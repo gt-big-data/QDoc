@@ -1,0 +1,4 @@
+Python:
+- Beautiful Soup 4 (bs4)
+- PIL: Python Imaging Library
+- Pymongo
