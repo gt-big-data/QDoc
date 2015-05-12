@@ -3,7 +3,7 @@ import time
 
 start_time = time.time()
 
-sources = ['cnn', 'reuters', 'business_insider', 'venture_beat', 'techcrunch', 'bbc'] # 'financial_times'
+sources = ['cnn', 'reuters', 'business_insider', 'venture_beat', 'techcrunch', 'bbc', 'guardian'] # 'financial_times'
 # GUID Available: (Globally Unique IDentifier)
 	# CNN: Yes
 	# Reuters: Yes
@@ -11,12 +11,12 @@ sources = ['cnn', 'reuters', 'business_insider', 'venture_beat', 'techcrunch', '
 	# VentureBeat: Yes
 	# TechCrunch: Yes
 	# BBC: Yes
+	# Guardian: Yes
 
 # Sources to add:
 	# Associated Press
 	# NY Times
 	# EuroNews
-	# The Guardian
 	# AFP
 	# Anadolu Agency
 	# The Independent
@@ -64,6 +64,13 @@ feeds['bbc'].append({'name': 'bbc_science', 'url': 'http://feeds.bbci.co.uk/news
 feeds['bbc'].append({'name': 'bbc_technology', 'url': 'http://feeds.bbci.co.uk/news/technology/rss.xml'})
 feeds['bbc'].append({'name': 'bbc_entertainment', 'url': 'http://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml'})
 
+feeds['guardian'] = []
+feeds['guardian'].append({'name': 'gua_world', 'url': 'http://www.theguardian.com/world/rss'})
+feeds['guardian'].append({'name': 'gua_politics', 'url': 'http://www.theguardian.com/politics/rss'})
+feeds['guardian'].append({'name': 'gua_politics', 'url': 'http://www.theguardian.com/culture/rss'})
+feeds['guardian'].append({'name': 'gua_business', 'url': 'http://www.theguardian.com/business/rss'})
+feeds['guardian'].append({'name': 'gua_environment', 'url': 'http://www.theguardian.com/environment/rss'})
+feeds['guardian'].append({'name': 'gua_travel', 'url': 'http://www.theguardian.com/travel/rss'})
 
 for source in sources:
 	for feed in feeds[source]:
