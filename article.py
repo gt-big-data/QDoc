@@ -1,8 +1,6 @@
-from pymongo import MongoClient, errors
 from collections import namedtuple
 import json
-
-
+import dbco
 
 Article = namedtuple('Article', ['title', 'url', 'timestamp', 'source', 'feed', 'content', 'img', 'keywords'])
 class Article(namedtuple('Article', ['title', 'url', 'timestamp', 'source', 'feed', 'content', 'img', 'keywords'])):
@@ -10,8 +8,6 @@ class Article(namedtuple('Article', ['title', 'url', 'timestamp', 'source', 'fee
         return super(Article, cls).__new__(cls, title, url, timestamp, source, feed, content, img, keywords)
 
 def saveNewArticles(newArticles):
-	client = MongoClient('mongodb://146.148.59.202:27017/')
-	db = client['big_data']
 
 	As = []
 	for a in newArticles:
@@ -45,5 +41,5 @@ def isValid(a):
 	if a.feed == '':
 		return False
 	if a.content == '':
-			return False
+		return False
 	return True

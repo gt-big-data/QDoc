@@ -7,10 +7,10 @@ def crawlContent(articles):
 	for i in range(0, len(articles)):
 		a = articles[i]
 		if a.url != '':
-
 			print i, " / ", len(articles)
 			try:
 				html = urllib2.urlopen(a.url).read()
+				print a.url
 				soup = BeautifulSoup(html, 'html.parser')
 				soup = removeHeaderNavFooter(soup)
 				soup = removeComments(soup)
@@ -23,10 +23,10 @@ def crawlContent(articles):
 				a = a._replace(img=bestImage)
 
 				articles[i] = a
-				# with open("test.html", "w") as f:
-				# 	f.write(soup.prettify('utf-8'))
-				# with open("test.txt", "w") as f:
-				# 	f.write(cont)
+				with open("test.html", "w") as f:
+					f.write(soup.prettify('utf-8'))
+				with open("test.txt", "w") as f:
+					f.write(cont)
 			except:
 				pass;
 
@@ -68,7 +68,8 @@ def adSelect(tag): # this is the selector for ads, recommended articles, etc
 	classList = ['ob_widget', 'zn-staggered__col', # CNN
 	'reuters-share', # reuters
 	'seealso', 'navBar', 'titleMoreLinks', 'RecommendBlk', 'AuthorBlock', 'Joindiscussion', 'TrendingBlk', 'subscribe_block', 'rhs', 'rhs_nl', 'footer', 'commentsBlock', # BusinessInsider
-	'vb_widget', 'entry-footer', 'navbar', 'site-header' # VentureBeat
+	'vb_widget', 'entry-footer', 'navbar', 'site-header', # VentureBeat
+	'l-sidebar', 'article-extra' #Techcrunch
 	]
 	if tag.has_attr('id') and tag.get('id') in idList:
 		return True
