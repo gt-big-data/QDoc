@@ -7,24 +7,28 @@ def crawlContent(articles):
 	for i in range(0, len(articles)):
 		a = articles[i]
 		if a.url != '':
+
 			print i, " / ", len(articles)
-			html = urllib2.urlopen(a.url).read()
-			soup = BeautifulSoup(html, 'html.parser')
-			soup = removeHeaderNavFooter(soup)
-			soup = removeComments(soup)
-			soup = removeAds(soup)
+			try:
+				html = urllib2.urlopen(a.url).read()
+				soup = BeautifulSoup(html, 'html.parser')
+				soup = removeHeaderNavFooter(soup)
+				soup = removeComments(soup)
+				soup = removeAds(soup)
 
-			cont = getContent(soup)
-			a = a._replace(content=cont)
+				cont = getContent(soup)
+				a = a._replace(content=cont)
 
-			bestImage = getBiggestImg(a, soup)
-			a = a._replace(img=bestImage)
+				bestImage = getBiggestImg(a, soup)
+				a = a._replace(img=bestImage)
 
-			articles[i] = a
-			# with open("test.html", "w") as f:
-			# 	f.write(soup.prettify('utf-8'))
-			# with open("test.txt", "w") as f:
-			# 	f.write(cont)
+				articles[i] = a
+				# with open("test.html", "w") as f:
+				# 	f.write(soup.prettify('utf-8'))
+				# with open("test.txt", "w") as f:
+				# 	f.write(cont)
+			except:
+				pass;
 
 	return articles
 
