@@ -4,10 +4,24 @@ import time
 start_time = time.time()
 
 sources = ['cnn', 'reuters', 'business_insider', 'venture_beat', 'techcrunch', 'bbc'] # 'financial_times'
+# GUID Available: (Globally Unique IDentifier)
+	# CNN: Yes
+	# Reuters: Yes
+	# Business Insider: Yes
+	# VentureBeat: Yes
+	# TechCrunch: Yes
+	# BBC: Yes
+
 # Sources to add:
-	# BBC
 	# Associated Press
 	# NY Times
+	# EuroNews
+	# The Guardian
+	# AFP
+	# Anadolu Agency
+	# The Independent
+	# UberGizmo
+	# RUssia Today
 
 feeds = {}
 

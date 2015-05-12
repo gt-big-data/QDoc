@@ -15,5 +15,5 @@ for article in articles:
 counters = Counter(titles)
 
 for title in counters:
-	if counters[title] >= 1:
+	if counters[title] > 1:
 		print "["+sources[title]+"]["+str(counters[title])+"]", title.encode('utf-8')
