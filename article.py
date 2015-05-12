@@ -1,6 +1,6 @@
 from collections import namedtuple
 import json
-import dbco
+from dbco import * # this imports the db connexion
 
 Article = namedtuple('Article', ['title', 'url', 'timestamp', 'source', 'feed', 'content', 'img', 'keywords'])
 class Article(namedtuple('Article', ['title', 'url', 'timestamp', 'source', 'feed', 'content', 'img', 'keywords'])):
