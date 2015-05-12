@@ -24,11 +24,12 @@ def crawlFeed(source, feedName, feedUrl):
 
 	for it in soup.find_all('item'):
 		dt = extractPubTime(it)
+		guid = extractGuid(it)
 		timestamp = (dt - epoch).total_seconds() # Hacky way of going from Datetime object to timestamp
 		if timestamp > startStamp: # new article
 			latestStamp = max(timestamp, latestStamp)
 			url = extractLink(it)
-			newArticles.append(Article(it.title.text, url, timestamp, source, feedName, '', ''))
+			newArticles.append(Article(guid, it.title.text, url, timestamp, source, feedName, '', ''))
 		else:
 			break # we're done, this assumes articles are ordered by descending pubDate
 
@@ -41,6 +42,12 @@ def crawlFeed(source, feedName, feedUrl):
 def extractPubTime(item):
 	dt = parser.parse(item.pubdate.text) # string to Datetime
 	return dt.replace(tzinfo=pytz.utc)
+
+def extractGuid(item):
+	guidItem = item.find('guid')
+	if guidItem is not None:
+		return guidItem.text
+	return ''
 
 def extractLink(item):
 	t1 = item.find('feedburner:origlink')

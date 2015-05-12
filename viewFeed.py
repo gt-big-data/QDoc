@@ -16,6 +16,7 @@ if len(sys.argv) > 1:
 	html = html.replace(u'\u2018', '')
 	html = html.replace(u'\u2014', '')
 	html = html.replace(u'\u2011', '')
+	html = html.replace(u'\u200b', '')
 	soup = BeautifulSoup(html.encode('utf-8'), 'html.parser')
 	print soup.prettify()
 else:
