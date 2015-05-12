@@ -20,10 +20,10 @@ def crawlContent(articles):
 				a = a._replace(img=bestImage)
 
 				articles[i] = a
-				# with open("test.html", "w") as f:
-				# 	f.write(soup.prettify('utf-8'))
-				# with open("test.txt", "w") as f:
-				# 	f.write(cont)
+				with open("test.html", "w") as f:
+					f.write(soup.prettify('utf-8'))
+				with open("test.txt", "w") as f:
+					f.write(cont)
 			except:
 				pass;
 
@@ -60,13 +60,15 @@ def removeAds(soup):
 	return soup
 
 def adSelect(tag): # this is the selector for ads, recommended articles, etc
-	idList = ['most-popular-parsely', 'specialFeature' # Reuters
+	idList = ['most-popular-parsely', 'specialFeature', # Reuters
+	'orb-footer', 'core-navigation', 'services-bar' # BBC
 	]
 	classList = ['ob_widget', 'zn-staggered__col', # CNN
 	'reuters-share', # reuters
 	'seealso', 'navBar', 'titleMoreLinks', 'RecommendBlk', 'AuthorBlock', 'Joindiscussion', 'TrendingBlk', 'subscribe_block', 'rhs', 'rhs_nl', 'footer', 'commentsBlock', # BusinessInsider
 	'vb_widget', 'entry-footer', 'navbar', 'site-header', # VentureBeat
-	'l-sidebar', 'article-extra' #Techcrunch
+	'l-sidebar', 'article-extra', #Techcrunch
+	'site-brand', 'column--secondary', 'share' # BBC
 	]
 	if tag.has_attr('id') and tag.get('id') in idList:
 		return True

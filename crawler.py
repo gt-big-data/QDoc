@@ -3,9 +3,9 @@ import time
 
 start_time = time.time()
 
-sources = ['cnn', 'reuters', 'business_insider', 'venture_beat', 'techcrunch'] # 'financial_times'
+sources = ['cnn', 'reuters', 'business_insider', 'venture_beat', 'techcrunch', 'bbc'] # 'financial_times'
 # Sources to add:
-	# Financial Times
+	# BBC
 	# Associated Press
 	# NY Times
 
@@ -42,10 +42,14 @@ feeds['venture_beat'].append({'name': 'vb_allfeeds', 'url': 'http://feeds.ventur
 feeds['techcrunch'] = []
 feeds['techcrunch'].append({'name': 'tc_allfeeds', 'url': 'http://feeds.feedburner.com/TechCrunch/'})
 
-# feeds['financial_times'] = [] # not possible, "not free"
-# feeds['financial_times'].append({'name': 'ft_world', 'url': 'http://www.ft.com/rss/world'})
-# feeds['financial_times'].append({'name': 'ft_companies', 'url': 'http://www.ft.com/rss/companies'})
-# feeds['financial_times'].append({'name': 'ft_arts', 'url': 'http://www.ft.com/rss/arts'})
+feeds['bbc'] = []
+feeds['bbc'].append({'name': 'bbc_world', 'url': 'http://feeds.bbci.co.uk/news/world/rss.xml'})
+feeds['bbc'].append({'name': 'bbc_business', 'url': 'http://feeds.bbci.co.uk/news/business/rss.xml'})
+feeds['bbc'].append({'name': 'bbc_politics', 'url': 'http://feeds.bbci.co.uk/news/politics/rss.xml'})
+feeds['bbc'].append({'name': 'bbc_science', 'url': 'http://feeds.bbci.co.uk/news/science_and_environment/rss.xml'})
+feeds['bbc'].append({'name': 'bbc_technology', 'url': 'http://feeds.bbci.co.uk/news/technology/rss.xml'})
+feeds['bbc'].append({'name': 'bbc_entertainment', 'url': 'http://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml'})
+
 
 for source in sources:
 	for feed in feeds[source]:
