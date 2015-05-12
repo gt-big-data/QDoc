@@ -1,16 +1,13 @@
 import urllib, urllib2
 from PIL import ImageFile
 from bs4 import BeautifulSoup, Comment, Doctype, NavigableString
-import re
 
 def crawlContent(articles):
 	for i in range(0, len(articles)):
 		a = articles[i]
 		if a.url != '':
-			print i, " / ", len(articles)
 			try:
 				html = urllib2.urlopen(a.url).read()
-				print a.url
 				soup = BeautifulSoup(html, 'html.parser')
 				soup = removeHeaderNavFooter(soup)
 				soup = removeComments(soup)
@@ -23,10 +20,10 @@ def crawlContent(articles):
 				a = a._replace(img=bestImage)
 
 				articles[i] = a
-				with open("test.html", "w") as f:
-					f.write(soup.prettify('utf-8'))
-				with open("test.txt", "w") as f:
-					f.write(cont)
+				# with open("test.html", "w") as f:
+				# 	f.write(soup.prettify('utf-8'))
+				# with open("test.txt", "w") as f:
+				# 	f.write(cont)
 			except:
 				pass;
 

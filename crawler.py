@@ -3,8 +3,7 @@ import time
 
 start_time = time.time()
 
-# sources = ['cnn', 'reuters', 'business_insider', 'venture_beat', 'techcrunch'] # 'financial_times'
-sources = ['techcrunch']
+sources = ['cnn', 'reuters', 'business_insider', 'venture_beat', 'techcrunch'] # 'financial_times'
 # Sources to add:
 	# Financial Times
 	# Associated Press
@@ -47,10 +46,6 @@ feeds['techcrunch'].append({'name': 'tc_allfeeds', 'url': 'http://feeds.feedburn
 # feeds['financial_times'].append({'name': 'ft_world', 'url': 'http://www.ft.com/rss/world'})
 # feeds['financial_times'].append({'name': 'ft_companies', 'url': 'http://www.ft.com/rss/companies'})
 # feeds['financial_times'].append({'name': 'ft_arts', 'url': 'http://www.ft.com/rss/arts'})
-
-
-
-
 
 for source in sources:
 	for feed in feeds[source]:
