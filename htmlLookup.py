@@ -13,7 +13,7 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 cont_old = ''
-url = 'http://www.cnn.com/2015/05/15/us/tsarnaev-13th-juror-closing-arguments/index.html'
+url = 'http://www.theguardian.com/film/gallery/2015/may/13/cannes-kicks-off-stars-walk-the-red-carpet-at-start-of-the-2015-film-festival'
 # for a in art:
 # 	cont_old = a['content']
 # 	url = a['url']

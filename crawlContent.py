@@ -22,8 +22,8 @@ def crawlContent(articles):
 				a = a._replace(img=bestImage)
 
 				articles[i] = a
-				# with open("test.html", "w") as f:
-				# 	f.write(soup.prettify('utf-8'))
+				with open("test.html", "w") as f:
+					f.write(soup.prettify('utf-8'))
 				# with open("test.txt", "w") as f:
 				# 	f.write(cont)
 			except:
@@ -107,16 +107,19 @@ def calcScore(el, txt):
 	score = 1 # you have to at least get to 0
 	if len(txt) < 5:
 		score -= 100
-	if len(txt) > 50: # at least some sentence
+	if len(txt) > 100: # at least some sentence
 		score += 50
 	if len(txt) <= 20:
 		shareKeywords = ['facebook', 'twitter', 'email', 'linkedin', 'google+', 'whatsapp', 'pinterest', 'snapchat', 'share', 'report', 'skip', 'more', 'post', 'comment']
 		for key in shareKeywords:
 			if key in txt.lower():
 				score -= 30
+	if len(txt) <= 70:
+		if 'photograph:' in txt.lower():
+			score -= 30
 	if ('http://' in txt or '.com' in txt or '.org' in txt or 'www.' in txt) and ' ' not in txt: # what if it's a link
 		score -= 30
-	if txt in ['Events', 'Terms of Service', 'Home', 'Privacy Policy', 'VentureBeat', 'Mobile', 'Guest', 'About', 'Topics', 'More news', 'See Also']:
+	if txt in ['Events', 'Terms of Service', 'Home', 'Privacy Policy', 'VentureBeat', 'Mobile', 'Guest', 'About', 'Topics', 'More news', 'See Also', 'close']:
 		score -= 100
 	return score
 
