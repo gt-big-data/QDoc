@@ -7,16 +7,16 @@ import sys
 
 src = 'guardian'
 
-art = db.qdoc.find({'$query': {'source': src}, '$orderby': {'timestamp': -1}}).skip(1).limit(1)
+# art = db.qdoc.find({'$query': {'source': src}, '$orderby': {'timestamp': -1}}).skip(1).limit(1)
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
 cont_old = ''
-url = ''
-for a in art:
-	cont_old = a['content']
-	url = a['url']
+url = 'http://www.cnn.com/2015/05/15/us/tsarnaev-13th-juror-closing-arguments/index.html'
+# for a in art:
+# 	cont_old = a['content']
+# 	url = a['url']
 
 print url
 art = [Article('blabla', "blabla2", url, 1431243710, src, src+"yolo")]

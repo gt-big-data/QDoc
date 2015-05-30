@@ -72,7 +72,7 @@ def adSelect(tag): # this is the selector for ads, recommended articles, etc
 	'orb-footer', 'core-navigation', 'services-bar', # BBC
 	'profile-cards' #VentureBeat
 	]
-	classList = ['ob_widget', 'zn-staggered__col', # CNN
+	classList = ['ob_widget', 'zn-staggered__col', 'el__video--standard', 'el__gallery--fullstandardwidth', 'el__gallery-showhide', 'el__gallery', 'el__gallery--standard', 'el__featured-video', 'zn-Rail', 'el__leafmedia', # CNN
 	'reuters-share', # reuters
 	'abusivetextareaDiv', 'LoginRegister', 'rhsb', 'TabsContList', 'rhs_nl', 'sticky', 'rhs', 'titleMoreLinks', 'ShareBox', 'Commentbox', 'commentsBlock', 'RecommendBlk', 'prvnxtbg', 'OUTBRAIN', 'AuthorBlock', 'seealso', 'Joindiscussion', 'subscribe_outer', # BusinessInsider
 	'vb_widget', 'entry-footer', 'navbar', 'site-header', 'mobile-post', 'widget-area', # VentureBeat
@@ -110,7 +110,7 @@ def calcScore(el, txt):
 	if len(txt) > 50: # at least some sentence
 		score += 50
 	if len(txt) <= 20:
-		shareKeywords = ['facebook', 'twitter', 'email', 'linkedin', 'google+', 'whatsapp', 'share', 'report', 'skip', 'more', 'post', 'comment']
+		shareKeywords = ['facebook', 'twitter', 'email', 'linkedin', 'google+', 'whatsapp', 'pinterest', 'snapchat', 'share', 'report', 'skip', 'more', 'post', 'comment']
 		for key in shareKeywords:
 			if key in txt.lower():
 				score -= 30
