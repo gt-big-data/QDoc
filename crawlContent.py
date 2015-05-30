@@ -22,10 +22,10 @@ def crawlContent(articles):
 				a = a._replace(img=bestImage)
 
 				articles[i] = a
-				# with open("test.html", "w") as f:
-				# 	f.write(soup.prettify('utf-8'))
-				# with open("test.txt", "w") as f:
-				# 	f.write(cont)
+				with open("test.html", "w") as f:
+					f.write(soup.prettify('utf-8'))
+				with open("test.txt", "w") as f:
+					f.write(cont)
 			except:
 				pass;
 
