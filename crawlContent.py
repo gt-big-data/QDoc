@@ -12,8 +12,10 @@ def crawlContent(articles):
 				soup = removeHeaderNavFooter(soup)
 				soup = removeComments(soup)
 				soup = removeAds(soup)
+				soup = removeScriptStyle(soup)
 
 				cont = getContent(soup)
+
 				a = a._replace(content=cont)
 
 				bestImage = getBiggestImg(a, soup)
@@ -49,6 +51,12 @@ def removeHeaderNavFooter(soup):
 	hnfs = soup.findAll({'header', 'nav', 'footer'})
 	[hnf.extract() for hnf in hnfs]
 	return soup
+def removeScriptStyle(soup):
+	hnfs = soup.findAll({'style', 'script', 'noscript', '[document]', 'head', 'title', 'form'})
+	[hnf.extract() for hnf in hnfs]
+	return soup
+
+
 
 def removeComments(soup):
 	comments = soup.findAll(text=lambda text:isinstance(text, Comment) or text.find('if') != -1)
@@ -61,15 +69,16 @@ def removeAds(soup):
 
 def adSelect(tag): # this is the selector for ads, recommended articles, etc
 	idList = ['most-popular-parsely', 'specialFeature', # Reuters
-	'orb-footer', 'core-navigation', 'services-bar' # BBC
+	'orb-footer', 'core-navigation', 'services-bar', # BBC
+	'profile-cards' #VentureBeat
 	]
 	classList = ['ob_widget', 'zn-staggered__col', # CNN
 	'reuters-share', # reuters
-	'seealso', 'navBar', 'titleMoreLinks', 'RecommendBlk', 'AuthorBlock', 'Joindiscussion', 'TrendingBlk', 'subscribe_block', 'rhs', 'rhs_nl', 'footer', 'commentsBlock', # BusinessInsider
-	'vb_widget', 'entry-footer', 'navbar', 'site-header', # VentureBeat
-	'l-sidebar', 'article-extra', #Techcrunch
-	'site-brand', 'column--secondary', 'share', # BBC
-	'content-footer', 'site-message', 'content__meta-container' # The Guardian
+	'abusivetextareaDiv', 'LoginRegister', 'rhsb', 'TabsContList', 'rhs_nl', 'sticky', 'rhs', 'titleMoreLinks', 'ShareBox', 'Commentbox', 'commentsBlock', 'RecommendBlk', 'prvnxtbg', 'OUTBRAIN', 'AuthorBlock', 'seealso', 'Joindiscussion', 'subscribe_outer', # BusinessInsider
+	'vb_widget', 'entry-footer', 'navbar', 'site-header', 'mobile-post', 'widget-area', # VentureBeat
+	'l-sidebar', 'article-extra', 'social-share', 'feature-island-container', 'announcement', 'header-ad', 'ad-top-mobile', 'ad-cluster-container', 'social-list', #Techcrunch
+	'site-brand', 'column--secondary', 'share', 'bbccom_slot', # BBC
+	'content-footer', 'site-message', 'content__meta-container', 'submeta' # The Guardian
 	]
 	if tag.has_attr('id') and tag.get('id') in idList:
 		return True
@@ -100,14 +109,19 @@ def calcScore(el, txt):
 		score -= 100
 	if len(txt) > 50: # at least some sentence
 		score += 50
+	if len(txt) <= 20:
+		shareKeywords = ['facebook', 'twitter', 'email', 'linkedin', 'google+', 'whatsapp', 'share', 'report', 'skip', 'more', 'post', 'comment']
+		for key in shareKeywords:
+			if key in txt.lower():
+				score -= 30
 	if ('http://' in txt or '.com' in txt or '.org' in txt or 'www.' in txt) and ' ' not in txt: # what if it's a link
 		score -= 30
-	if txt in ['Events', 'Terms of Service', 'Home', 'Privacy Policy', 'VentureBeat', 'Mobile', 'Guest', 'About']:
+	if txt in ['Events', 'Terms of Service', 'Home', 'Privacy Policy', 'VentureBeat', 'Mobile', 'Guest', 'About', 'Topics', 'More news', 'See Also']:
 		score -= 100
 	return score
 
 def visible(element):
-	if element.parent.name in ['style', 'script', '[document]', 'head', 'title']:
+	if element.parent.name in ['style', 'script', 'noscript', '[document]', 'head', 'title']:
 		return False
 	return True
 
