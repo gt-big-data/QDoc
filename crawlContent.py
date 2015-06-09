@@ -7,7 +7,6 @@ def crawlContent(articles):
 		a = articles[i]
 		if a.url != '':
 			try:
-				print a.url
 				html = urllib2.urlopen(a.url).read()
 				soup = BeautifulSoup(html, 'html.parser')
 				soup = removeHeaderNavFooter(soup)
