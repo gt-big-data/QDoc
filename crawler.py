@@ -3,7 +3,8 @@ import time
 
 start_time = time.time()
 
-sources = ['cnn', 'reuters', 'business_insider', 'venture_beat', 'techcrunch', 'bbc', 'guardian'] # 'financial_times'
+sources = ['cnn', 'reuters', 'business_insider', 'venture_beat', 'techcrunch', 'bbc', 'guardian', 'aljazeera', 'france24']
+# sources = ['france24']
 # GUID Available: (Globally Unique IDentifier)
 	# CNN: Yes
 	# Reuters: Yes
@@ -71,6 +72,12 @@ feeds['guardian'].append({'name': 'gua_politics', 'url': 'http://www.theguardian
 feeds['guardian'].append({'name': 'gua_business', 'url': 'http://www.theguardian.com/business/rss'})
 feeds['guardian'].append({'name': 'gua_environment', 'url': 'http://www.theguardian.com/environment/rss'})
 feeds['guardian'].append({'name': 'gua_travel', 'url': 'http://www.theguardian.com/travel/rss'})
+
+feeds['aljazeera'] = []
+feeds['aljazeera'].append({'name': 'alj_allfeeds', 'url': 'http://america.aljazeera.com/content/ajam/articles.rss'})
+
+feeds['france24'] = []
+feeds['france24'].append({'name': 'f24_livenews', 'url': 'http://www.france24.com/en/timeline/rss'})
 
 for source in sources:
 	for feed in feeds[source]:

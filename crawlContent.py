@@ -7,6 +7,7 @@ def crawlContent(articles):
 		a = articles[i]
 		if a.url != '':
 			try:
+				print a.url
 				html = urllib2.urlopen(a.url).read()
 				soup = BeautifulSoup(html, 'html.parser')
 				soup = removeHeaderNavFooter(soup)
@@ -22,8 +23,8 @@ def crawlContent(articles):
 				a = a._replace(img=bestImage)
 
 				articles[i] = a
-				with open("test.html", "w") as f:
-					f.write(soup.prettify('utf-8'))
+				# with open("test.html", "w") as f:
+				# 	f.write(soup.prettify('utf-8'))
 				# with open("test.txt", "w") as f:
 				# 	f.write(cont)
 			except:
@@ -36,8 +37,12 @@ def getBiggestImg(a, soup):
 	maxDim = 0
 	imgs = soup.findAll('img')
 	for img in imgs:
-		if img.has_attr('src'):
+		url = ''
+		if img.has_attr('data-src-small'): # fucking CNN, can't get it right
+			url = img.get('data-src-small')
+		elif img.has_attr('src'):
 			url = img.get('src')
+		if url != '':
 			if 'http://' not in url and a.source == 'business_insider':
 				url = 'http://www.businessinsider.in'+url
 			if 'doubleclick.net' not in url:
@@ -48,7 +53,7 @@ def getBiggestImg(a, soup):
 	return bestUrl
 
 def removeHeaderNavFooter(soup):
-	hnfs = soup.findAll({'header', 'nav', 'footer'})
+	hnfs = soup.findAll({'header', 'nav', 'footer', 'aside'})
 	[hnf.extract() for hnf in hnfs]
 	return soup
 def removeScriptStyle(soup):
@@ -78,7 +83,9 @@ def adSelect(tag): # this is the selector for ads, recommended articles, etc
 	'vb_widget', 'entry-footer', 'navbar', 'site-header', 'mobile-post', 'widget-area', # VentureBeat
 	'l-sidebar', 'article-extra', 'social-share', 'feature-island-container', 'announcement', 'header-ad', 'ad-top-mobile', 'ad-cluster-container', 'social-list', #Techcrunch
 	'site-brand', 'column--secondary', 'share', 'bbccom_slot', # BBC
-	'content-footer', 'site-message', 'content__meta-container', 'submeta' # The Guardian
+	'content-footer', 'site-message', 'content__meta-container', 'submeta', # The Guardian
+	'unsupported-browser', 'component-articleOpinion', 'hidden-phone', 'relatedResources', 'articleOpinion-secondary', 'articleOpinion-comments', 'dynamicStoryHighlightList', 'brightcovevideo' # Al-Jazeera
+	'col-2', 'on-air-board-outer', 'short-cuts-outer' # France24
 	]
 	if tag.has_attr('id') and tag.get('id') in idList:
 		return True
