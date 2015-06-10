@@ -2,7 +2,7 @@ from dbco import *
 from article import *
 from crawlContent import *
 
-articles = db.qdoc.find({'content': ''}).limit(20)
+articles = db.qdoc.find({'content': ''})
 
 for a in articles:
 	art = [Article('blabla', a['title'], a['url'], 1431243710, a['source'], "cnn_world")]
