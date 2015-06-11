@@ -8,11 +8,12 @@ def crawlContent(articles):
 		if a.url != '':
 			try:
 				html = urllib2.urlopen(a.url).read()
+				
 				soup = BeautifulSoup(html, 'html.parser')
 				soup = removeHeaderNavFooter(soup)
 				soup = removeComments(soup)
-				soup = removeAds(soup)
 				soup = removeScriptStyle(soup)
+				soup = removeAds(soup)
 
 				cont = getContent(soup)
 
@@ -28,7 +29,6 @@ def crawlContent(articles):
 				# 	f.write(cont)
 			except:
 				pass;
-
 	return articles
 
 def getBiggestImg(a, soup):
@@ -60,8 +60,6 @@ def removeScriptStyle(soup):
 	[hnf.extract() for hnf in hnfs]
 	return soup
 
-
-
 def removeComments(soup):
 	comments = soup.findAll(text=lambda text:isinstance(text, Comment) or text.find('if') != -1)
 	[comment.extract() for comment in comments]
@@ -82,7 +80,7 @@ def adSelect(tag): # this is the selector for ads, recommended articles, etc
 	'vb_widget', 'entry-footer', 'navbar', 'site-header', 'mobile-post', 'widget-area', # VentureBeat
 	'l-sidebar', 'article-extra', 'social-share', 'feature-island-container', 'announcement', 'header-ad', 'ad-top-mobile', 'ad-cluster-container', 'social-list', #Techcrunch
 	'site-brand', 'column--secondary', 'share', 'bbccom_slot', # BBC
-	'content-footer', 'site-message', 'content__meta-container', 'submeta', # The Guardian
+	'content-footer', 'site-message', 'content__meta-container', 'submeta', 'l-header', # The Guardian
 	'unsupported-browser', 'component-articleOpinion', 'hidden-phone', 'relatedResources', 'articleOpinion-secondary', 'articleOpinion-comments', 'dynamicStoryHighlightList', 'brightcovevideo' # Al-Jazeera
 	'col-2', 'on-air-board-outer', 'short-cuts-outer' # France24
 	]
@@ -102,8 +100,8 @@ def getContent(soup):
 		if isinstance(elem, NavigableString):
 			txt = elem.encode('utf-8')
 			score = calcScore(elem, txt)
-			# print "[",score,"]", txt
 			if score > 0:
+				# print "[",score,"]", txt
 				buildText.append(txt)
 		else:
 			pass

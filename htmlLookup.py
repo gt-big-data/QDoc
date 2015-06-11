@@ -13,7 +13,7 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 cont_old = ''
-url = 'http://www.france24.com/en/20150609-crockett-latest-commit-all-blacks'
+url = 'http://www.theguardian.com/environment/ng-interactive/2015/mar/16/the-biggest-story-in-the-world'
 # for a in art:
 # 	cont_old = a['content']
 # 	url = a['url']
@@ -27,7 +27,7 @@ soup_old = BeautifulSoup(cont_old, 'html.parser')
 # with open(src+"_old.txt", "w") as f:
 # 	f.write(soup_old.prettify())
 
-# soup_new = BeautifulSoup(art[0].content, 'html.parser')
+soup_new = BeautifulSoup(art[0].content, 'html.parser')
 
-# with open(src+"_new.txt", "w") as f:
-# 	f.write(soup_new.prettify())
+with open(src+"_new.txt", "w") as f:
+	f.write(soup_new.prettify())
