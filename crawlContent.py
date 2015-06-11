@@ -10,13 +10,11 @@ def crawlContent(articles):
 				html = urllib2.urlopen(a.url).read()
 				
 				soup = BeautifulSoup(html, 'html.parser')
-				# soup = removeHeaderNavFooter(soup)
+				soup = removeHeaderNavFooter(soup)
 				soup = removeComments(soup)
 				soup = removeScriptStyle(soup)
 				soup = removeAds(soup)
 
-				with open("test.html", "w") as f:
-					f.write(soup.prettify('utf-8'))
 				cont = getContent(soup)
 
 				a = a._replace(content=cont)
@@ -25,6 +23,8 @@ def crawlContent(articles):
 				a = a._replace(img=bestImage)
 
 				articles[i] = a
+				# with open("test.html", "w") as f:
+				# 	f.write(soup.prettify('utf-8'))
 				# with open("test.txt", "w") as f:
 				# 	f.write(cont)
 			except:
@@ -52,7 +52,7 @@ def getBiggestImg(a, soup):
 	return bestUrl
 
 def removeHeaderNavFooter(soup):
-	hnfs = soup.findAll({'nav', 'footer', 'aside'})
+	hnfs = soup.findAll({'header', 'nav', 'footer', 'aside'})
 	[hnf.extract() for hnf in hnfs]
 	return soup
 def removeScriptStyle(soup):
