@@ -1,14 +1,18 @@
 import urllib, urllib2
+from dateutil.parser import *
 from PIL import ImageFile
 from bs4 import BeautifulSoup, Comment, Doctype, NavigableString
 
+source = ''
+
 def crawlContent(articles):
+	global source
 	for i in range(0, len(articles)):
 		a = articles[i]
 		if a.url != '':
 			try:
 				html = urllib2.urlopen(a.url).read()
-				
+				source = a.source
 				soup = BeautifulSoup(html, 'html.parser')
 				soup = removeHeaderNavFooter(soup)
 				soup = removeComments(soup)
@@ -23,8 +27,8 @@ def crawlContent(articles):
 				a = a._replace(img=bestImage)
 
 				articles[i] = a
-				# with open("test.html", "w") as f:
-				# 	f.write(soup.prettify('utf-8'))
+				with open("test.html", "w") as f:
+					f.write(soup.prettify('utf-8'))
 				# with open("test.txt", "w") as f:
 				# 	f.write(cont)
 			except:
@@ -74,21 +78,21 @@ def adSelect(tag): # this is the selector for ads, recommended articles, etc
 	'orb-footer', 'core-navigation', 'services-bar', # BBC
 	'profile-cards' #VentureBeat
 	]
-	classList = ['ob_widget', 'zn-staggered__col', 'el__video--standard', 'el__gallery--fullstandardwidth', 'el__gallery-showhide', 'el__gallery', 'el__gallery--standard', 'el__featured-video', 'zn-Rail', 'el__leafmedia', # CNN
-	'reuters-share', # reuters
-	'abusivetextareaDiv', 'LoginRegister', 'rhsb', 'TabsContList', 'rhs_nl', 'sticky', 'rhs', 'titleMoreLinks', 'ShareBox', 'Commentbox', 'commentsBlock', 'RecommendBlk', 'prvnxtbg', 'OUTBRAIN', 'AuthorBlock', 'seealso', 'Joindiscussion', 'subscribe_outer', # BusinessInsider
-	'vb_widget', 'entry-footer', 'navbar', 'site-header', 'mobile-post', 'widget-area', # VentureBeat
-	'l-sidebar', 'article-extra', 'social-share', 'feature-island-container', 'announcement', 'header-ad', 'ad-top-mobile', 'ad-cluster-container', 'social-list', #Techcrunch
-	'site-brand', 'column--secondary', 'share', 'bbccom_slot', # BBC
-	'content-footer', 'site-message', 'content__meta-container', 'submeta', 'l-header', # The Guardian
-	'unsupported-browser', 'component-articleOpinion', 'hidden-phone', 'relatedResources', 'articleOpinion-secondary', 'articleOpinion-comments', 'dynamicStoryHighlightList', 'brightcovevideo' # Al-Jazeera
-	'col-2', 'on-air-board-outer', 'short-cuts-outer' # France24
-	]
+	classList = {}
+	classList['cnn'] = ['ob_widget', 'zn-staggered__col', 'el__video--standard', 'el__gallery--fullstandardwidth', 'el__gallery-showhide', 'el__gallery', 'el__gallery--standard', 'el__featured-video', 'zn-Rail', 'el__leafmedia']
+	classList['reuters'] = ['reuters-share']
+	classList['business_insider'] = ['abusivetextareaDiv', 'LoginRegister', 'rhsb', 'TabsContList', 'rhs_nl', 'sticky', 'rhs', 'titleMoreLinks', 'ShareBox', 'Commentbox', 'commentsBlock', 'RecommendBlk', 'prvnxtbg', 'OUTBRAIN', 'AuthorBlock', 'seealso', 'Joindiscussion', 'subscribe_outer']
+	classList['venture_beat'] = ['vb_widget', 'entry-footer', 'navbar', 'site-header', 'mobile-post', 'widget-area']
+	classList['techcrunch'] = ['l-sidebar', 'article-extra', 'social-share', 'feature-island-container', 'announcement', 'header-ad', 'ad-top-mobile', 'ad-cluster-container', 'social-list']
+	classList['bbc'] = ['site-brand', 'column--secondary', 'share', 'bbccom_slot']
+	classList['guardian'] = ['content-footer', 'site-message', 'content__meta-container', 'submeta', 'l-header', 'block-share', 'share-modal__content']
+	classList['aljazeera'] = ['unsupported-browser', 'component-articleOpinion', 'hidden-phone', 'relatedResources', 'articleOpinion-secondary', 'articleOpinion-comments', 'dynamicStoryHighlightList', 'brightcovevideo']
+	classList['france24'] = ['col-2', 'on-air-board-outer', 'short-cuts-outer']
 	if tag.has_attr('id') and tag.get('id') in idList:
 		return True
 	if tag.has_attr('class'):
 		c = tag.get('class')
-		for className in classList:
+		for className in classList[source]:
 			if className in c:
 				return True
 	return False
@@ -107,19 +111,30 @@ def getContent(soup):
 			pass
 	return "\n".join(buildText)
 
+def isDate(txt):
+	try:
+		dt = parse(txt)
+		return True
+	except:
+		return False
+
 def calcScore(el, txt):
+	txtLower = txt.lower()
 	score = 1 # you have to at least get to 0
 	if len(txt) < 5:
 		score -= 100
 	if len(txt) > 100: # at least some sentence
 		score += 50
-	if len(txt) <= 20:
-		shareKeywords = ['facebook', 'twitter', 'email', 'linkedin', 'google+', 'whatsapp', 'pinterest', 'snapchat', 'share', 'report', 'skip', 'more', 'post', 'comment']
+	if isDate(txt):
+		score -= 100
+		return score
+	if len(txt) <= 25:
+		shareKeywords = ['facebook', 'twitter', 'google plus', 'email', 'linkedin', 'google+', 'whatsapp', 'pinterest', 'snapchat', 'share', 'report', 'skip', 'more', 'post', 'comment', 'tweet', 'print']
 		for key in shareKeywords:
-			if key in txt.lower():
+			if key in txtLower:
 				score -= 30
 	if len(txt) <= 70:
-		if 'photograph:' in txt.lower():
+		if ('created' in txtLower or 'date' in txtLower or 'photograph:' in txtLower or 'browser' in txtLower or 'adobe' in txtLower or 'try again' in txtLower or 'upgrade' in txtLower or 'please install' in txtLower):
 			score -= 30
 	if ('http://' in txt or '.com' in txt or '.org' in txt or 'www.' in txt) and ' ' not in txt: # what if it's a link
 		score -= 30
