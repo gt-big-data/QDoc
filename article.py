@@ -4,7 +4,7 @@ from dbco import * # this imports the db connexion
 
 Article = namedtuple('Article', ['guid', 'title', 'url', 'timestamp', 'source', 'feed', 'content', 'img', 'keywords'])
 class Article(namedtuple('Article', ['guid', 'title', 'url', 'timestamp', 'source', 'feed', 'content', 'img', 'keywords'])):
-    def __new__(cls, guid='', title='', url='', timestamp=0, source='', feed='', content='CC', img='', keywords=[]):
+    def __new__(cls, guid='', title='', url='', timestamp=0, source='', feed='', content='No Content', img='', keywords=[]):
         return super(Article, cls).__new__(cls, guid, title, url, timestamp, source, feed, content, img, keywords)
 
 def saveNewArticles(newArticles):
