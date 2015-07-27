@@ -43,10 +43,15 @@ def extractPubTime(item):
 	dt = parser.parse(item.pubdate.text) # string to Datetime
 	return dt.replace(tzinfo=pytz.utc)
 
-def extractGuid(item):
+def extractGuid(item , source):
 	guidItem = item.find('guid')
 	if guidItem is not None:
-		return guidItem.text
+		guid = guidItem.text
+		if source == 'reuters' and 'http' in guid: # assholes
+			toks = guid.split('?')
+            tok2 = toks[0].split('/') # take out the GET paramaters
+            guid = tok2[len(tok2)-1][:-8] # 1) keep last piece of url, 2) take out 8 digits of date lol
+		return guid
 	return ''
 
 def extractLink(item):

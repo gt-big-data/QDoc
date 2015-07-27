@@ -1,0 +1,1 @@
+db.qdoc.update({'topic': {'$gte': 1}}, {'$set': {'topic': 0}}, multi=True)
