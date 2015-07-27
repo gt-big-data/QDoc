@@ -24,7 +24,7 @@ def crawlFeed(source, feedName, feedUrl):
 
 	for it in soup.find_all('item'):
 		dt = extractPubTime(it)
-		guid = extractGuid(it)
+		guid = extractGuid(it, source)
 		timestamp = (dt - epoch).total_seconds() # Hacky way of going from Datetime object to timestamp
 		if timestamp > startStamp: # new article
 			latestStamp = max(timestamp, latestStamp)
@@ -49,8 +49,8 @@ def extractGuid(item , source):
 		guid = guidItem.text
 		if source == 'reuters' and 'http' in guid: # assholes
 			toks = guid.split('?')
-            tok2 = toks[0].split('/') # take out the GET paramaters
-            guid = tok2[len(tok2)-1][:-8] # 1) keep last piece of url, 2) take out 8 digits of date lol
+		        tok2 = toks[0].split('/') # take out the GET paramaters
+			guid = tok2[len(tok2)-1][:-8] # 1) keep last piece of url, 2) take out 8 digits of date lol
 		return guid
 	return ''
 
