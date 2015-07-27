@@ -20,7 +20,6 @@ def saveNewArticles(newArticles):
 def insertArticles(db, As):
 	for a in As:
 		db.qdoc.update({'guid': a['guid']}, {'$set': a}, upsert=True) # if the GUID is already in the set
-	# db.qdoc.insert(As)
 
 def saveNewArticlesFile(newArticles):
 	with open("DB_ex.txt", "a") as f:
