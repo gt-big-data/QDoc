@@ -15,7 +15,7 @@ def saveNewArticles(newArticles):
         if isValid(a):
             As.append(a._asdict())
         else:
-            print("Article from source: ", a.source, "feed: ", a.feed, " was invalid")
+            print "Article from source: ", a.source, "feed: ", a.feed, " was invalid"
     if len(As) > 0:
         insertArticles(db, As)
 
