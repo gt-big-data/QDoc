@@ -1,6 +1,8 @@
 from urllib import urlopen
 from bs4 import BeautifulSoup
 
+from pymongo import MongoClient, errors
+
 from dateutil import parser
 from datetime import datetime
 import time
@@ -19,11 +21,17 @@ def crawlFeed(source, feedName, feedUrl):
     feedName -- The title of the RSS feed (e.g. 'cnn_world', 'cnn_sport').
     feedUrl -- An RSS feed url to extract links from (e.g. 'http://*.rss').
     """
+
     # Given a feedname from a Source and a URL of where the Rss feed is,
     # Get the new articles, with their basic params: Title, URL, Publish Time
     # loadLastStamp always returns 0.
     startStamp = loadLastStamp(feedName)
     html = urlopen(feedUrl).read()
+
+    client = MongoClient()
+    db = client['big_data']
+    db.html.update({'name': feedName}, {'html': html, 'name':feedName}, upsert=True)
+
     epoch = datetime(1970, 1, 1).replace(tzinfo=pytz.utc)
 
     soup = BeautifulSoup(html, 'html.parser')
