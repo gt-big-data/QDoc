@@ -1,5 +1,5 @@
 from pymongo import MongoClient, errors
 
-#Production code: 'mongodb://146.148.59.202:27017/'
+# TODO: Move this to a config file.
 client = MongoClient('mongodb://146.148.59.202:27017/')
 db = client['big_data']

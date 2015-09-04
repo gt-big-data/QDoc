@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+"""Testing script for visually inspecting RSS feeds (or any HTML page)."""
 from urllib import urlopen
 from bs4 import BeautifulSoup
 import sys
