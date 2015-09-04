@@ -14,13 +14,14 @@ from crawlContent import *
 def crawlFeed(source, feedName, feedUrl):
     """Crawl an RSS feed.
 
-  Arguments:
-  source -- Main name of the news site (e.g. cnn, nyt, etc.).
-  feedName -- The title of the RSS feed (e.g. 'cnn_world', 'cnn_sport').
-  feedUrl -- An RSS feed url to extract links from (e.g. 'http://*.rss').
-  """
+    Arguments:
+    source -- Main name of the news site (e.g. cnn, nyt, etc.).
+    feedName -- The title of the RSS feed (e.g. 'cnn_world', 'cnn_sport').
+    feedUrl -- An RSS feed url to extract links from (e.g. 'http://*.rss').
+    """
     # Given a feedname from a Source and a URL of where the Rss feed is,
     # Get the new articles, with their basic params: Title, URL, Publish Time
+    # loadLastStamp always returns 0.
     startStamp = loadLastStamp(feedName)
     html = urlopen(feedUrl).read()
     epoch = datetime(1970, 1, 1).replace(tzinfo=pytz.utc)
