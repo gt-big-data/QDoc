@@ -81,7 +81,7 @@ feeds['france24'] = []
 feeds['france24'].append({'name': 'f24_livenews', 'url': 'http://www.france24.com/en/timeline/rss'})
 
 for source in sources:
-	for feed in feeds[source]:
-		crawlFeed(source, feed['name'], feed['url'])
+    for feed in feeds[source]:
+        crawlFeed(source, feed['name'], feed['url'])
 
 print("--- %s seconds ---" % round(time.time() - start_time, 2))

@@ -1,19 +1,10 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
+
+"""Recrawl an existing article and compare the old crawled data with the new data."""
 from dbco import *
 from article import *
 from crawlContent import *
 import sys
-
-# articles = db.qdoc.find({'content': ''})
-
-# for a in articles:
-# 	art = [Article('blabla', a['title'], a['url'], 1431243710, a['source'], "cnn_world")]
-# 	art = crawlContent(art)
-# 	new_cont = art[0].content
-# 	db.qdoc.update({'guid': a['guid']}, {'$set': {'content': new_cont}}, multi=True)
-# 	print "Done"
-
-
 
 source = sys.argv[1]
 ski = int(sys.argv[2])
@@ -28,4 +19,4 @@ with open("new_content.txt", "w") as f:
 with open("old_content.txt", "w") as f:
 	f.write(a['content'].encode('utf-8'))
 
-print "Done"
+print("Done")
