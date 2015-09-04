@@ -17,4 +17,7 @@ Here's what you can do to get started:
 
 Contact:
 ===========
-plaban3@gatech.edu
+
+* plaban3@gatech.edu
+* smarder3@gatech.edu
+* mersted@gatech.edu
