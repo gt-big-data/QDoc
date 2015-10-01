@@ -71,6 +71,16 @@ By default, the crawler is pointing to the production database (this will be cha
 
     python crawler.py
 
+The first time you run it (or the first time you run it in a while), it will take a few minutes to finish.
+
+To check if everything's working, open up a terminal and type the following:
+
+1. `mongo` - That will run an interactive shell that connects to your local MongoDB.
+2. `use big_data` - That connects you to the database where we store all of the crawled articles.
+3. `db.qdoc.findOne()` - That will split out any article in the `qdoc` collection (table).
+
+If the last command prints out a lot of text and it looks like a news article, congrats! Otherwise, talk to someone in the `Contact` section for help.
+
 ## Contact:
 
 If you have any questions, feel free to talk to Sam (smarder3@gatech.edu) or Matt (mersted@gatech.edu).
