@@ -41,15 +41,21 @@ Linux: Download and install a binary from the above link or [setup your package 
 
 You also need to create the directory `/data/db`. This is where Mongo stores its data.
 
-* Mac and Linux: `sudo mkdir -p -m 777 /data/db`
+* OSX and Linux: `sudo mkdir -p -m 777 /data/db`
 * Windows: Create the folder `C:\data` and then create the folder `C:\data\db`.
 
 If you're on Windows, you'll also need to add Mongo to your path. It's probably located at `C:\mongodb\bin\` or `C:\Program Files\mongodb\bin`.
 
+### Install Our Python Dependencies
 
-1. Install Python 2.
-1. Install `pip` if you're on Windows.
-1. Install all of the dependencies in `Dependnencies.txt`.
+Only up a terminal in this project's root directory (the folder this file is in). Then type:
+
+    pip install -r requirements.txt
+
+If that complains about directories not being writable (probably on OSX and Linux), type `sudo pip install -r requirements.txt` instead.
+
+
+
 1. Run `python crawler.py`.
 
 Contact:

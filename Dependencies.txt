@@ -1,6 +1,0 @@
-Python:
-- Beautiful Soup 4 (pip install beautifulsoup4)
-- PIL: Python Imaging Library (pip install pillow)
-- Pymongo: For Database (pip install pymongo)
-- Dateutil : Date Parsing (pip install python-dateutil)
-- Pytz: For timezones (pip install pytz)
