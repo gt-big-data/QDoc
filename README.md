@@ -54,9 +54,22 @@ Only up a terminal in this project's root directory (the folder this file is in)
 
 If that complains about directories not being writable (probably on OSX and Linux), type `sudo pip install -r requirements.txt` instead.
 
+## Run the Crawler!
+
+### Run a Local MongoDB Instance
+
+If all of the setup stuff worked, just type `mongod` in a terminal window and you're good to go. You'll need to leave that window open in the background while you do stuff with the crawler.
+
+### Point the Crawler to Your Local Database
+
+By default, the crawler is pointing to the production database (this will be changed pretty soon). In the meantime, open up `dbco.py` in your text [editor of choice](https://atom.io/) and change line 4 to this:
+
+    client = MongoClient('mongodb://127.0.0.1:27017/')
 
 
-1. Run `python crawler.py`.
+### Actually Run the Crawler!
+
+    python crawler.py
 
 Contact:
 ===========
