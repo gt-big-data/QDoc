@@ -71,9 +71,8 @@ By default, the crawler is pointing to the production database (this will be cha
 
     python crawler.py
 
-Contact:
-===========
+## Contact:
 
-* plaban3@gatech.edu
-* smarder3@gatech.edu
-* mersted@gatech.edu
+If you have any questions, feel free to talk to Sam (smarder3@gatech.edu) or Matt (mersted@gatech.edu).
+
+Also, Philippe (plaban3@gatech.edu) originally created the crawler. You should ask him about any weird things you see in the code. 
