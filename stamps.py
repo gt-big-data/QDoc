@@ -33,8 +33,4 @@ def saveLastStamp(name, stamp):
     name -- The name of the feed to save.
     stamp -- The timestamp to store with the RSS feed.
     """
-    path = 'stamps/' + name + '.txt'
-    # TODO: Convert to `with` syntax.
-    f = open(path,'w')
-    f.write(str(stamp))
     db.rss_stamps.update({'feed': name}, {'feed': name, 'stamp': int(stamp)}, upsert=True)
