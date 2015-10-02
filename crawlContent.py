@@ -6,35 +6,36 @@ from bs4 import BeautifulSoup, Comment, Doctype, NavigableString
 # TODO: Remove need for strange global variable.
 source = ''
 
+# TODO: Split this up so an individual article can be crawled.
 def crawlContent(articles):
     """Download and crawl the URLs stored in several articles."""
     global source
     for i in range(0, len(articles)):
         a = articles[i]
         if a.url != '':
-            try:
-                html = urllib2.urlopen(a.url).read()
-                source = a.source
-                soup = BeautifulSoup(html, 'html.parser')
-                soup = removeHeaderNavFooter(soup)
-                soup = removeComments(soup)
-                soup = removeScriptStyle(soup)
-                soup = removeAds(soup)
+            # try:
+            html = urllib2.urlopen(a.url).read()
+            source = a.source
+            soup = BeautifulSoup(html, 'html.parser')
+            soup = removeHeaderNavFooter(soup)
+            soup = removeComments(soup)
+            soup = removeScriptStyle(soup)
+            soup = removeAds(soup)
 
-                cont = getContent(soup)
+            cont = getContent(soup)
 
-                a = a._replace(content=cont)
+            a = a._replace(content=cont)
 
-                bestImage = getBiggestImg(a, soup)
-                a = a._replace(img=bestImage)
+            bestImage = getBiggestImg(a, soup)
+            a = a._replace(img=bestImage)
 
-                articles[i] = a
-                with open("test.html", "w") as f:
-                    f.write(soup.prettify('utf-8'))
+            articles[i] = a
+            with open("test.html", "w") as f:
+                f.write(soup.prettify('utf-8'))
                 # with open("test.txt", "w") as f:
                 #   f.write(cont)
-            except:
-                pass;
+            # except:
+            #     pass;
     return articles
 
 def getBiggestImg(a, soup):
