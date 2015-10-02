@@ -4,3 +4,5 @@
 stamps/*.txt
 test.html
 *credentials.json
+*.out
+*.py.save
