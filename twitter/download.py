@@ -5,16 +5,12 @@ from tweet import *
 
 class TweetSampler(twython.TwythonStreamer):
 
-    def __init__(self):
-        self.written = 0
-
     def on_success(self, data):
         if 'text' in data and 'id_str' in data and 'user' in data and 'id_str' in data['user'] and 'timestamp_ms' in data and 'place' in data and 'id' in data['place']:
             time = int(float(data['timestamp_ms']) / 1000.0)
             t = Tweet(data['id_str'], data['text'], data['user']['id_str'], time, data['place']['id'])
             saveNewTweets([t])
-            self.written += 1
-            print "Saved", self.written
+	    print 'Saved a tweet'
 
     def on_error(self, status_code, data):
         print status_code
