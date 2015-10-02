@@ -1,10 +1,11 @@
-import json
-from dbco import * # this imports the db connection
+# TODO: Grab this from a config file.
+from writers import MongoWriter
+writer = MongoWriter()
 
 def good(val):
     return val and len(val) > 0
 
-class Article:
+class Article(object):
     def __new__(self, guid='', title='', url='', timestamp=0, source='', feed=''):
         self.guid = guid
         self.title = title
@@ -37,26 +38,8 @@ class Article:
 
 def saveNewArticles(newArticles):
     """Add valid articles to the database."""
-    As = []
-    for a in newArticles:
+    for article in newArticles:
         if a.isValid():
-            As.append(a._asdict())
+            writer.write(article)
         else:
-            print "Article from source: ", a.source, "feed: ", a.feed, " was invalid"
-    if len(As) > 0:
-        insertArticles(db, As)
-
-# TODO : Move this into a writing interface (further away from Article).
-def insertArticles(db, As):
-    for a in As:
-        db.qdoc.update({'guid': a['guid']}, {'$set': a}, upsert=True) # if the GUID is already in the set
-
-# TODO: Move this into a writing interface (further away from Article).
-def saveNewArticlesFile(newArticles):
-    """Write an array of articles to DB_ex.txt"""
-    with open("DB_ex.txt", "a") as f:
-        for a in newArticles:
-            if a.isValid():
-                f.write(json.dumps(a._asdict())+'\n')
-            else:
-                print "Article from source: ", a.source, "feed: ", a.feed, " was invalid"
+            print("Article from source: " + a.source + "feed: " + a.feed + " was invalid")
