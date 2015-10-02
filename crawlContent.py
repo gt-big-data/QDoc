@@ -10,12 +10,11 @@ source = ''
 def crawlContent(articles):
     """Download and crawl the URLs stored in several articles."""
     global source
-    for i in range(0, len(articles)):
-        a = articles[i]
-        if a.url != '':
+    for article in articles:
+        if article.url != '':
             try:
-                html = urllib2.urlopen(a.url).read()
-                source = a.source
+                html = urllib2.urlopen(article.url).read()
+                source = article.source
                 soup = BeautifulSoup(html, 'html.parser')
                 soup = removeHeaderNavFooter(soup)
                 soup = removeComments(soup)
@@ -24,17 +23,12 @@ def crawlContent(articles):
 
                 cont = getContent(soup)
 
-                a = a._replace(content=cont)
+                article.content = cont
 
-                bestImage = getBiggestImg(a, soup)
-                a = a._replace(img=bestImage)
-
-                articles[i] = a
-                # with open("test.html", "w") as f:
-                #     f.write(soup.prettify('utf-8'))
-
+                bestImage = getBiggestImg(article, soup)
+                article.img = bestImage
             except:
-                pass;
+                pass
     return articles
 
 def getBiggestImg(a, soup):
