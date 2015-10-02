@@ -1,3 +1,0 @@
-// TODO: Delete this file becuase I can't figure out what it does.
-// Reset all topics to 0.
-db.qdoc.update({'topic': {'$gte': 1}}, {'$set': {'topic': 0}}, multi=True)
