@@ -1,6 +1,7 @@
 """Load and save etags from RSS feeds."""
 
-import os
+import os, time
+from dbco import *
 
 def loadLastStamp(name):
     """Load a timestamp from a RSS feed name.
@@ -10,13 +11,18 @@ def loadLastStamp(name):
     Arguments:
     name -- The name of the feed used to save the timestamp.
     """
-    path = 'stamps/'+name+'.txt'
-    if os.path.isfile(path):
-        # TODO: Convert to `with` syntax.
-        f = open(path)
-        txt = f.read()
-        return float(txt)
-    return 0
+    db_obj = list(db.rss_stamps.find({'feed': name}).limit(1))
+    if len(db_obj) > 0:
+        return db_obj[0]['stamp']
+    return (time.time()-3600) # if we cannot find it, by default say it was an hour ago...
+
+    # path = 'stamps/'+name+'.txt'
+    # if os.path.isfile(path):
+    #     # TODO: Convert to `with` syntax.
+    #     f = open(path)
+    #     txt = f.read()
+    #     return float(txt)
+    # return 0
 
 def saveLastStamp(name, stamp):
     """Save a timestamp from an RSS feed for later.
@@ -31,3 +37,4 @@ def saveLastStamp(name, stamp):
     # TODO: Convert to `with` syntax.
     f = open(path,'w')
     f.write(str(stamp))
+    db.rss_stamps.update({'feed': name}, {'feed': name, 'stamp': int(stamp)}, upsert=True)
