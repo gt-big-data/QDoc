@@ -1,32 +1,7 @@
-# TODO: Figure out what these IPs and ranges are for and then probably delete them.
-#128.0.0.0/8, 143.0.0.0/8, 10.0.0.0/8, 127.0.0.0/8, 24.98.127.49, 130.211.151.156, 98.251.6.21, 130.211.122.221
-from feedCrawl import *
-import time
+from dbco import *
+from stamps import * # saving last stamps
 
-start_time = time.time()
-
-# TODO: Remove need for this array. Should be inferred from the feeds object.
 sources = ['cnn', 'reuters', 'business_insider', 'venture_beat', 'techcrunch', 'bbc', 'guardian', 'aljazeera', 'france24']
-# sources = ['france24']
-# GUID Available: (Globally Unique IDentifier)
-	# CNN: Yes
-	# Reuters: Yes
-	# Business Insider: Yes
-	# VentureBeat: Yes
-	# TechCrunch: Yes
-	# BBC: Yes
-	# Guardian: Yes
-
-# Sources to add:
-	# Associated Press
-	# NY Times
-	# EuroNews
-	# AFP
-	# Anadolu Agency
-	# The Independent
-	# UberGizmo
-	# RUssia Today
-
 feeds = {}
 
 feeds['cnn'] = [] # http://edition.cnn.com/services/rss/
@@ -84,6 +59,6 @@ feeds['france24'].append({'name': 'f24_livenews', 'url': 'http://www.france24.co
 
 for source in sources:
     for feed in feeds[source]:
-        crawlFeed(source, feed['name'], feed['url'])
-
-print("--- %s seconds ---" % round(time.time() - start_time, 2))
+	feedName = feed['name']
+        startStamp = loadLastStamp(feedName)	
+	db.rss_stamps.update({'feed': feedName}, {'feed': feedName, 'stamp': int(startStamp)}, upsert=True)
