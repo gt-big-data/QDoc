@@ -1,25 +1,43 @@
+from nltk.corpus import stopwords
 from collections import namedtuple
-import json
-from dbco import * # this imports the db connexion
+import json, re
+from dbco import *
 
-Tweet = namedtuple('Tweet', ['guid', 'text', 'author', 'timestamp', 'place'])
-class Tweet(namedtuple('Tweet', ['guid', 'text', 'author', 'timestamp', 'place'])):
-    def __new__(cls, guid='', text='', author='', timestamp=0, place=''):
-        return super(Tweet, cls).__new__(cls, guid, text, author, timestamp, place)
+stopW = set(stopwords.words('english'))
+commW = ['http', 'like', 'ga', 'job', 'love', 'atlanta', 'amp', 'hiring', 'day', 'lol', 'know', 'time', 'want', 'got', 'good', 'shit', 'need', 'people', 'thank', 'today', 'really', 'make', 'careerarc', 'work', 'happy', 'great', 'going', 'nigga', 'think', 'come', 'new', 'life', 'school', 'right', 'll', 'feel', 'look', 'girl', 'night', 'thing', 'man', 'say', 've', 'friend', 'let', 'fuck', 'year', 'best', 'alway', 'way', 'wanna', 'tonight', 'game', 'better', 'birthday', 'mi', 'hate', 'latest', 'ain', 'im', 'tomorrow', 'u', 'gonna', 'home', 'god', 'getting', 'week', 'real', 'guy', 'oh', 'bad', 'sleep', 'morning', 'hope', 'tell', 'gotta', 'opening', 'bitch', 'said', 'click', 'baby', 'wait', 'ready', 'yall', 'boy', 'stop', 'didn', 'lmao', 'ya', 'start', 'damn', 'cause', 'talk', 'retail', 'team', 'follow', 'little', 'clas', 'mean', 'play']
+commW.extend(stopW)
+common_words = set(commW)
 
-def saveNewTweets(newTweets):
-	Ts = []
-	for t in newTweets:
-		if isValid(t):
-			Ts.append(t._asdict())
-	if len(Ts) > 0:
-		insertArticles(Ts)
+Tweet = namedtuple('Tweet', ['guid', 'text', 'author', 'timestamp', 'place', 'words', 'hashtags', 'mentions'])
+class Tweet(namedtuple('Tweet', ['guid', 'text', 'author', 'timestamp', 'place', 'words', 'hashtags', 'mentions'])):
+    def __new__(cls, guid='', text='', author='', timestamp=0, place='', words=[], hashtags=[], mentions=[]):
+        return super(Tweet, cls).__new__(cls, guid, text, author, timestamp, place, words, hashtags, mentions)
 
-def insertArticles(Ts):
-	for t in Ts:
-		db.tweet.update({'guid': t['guid']}, {'$set': t}, upsert=True) # if the GUID is already in the set
+def saveNewTweet(T):
+	if isValid(T):
+		insertTweet(T)
+
+def remove_non_ascii_1(text):
+	return ''.join(i for i in text if ord(i)<128)
+
+def cleanTweet(tweet):
+	global common_words
+	tweetString = re.sub('[()!\.,\?&;]', '', tweet).lower()
+	tweetString = remove_non_ascii_1(tweetString)
+	tweetString = tweetString.replace('\n', '')
+	words = tweetString.split(' ')
+	words = [w for w in words if ('http' not in w and len(w) > 1 and not w.isdigit())]
+	words = list(set(words)-common_words)
+	hashtags = [w for w in words if w.startswith('#')]
+	mentions = [w for w in words if w.startswith('@')]
+	words = list((set(words)-set(hashtags))-set(mentions))
+	return words, hashtags, mentions
+
+def insertTweet(T):
+	db.tweet.update({'guid': t['guid']}, {'$set': t}, upsert=True)
 
 def isValid(t):
+	# Verifies that a tweet has the minimal information needed
 	if t.guid == '':
 		return False
 	if t.text == '':
@@ -29,9 +47,6 @@ def isValid(t):
 	if t.timestamp < 500:
 		return False
 	myText = t.text
-	if len(myText) < 20 or len(myText.split(' ')) < 4:
+	if len(t.words + t.hashtags + t.mentions) < 3:
 		return False
 	return True
-
-# tw = Tweet('blala', 'hello my tweet', 'phili', 234567567)
-# saveNewTweets([tw])
