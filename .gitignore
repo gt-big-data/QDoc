@@ -3,3 +3,4 @@
 *.log
 stamps/*.txt
 test.html
+*credentials.json

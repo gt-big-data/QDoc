@@ -15,7 +15,7 @@ class Tweet(namedtuple('Tweet', ['guid', 'text', 'author', 'timestamp', 'place',
 
 def saveNewTweet(T):
 	if isValid(T):
-		insertTweet(T._asdict())
+		insertTweet(T_asdict)
 
 def remove_non_ascii_1(text):
 	return ''.join(i for i in text if ord(i)<128)
@@ -34,7 +34,8 @@ def cleanTweet(tweet):
 	return words, hashtags, mentions
 
 def insertTweet(T):
-	db.tweet.update({'guid': T['guid']}, {'$set': T}, upsert=True)
+	print T.guid
+#	db.tweet.update({'guid': T.guid}, {'$set': T}, upsert=True)
 
 def isValid(t):
 	# Verifies that a tweet has the minimal information needed
