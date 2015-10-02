@@ -24,17 +24,13 @@ def crawlContent(articles):
 
                 cont = getContent(soup)
 
-                a = a._replace(content=cont)
+                a.content = cont
 
                 bestImage = getBiggestImg(a, soup)
-                a = a._replace(img=bestImage)
-
-                articles[i] = a
-                # with open("test.html", "w") as f:
-                #     f.write(soup.prettify('utf-8'))
+                a.img = bestImage
 
             except:
-                pass;
+                pass
     return articles
 
 def getBiggestImg(a, soup):

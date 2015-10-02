@@ -1,12 +1,17 @@
-from collections import namedtuple
 import json
 from dbco import * # this imports the db connection
 
-# TODO: Make this a regular class.
-Article = namedtuple('Article', ['guid', 'title', 'url', 'timestamp', 'source', 'feed', 'content', 'img', 'keywords'])
-class Article(namedtuple('Article', ['guid', 'title', 'url', 'timestamp', 'source', 'feed', 'content', 'img', 'keywords'])):
-    def __new__(cls, guid='', title='', url='', timestamp=0, source='', feed='', content='No Content', img='', keywords=[]):
-        return super(Article, cls).__new__(cls, guid, title, url, timestamp, source, feed, content, img, keywords)
+class Article:
+    def __new__(self, guid='', title='', url='', timestamp=0, source='', feed=''):
+        self.guid = guid
+        self.title = title
+        self.url = url
+        self.timestamp = timestamp
+        self.source = source
+        self.feed = feed
+        self.content = ''
+        self.img = ''
+        self.keywords = []
 
 def saveNewArticles(newArticles):
     """Add valid articles to the database."""
