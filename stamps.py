@@ -16,14 +16,6 @@ def loadLastStamp(name):
         return db_obj[0]['stamp']
     return (time.time()-3600) # if we cannot find it, by default say it was an hour ago...
 
-    # path = 'stamps/'+name+'.txt'
-    # if os.path.isfile(path):
-    #     # TODO: Convert to `with` syntax.
-    #     f = open(path)
-    #     txt = f.read()
-    #     return float(txt)
-    # return 0
-
 def saveLastStamp(name, stamp):
     """Save a timestamp from an RSS feed for later.
 
