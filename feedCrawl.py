@@ -43,7 +43,7 @@ def crawlFeed(source, feedName, feedUrl):
         if timestamp > startStamp: # new article
             latestStamp = max(timestamp, latestStamp)
             url = extractLink(it)
-            newArticles.append(Article(guid, it.title.text, url, timestamp, source, feedName, '', ''))
+            newArticles.append(Article(guid=guid, title=it.title.text, url=url, timestamp=timestamp, source=source, feed=feedName))
         else:
             break # we're done, this assumes articles are ordered by descending pubDate
 

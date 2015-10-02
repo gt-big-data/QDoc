@@ -5,3 +5,4 @@ test.html
 *credentials.json
 *.out
 *.py.save
+test_files/

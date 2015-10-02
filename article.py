@@ -1,12 +1,12 @@
 # TODO: Grab this from a config file.
-from writers import MongoWriter
 writer = MongoWriter()
+from writers import *
 
 def good(val):
     return val and len(val) > 0
 
 class Article(object):
-    def __new__(self, guid='', title='', url='', timestamp=0, source='', feed=''):
+    def __init__(self, guid='', title='', url='', timestamp=0, source='', feed=''):
         self.guid = guid
         self.title = title
         self.url = url
@@ -39,7 +39,7 @@ class Article(object):
 def saveNewArticles(newArticles):
     """Add valid articles to the database."""
     for article in newArticles:
-        if a.isValid():
+        if article.isValid():
             writer.write(article)
         else:
-            print("Article from source: " + a.source + "feed: " + a.feed + " was invalid")
+            print("Article from source: " + article.source + "feed: " + article.feed + " was invalid")

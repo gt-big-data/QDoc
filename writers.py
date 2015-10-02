@@ -1,4 +1,5 @@
 from os import mkdir
+import re
 import json
 
 class PrintWriter(object):
@@ -24,7 +25,7 @@ class FileWriter(object):
         Arguments:
         article -- A JSON-serializable dictionary.
         """
-        filename = article.guid + ".json"
+        filename = re.sub(r'\W', '_', article.guid) + ".json"
 
         try:
             filepath = "test_files/" + filename
@@ -47,8 +48,9 @@ def check_and_make_dir(path):
         pass
 
 class MongoWriter():
-    def __init__(self, host, port):
+    def __init__(self):
         from dbco import db
+        self.db = db
 
     def write(self, article):
         """Write an Article object to MongoDB.
@@ -56,4 +58,4 @@ class MongoWriter():
         Arguments:
         article -- An article!
         """
-        db.qdoc.update({'guid': article['guid']}, {'$set': article}, upsert=True)
+        self.db.qdoc.update({'guid': article.guid}, {'$set': article.__dict__}, upsert=True)
