@@ -34,22 +34,25 @@ def saveNewArticlesFile(newArticles):
             else:
                 print "Article from source: ", a.source, "feed: ", a.feed, " was invalid"
 
+def good(val):
+    return val and len(val) > 0
+
 # TODO: Make this a member function.
 def isValid(a):
     """Check if the article has enough data to be considered "crawled"."""
 
-    if a.guid == '':
+    if not good(a.guid):
         return False
-    if a.title == '':
+    if not good(a.title):
         return False
-    if a.url == '':
+    if not good(a.url):
         return False
     if a.timestamp < 500:
         return False
-    if a.source == '':
+    if not good(a.source):
         return False
-    if a.feed == '':
+    if not good(a.feed):
         return False
-    if a.content == '':
+    if not good(a.content):
         return False
     return True

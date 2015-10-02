@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup, Comment, Doctype, NavigableString
 # TODO: Remove need for strange global variable.
 source = ''
 
+# TODO: Split this up so an individual article can be crawled.
 def crawlContent(articles):
     """Download and crawl the URLs stored in several articles."""
     global source
@@ -29,10 +30,9 @@ def crawlContent(articles):
                 a = a._replace(img=bestImage)
 
                 articles[i] = a
- #               with open("test.html", "w") as f:
- #                   f.write(soup.prettify('utf-8'))
-                # with open("test.txt", "w") as f:
-                #   f.write(cont)
+                # with open("test.html", "w") as f:
+                #     f.write(soup.prettify('utf-8'))
+
             except:
                 pass;
     return articles
