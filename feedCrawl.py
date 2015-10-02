@@ -48,7 +48,8 @@ def crawlFeed(source, feedName, feedUrl):
             break # we're done, this assumes articles are ordered by descending pubDate
 
     newArticles = crawlContent(newArticles) # crawls for content, img and possible keywords (?)
-    saveNewArticles(newArticles) # save to Database
+    for article in newArticles:
+        article.save()
     print feedName, " => +"+str(len(newArticles))
 
     saveLastStamp(feedName, latestStamp) # save to not reload articles

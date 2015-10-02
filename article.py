@@ -1,6 +1,6 @@
 # TODO: Grab this from a config file.
-writer = MongoWriter()
 from writers import *
+writer = MongoWriter()
 
 def good(val):
     return val and len(val) > 0
@@ -36,10 +36,12 @@ class Article(object):
             return False
         return True
 
-def saveNewArticles(newArticles):
-    """Add valid articles to the database."""
-    for article in newArticles:
-        if article.isValid():
-            writer.write(article)
+    def save(self):
+        """Write this article to the preferred method of writing.
+
+        This method will print out an error if the article is not valid.
+        """
+        if self.isValid():
+            writer.write(self)
         else:
             print("Article from source: " + article.source + "feed: " + article.feed + " was invalid")
