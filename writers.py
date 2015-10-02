@@ -9,9 +9,10 @@ class PrintWriter(object):
         """Write an Article object to the screen.
 
         Arguments:
-        article -- A JSON-serializable dictionary.
+        article -- An Article object.
         """
-        print(json.dumps(article.__dict__, indent=4, ensure_ascii=False))
+        json_data = json.dumps(article.__dict__, indent=4).encode('utf-8')
+        print(json_data)
 
 class FileWriter(object):
     """Class for writing JSON data to a file."""
@@ -23,13 +24,13 @@ class FileWriter(object):
         """Write an Article object to a file.
 
         Arguments:
-        article -- A JSON-serializable dictionary.
+        article -- An Article object.
         """
         filename = re.sub(r'\W', '_', article.guid) + ".json"
 
         try:
             filepath = "test_files/" + filename
-            pretty_string = json.dumps(article.__dict__, indent=4)
+            pretty_string = json.dumps(article.__dict__, indent=4).encode('utf-8')
             with open(filepath, 'w') as output_file:
                 output_file.write(pretty_string)
         except:
@@ -56,6 +57,6 @@ class MongoWriter():
         """Write an Article object to MongoDB.
 
         Arguments:
-        article -- An article!
+        article -- An Article object.
         """
         self.db.qdoc.update({'guid': article.guid}, {'$set': article.__dict__}, upsert=True)
