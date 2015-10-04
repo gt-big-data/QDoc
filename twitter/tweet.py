@@ -8,10 +8,10 @@ commW = ['http', 'like', 'ga', 'job', 'love', 'atlanta', 'amp', 'hiring', 'day',
 commW.extend(stopW)
 common_words = set(commW)
 
-Tweet = namedtuple('Tweet', ['guid', 'text', 'author', 'timestamp', 'place', 'words', 'hashtags', 'mentions'])
-class Tweet(namedtuple('Tweet', ['guid', 'text', 'author', 'timestamp', 'place', 'words', 'hashtags', 'mentions'])):
-    def __new__(cls, guid='', text='', author='', timestamp=0, place='', words=[], hashtags=[], mentions=[]):
-        return super(Tweet, cls).__new__(cls, guid, text, author, timestamp, place, words, hashtags, mentions)
+Tweet = namedtuple('Tweet', ['guid', 'text', 'author', 'timestamp', 'lon', 'lat', 'words', 'hashtags', 'mentions'])
+class Tweet(namedtuple('Tweet', ['guid', 'text', 'author', 'timestamp', 'lon', 'lat', 'words', 'hashtags', 'mentions'])):
+    def __new__(cls, guid='', text='', author='', timestamp=0, lon=0, lat=0, words=[], hashtags=[], mentions=[]):
+        return super(Tweet, cls).__new__(cls, guid, text, author, timestamp, lon, lat, words, hashtags, mentions)
 
 def saveNewTweet(T):
 	if isValid(T):
