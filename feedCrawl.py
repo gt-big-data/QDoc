@@ -4,8 +4,8 @@ from bs4 import BeautifulSoup
 from pymongo import MongoClient, errors
 
 from dateutil import parser
+
 from datetime import datetime
-import time
 import pytz
 
 from stamps import * # saving last stamps

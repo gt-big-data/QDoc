@@ -1,15 +1,11 @@
-import urllib, urllib2
+import urllib2
 from dateutil.parser import *
 from PIL import ImageFile
 from bs4 import BeautifulSoup, Comment, Doctype, NavigableString
 
-# TODO: Remove need for strange global variable.
-source = ''
-
 # TODO: Split this up so an individual article can be crawled.
 def crawlContent(articles):
     """Download and crawl the URLs stored in several articles."""
-    global source
     for article in articles:
         if article.url != '':
             try:
@@ -66,11 +62,11 @@ def removeComments(soup):
     [comment.extract() for comment in comments]
     return soup
 def removeAds(soup):
-    ads = soup.findAll(adSelect)
+    ads = soup.findAll(adSelect, source)
     [ad.extract() for ad in ads]
     return soup
 
-def adSelect(tag): # this is the selector for ads, recommended articles, etc
+def adSelect(tag, source): # this is the selector for ads, recommended articles, etc
     idList = ['most-popular-parsely', 'specialFeature', # Reuters
     'orb-footer', 'core-navigation', 'services-bar', # BBC
     'profile-cards' #VentureBeat
