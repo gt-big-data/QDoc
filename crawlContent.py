@@ -3,28 +3,30 @@ from dateutil.parser import *
 from PIL import ImageFile
 from bs4 import BeautifulSoup, Comment, Doctype, NavigableString
 
-# TODO: Split this up so an individual article can be crawled.
+def htmlToSoup(article, html):
+    soup = BeautifulSoup(html, 'html.parser')
+    soup = removeHeaderNavFooter(soup)
+    soup = removeComments(soup)
+    soup = removeScriptStyle(soup)
+    soup = removeAds(soup, article.source)
+    return soup
+
+def parse(article, html):
+    soup = htmlToSoup(article, html)
+    article.content = getContent(soup)
+    article.img = getBiggestImg(article, soup)
+
 def crawlContent(articles):
     """Download and crawl the URLs stored in several articles."""
     for article in articles:
-        if article.url != '':
-            try:
-                html = urllib2.urlopen(article.url).read()
-                source = article.source
-                soup = BeautifulSoup(html, 'html.parser')
-                soup = removeHeaderNavFooter(soup)
-                soup = removeComments(soup)
-                soup = removeScriptStyle(soup)
-                soup = removeAds(soup)
-
-                cont = getContent(soup)
-
-                article.content = cont
-
-                bestImage = getBiggestImg(article, soup)
-                article.img = bestImage
-            except:
-                pass
+        if article.url == '':
+            continue
+        try:
+            html = urllib2.urlopen(article.url).read()
+        except Exception:
+            print("Could not download the article at %s." % article.url)
+            continue
+        parse(article, html)
     return articles
 
 def getBiggestImg(a, soup):
@@ -61,12 +63,12 @@ def removeComments(soup):
     comments = soup.findAll(text=lambda text:isinstance(text, Comment) or text.find('if') != -1)
     [comment.extract() for comment in comments]
     return soup
-def removeAds(soup):
-    ads = soup.findAll(adSelect, source)
+def removeAds(soup, source):
+    ads = soup.findAll(adSelect(source), source)
     [ad.extract() for ad in ads]
     return soup
 
-def adSelect(tag, source): # this is the selector for ads, recommended articles, etc
+def adSelect(source): # this is the selector for ads, recommended articles, etc
     idList = ['most-popular-parsely', 'specialFeature', # Reuters
     'orb-footer', 'core-navigation', 'services-bar', # BBC
     'profile-cards' #VentureBeat
@@ -81,14 +83,16 @@ def adSelect(tag, source): # this is the selector for ads, recommended articles,
     classList['guardian'] = ['content-footer', 'site-message', 'content__meta-container', 'submeta', 'l-header', 'block-share', 'share-modal__content']
     classList['aljazeera'] = ['unsupported-browser', 'component-articleOpinion', 'hidden-phone', 'relatedResources', 'articleOpinion-secondary', 'articleOpinion-comments', 'dynamicStoryHighlightList', 'brightcovevideo']
     classList['france24'] = ['col-2', 'on-air-board-outer', 'short-cuts-outer']
-    if tag.has_attr('id') and tag.get('id') in idList:
-        return True
-    if tag.has_attr('class'):
-        c = tag.get('class')
-        for className in classList[source]:
-            if className in c:
-                return True
-    return False
+    def filter(tag):
+        if tag.has_attr('id') and tag.get('id') in idList:
+            return True
+        if tag.has_attr('class'):
+            c = tag.get('class')
+            for className in classList[source]:
+                if className in c:
+                    return True
+        return False
+    return filter
 
 def getContent(soup):
     elems = soup.findAll(text=True and visible)
