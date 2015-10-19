@@ -44,4 +44,4 @@ class Article(object):
         if self.isValid():
             writer.write(self)
         else:
-            print("Article from source: " + article.source + "feed: " + article.feed + " was invalid")
+            print("Article from source: " + self.source + "feed: " + self.feed + " was invalid")
