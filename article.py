@@ -38,10 +38,9 @@ class Article(object):
 
     def save(self):
         """Write this article to the preferred method of writing.
-
         This method will print out an error if the article is not valid.
         """
         if self.isValid():
             writer.write(self)
         else:
-            print("Article from source: " + article.source + "feed: " + article.feed + " was invalid")
+            print("Article from source: " + self.source + "feed: " + self.feed + " was invalid")
