@@ -1,10 +1,16 @@
-import urllib2
+# encoding=utf8  
+
+import urllib2, re
 from dateutil.parser import *
 from PIL import ImageFile
 from bs4 import BeautifulSoup, Comment, Doctype, NavigableString
 
 def htmlToSoup(article, html):
     soup = BeautifulSoup(html, 'html.parser')
+    art = soup.find('article')
+    if art is not None:
+        soup = art
+
     soup = removeHeaderNavFooter(soup)
     soup = removeComments(soup)
     soup = removeScriptStyle(soup)
@@ -64,25 +70,26 @@ def removeComments(soup):
     [comment.extract() for comment in comments]
     return soup
 def removeAds(soup, source):
-    ads = soup.findAll(adSelect(source), source)
+    ads = soup.findAll(adSelect(source))
     [ad.extract() for ad in ads]
     return soup
 
 def adSelect(source): # this is the selector for ads, recommended articles, etc
     idList = ['most-popular-parsely', 'specialFeature', # Reuters
     'orb-footer', 'core-navigation', 'services-bar', # BBC
-    'profile-cards' #VentureBeat
+    'profile-cards', #VentureBeat
+    'social-plugins_bottom', 'social-plugins', 'avcslide' # Business Insider
     ]
     classList = {}
-    classList['cnn'] = ['ob_widget', 'zn-staggered__col', 'el__video--standard', 'el__gallery--fullstandardwidth', 'el__gallery-showhide', 'el__gallery', 'el__gallery--standard', 'el__featured-video', 'zn-Rail', 'el__leafmedia']
-    classList['reuters'] = ['reuters-share']
-    classList['business_insider'] = ['abusivetextareaDiv', 'LoginRegister', 'rhsb', 'TabsContList', 'rhs_nl', 'sticky', 'rhs', 'titleMoreLinks', 'ShareBox', 'Commentbox', 'commentsBlock', 'RecommendBlk', 'prvnxtbg', 'OUTBRAIN', 'AuthorBlock', 'seealso', 'Joindiscussion', 'subscribe_outer']
+    classList['cnn'] = ['pg-rail','ob_widget', 'zn-story-bottom', 'zn-staggered__col', 'el__video--standard', 'el__gallery--fullstandardwidth', 'el__gallery-showhide', 'el__gallery', 'el__gallery--standard', 'el__featured-video', 'zn-Rail', 'el__leafmedia', 'metadata']
+    classList['reuters'] = ['reuters-share', 'article-header', 'shr-overlay']
+    classList['business_insider'] = ['abusivetextareaDiv', 'LoginRegister', 'rhsb', 'TabsContList', 'rhs_nl', 'sticky', 'rhs', 'titleMoreLinks', 'ShareBox', 'Commentbox', 'commentsBlock', 'RecommendBlk', 'prvnxtbg', 'OUTBRAIN', 'AuthorBlock', 'seealso', 'Joindiscussion', 'subscribe_outer', 'ByLine', 'comment-class', 'bi_h2', 'margin-top']
     classList['venture_beat'] = ['vb_widget', 'entry-footer', 'navbar', 'site-header', 'mobile-post', 'widget-area']
     classList['techcrunch'] = ['l-sidebar', 'article-extra', 'social-share', 'feature-island-container', 'announcement', 'header-ad', 'ad-top-mobile', 'ad-cluster-container', 'social-list', 'trending-title', 'trending-byline', 'nav', 'nav-col', 'nav-crunchbase', 'trending-head']
     classList['bbc'] = ['site-brand', 'column--secondary', 'share', 'bbccom_slot']
     classList['guardian'] = ['content-footer', 'site-message', 'content__meta-container', 'submeta', 'l-header', 'block-share', 'share-modal__content']
     classList['aljazeera'] = ['unsupported-browser', 'component-articleOpinion', 'hidden-phone', 'relatedResources', 'articleOpinion-secondary', 'articleOpinion-comments', 'dynamicStoryHighlightList', 'brightcovevideo']
-    classList['france24'] = ['col-2', 'on-air-board-outer', 'short-cuts-outer']
+    classList['france24'] = ['col-2', 'on-air-board-outer', 'short-cuts-outer', 'location', 'modification']
     def filter(tag):
         if tag.has_attr('id') and tag.get('id') in idList:
             return True
@@ -102,11 +109,11 @@ def getContent(soup):
             txt = elem.encode('utf-8')
             score = calcScore(elem, txt)
             if score > 0:
-                # print "[",score,"]", txt
                 buildText.append(txt)
         else:
             pass
     return "\n".join(buildText)
+    # return soup.get_text().encode('utf-8').replace('\n\n', '\n')
 
 def isDate(txt):
     try:
