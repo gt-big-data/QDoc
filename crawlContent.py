@@ -1,5 +1,3 @@
-# encoding=utf8  
-
 import urllib2, re
 from dateutil.parser import *
 from PIL import ImageFile
@@ -66,7 +64,7 @@ def removeScriptStyle(soup):
     return soup
 
 def removeComments(soup):
-    comments = soup.findAll(text=lambda text:isinstance(text, Comment) or text.find('if') != -1)
+    comments = soup.findAll(text=lambda text:isinstance(text, Comment))
     [comment.extract() for comment in comments]
     return soup
 def removeAds(soup, source):
@@ -84,7 +82,7 @@ def adSelect(source): # this is the selector for ads, recommended articles, etc
     classList['cnn'] = ['pg-rail','ob_widget', 'zn-story-bottom', 'zn-staggered__col', 'el__video--standard', 'el__gallery--fullstandardwidth', 'el__gallery-showhide', 'el__gallery', 'el__gallery--standard', 'el__featured-video', 'zn-Rail', 'el__leafmedia', 'metadata']
     classList['reuters'] = ['reuters-share', 'article-header', 'shr-overlay']
     classList['business_insider'] = ['abusivetextareaDiv', 'LoginRegister', 'rhsb', 'TabsContList', 'rhs_nl', 'sticky', 'rhs', 'titleMoreLinks', 'ShareBox', 'Commentbox', 'commentsBlock', 'RecommendBlk', 'prvnxtbg', 'OUTBRAIN', 'AuthorBlock', 'seealso', 'Joindiscussion', 'subscribe_outer', 'ByLine', 'comment-class', 'bi_h2', 'margin-top']
-    classList['venture_beat'] = ['vb_widget', 'entry-footer', 'navbar', 'site-header', 'mobile-post', 'widget-area']
+    classList['venture_beat'] = ['vb_widget', 'entry-footer', 'navbar', 'site-header', 'mobile-post', 'widget-area', 'vb_image_source', 'wp-caption-text']
     classList['techcrunch'] = ['l-sidebar', 'article-extra', 'social-share', 'feature-island-container', 'announcement', 'header-ad', 'ad-top-mobile', 'ad-cluster-container', 'social-list', 'trending-title', 'trending-byline', 'nav', 'nav-col', 'nav-crunchbase', 'trending-head']
     classList['bbc'] = ['site-brand', 'column--secondary', 'share', 'bbccom_slot']
     classList['guardian'] = ['content-footer', 'site-message', 'content__meta-container', 'submeta', 'l-header', 'block-share', 'share-modal__content']
@@ -106,14 +104,19 @@ def getContent(soup):
     buildText = []
     for elem in elems:
         if isinstance(elem, NavigableString):
-            txt = elem.encode('utf-8')
+            # txt = elem.encode('utf-8')
+            txt = elem
             score = calcScore(elem, txt)
             if score > 0:
                 buildText.append(txt)
         else:
             pass
-    return "\n".join(buildText)
-    # return soup.get_text().encode('utf-8').replace('\n\n', '\n')
+    returnString = ''
+    for st in buildText:
+        returnString += st
+        if st[-1] in ['.', '!', '?']:
+            returnString += '\n'
+    return returnString
 
 def isDate(txt):
     try:
