@@ -39,4 +39,4 @@ def recrawlSource(source):
 		print "-------------------------------------"		
 		print "Left: ", left
 
-recrawlSource('cnn')
+recrawlSource('guardian')
