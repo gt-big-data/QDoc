@@ -80,9 +80,9 @@ def adSelect(source): # this is the selector for ads, recommended articles, etc
     ]
     classList = {}
     classList['cnn'] = ['pg-rail','ob_widget', 'zn-story-bottom', 'zn-staggered__col', 'el__video--standard', 'el__gallery--fullstandardwidth', 'el__gallery-showhide', 'el__gallery', 'el__gallery--standard', 'el__featured-video', 'zn-Rail', 'el__leafmedia', 'metadata']
-    classList['reuters'] = ['reuters-share', 'article-header', 'shr-overlay']
+    classList['reuters'] = ['reuters-share', 'article-header', 'shr-overlay', 'related-photo-credit']
     classList['business_insider'] = ['abusivetextareaDiv', 'LoginRegister', 'rhsb', 'TabsContList', 'rhs_nl', 'sticky', 'rhs', 'titleMoreLinks', 'ShareBox', 'Commentbox', 'commentsBlock', 'RecommendBlk', 'prvnxtbg', 'OUTBRAIN', 'AuthorBlock', 'seealso', 'Joindiscussion', 'subscribe_outer', 'ByLine', 'comment-class', 'bi_h2', 'margin-top']
-    classList['venture_beat'] = ['vb_widget', 'entry-footer', 'navbar', 'site-header', 'mobile-post', 'widget-area', 'vb_image_source', 'wp-caption-text']
+    classList['venture_beat'] = ['vb_widget', 'entry-footer', 'navbar', 'site-header', 'mobile-post', 'widget-area', 'vb_image_source', 'wp-caption-text', 'boilerplate-label', 'post-boilerplate']
     classList['techcrunch'] = ['l-sidebar', 'article-extra', 'social-share', 'feature-island-container', 'announcement', 'header-ad', 'ad-top-mobile', 'ad-cluster-container', 'social-list', 'trending-title', 'trending-byline', 'nav', 'nav-col', 'nav-crunchbase', 'trending-head']
     classList['bbc'] = ['site-brand', 'column--secondary', 'share', 'bbccom_slot']
     classList['guardian'] = ['content-footer', 'site-message', 'content__meta-container', 'submeta', 'l-header', 'block-share', 'share-modal__content']
@@ -104,7 +104,6 @@ def getContent(soup):
     buildText = []
     for elem in elems:
         if isinstance(elem, NavigableString):
-            # txt = elem.encode('utf-8')
             txt = elem
             score = calcScore(elem, txt)
             if score > 0:
@@ -113,7 +112,7 @@ def getContent(soup):
             pass
     returnString = ''
     for st in buildText:
-        returnString += st
+        returnString += re.sub(' +', ' ', st).replace('\t', '')
         if st[-1] in ['.', '!', '?']:
             returnString += '\n'
     return returnString

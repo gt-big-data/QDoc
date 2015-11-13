@@ -14,6 +14,8 @@ if len(sys.argv) > 1:
 
 	soup = htmlToSoup(article, html)
 	parse(article, html)
-	f = open('latestCrawl.html', 'w'); f.write(soup.prettify().encode('utf-8')); f.close();
-	f = open('oldContent.txt', 'w'); f.write((art['content']).encode('utf-8')); f.close();
-	f = open('newContent.txt', 'w'); f.write(article.content); f.close();
+	f = open('latestCrawl.html', 'w'); f.write(soup.prettify().encode('utf8')); f.close();
+	f = open('oldContent.txt', 'w'); f.write(art['content'].encode('utf8')); f.close();
+	f = open('newContent.txt', 'w'); f.write(article.content.encode('utf8')); f.close();
+
+	print article.url
