@@ -5,7 +5,11 @@ from dbco import *
 import sys
 
 def recrawlArt(art, article):
-	html = urllib2.urlopen(art['url']).read()
+	try:
+		html = urllib2.urlopen(art['url']).read()
+	except:
+		print "Error 404: Not Found"
+		return None
 	soup = htmlToSoup(article, html)
 	parse(article, html)
 
@@ -30,9 +34,10 @@ def recrawlSource(source):
 		for art in articles:
 			article = Article(guid=art['guid'], title=art['title'], url=art['url'], timestamp=art['timestamp'], source=art['source'], feed=art['feed'])
 			newContent = recrawlArt(art, article)
-			qdocUpdate.find({'_id': art['_id']}).upsert().update({
-				'$set': {'recrawled': True,	'content': newContent,}
-			})
+			if newContent:
+				qdocUpdate.find({'_id': art['_id']}).upsert().update({
+					'$set': {'recrawled': True,	'content': newContent,}
+				})
 		qdocUpdate.execute()
 		left = db.qdoc.find({'source': source, 'recrawled': {'$exists': False}}).count()
 		print "-------------------------------------"		
