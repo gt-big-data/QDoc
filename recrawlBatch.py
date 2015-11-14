@@ -2,7 +2,8 @@ from bson.objectid import ObjectId
 from crawlContent import *
 from article import *
 from dbco import *
-import sys
+import sys, socket
+socket.setdefaulttimeout(5)
 
 def recrawlArt(art, article):
 	try:
@@ -27,7 +28,7 @@ def recrawlArt(art, article):
 def recrawlSource(source):
 	left = 1
 	while left>0:
-		sort = -1;
+		sort = 1;
 		articles = list(db.qdoc.find({'source': source, 'recrawled': {'$exists': False}}).sort('timestamp', sort).limit(50))
 
 		qdocUpdate = db.qdoc.initialize_unordered_bulk_op()
@@ -35,13 +36,14 @@ def recrawlSource(source):
 			article = Article(guid=art['guid'], title=art['title'], url=art['url'], timestamp=art['timestamp'], source=art['source'], feed=art['feed'])
 			newContent = recrawlArt(art, article)
 			if newContent:
-				qdocUpdate.find({'_id': art['_id']}).upsert().update({
-					'$set': {'recrawled': True,	'content': newContent,}
-				})
+				qdocUpdate.find({'_id': art['_id']}).upsert().update({'$set': {'recrawled': True, 'content': newContent}})
+			else:
+				qdocUpdate.find({'_id': art['_id']}).upsert().update({'$set': {'recrawled': True}})
+
 		qdocUpdate.execute()
 		left = db.qdoc.find({'source': source, 'recrawled': {'$exists': False}}).count()
 		print "-------------------------------------"		
 		print "-------------------------------------"		
 		print "Left: ", left
 
-recrawlSource('venture_beat')
+recrawlSource('reuters')
