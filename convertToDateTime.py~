@@ -19,6 +19,6 @@ for document in cursor:
     db.qdoc.update_many(
         {"date": ts},
         {
-            "$set": {"date": datetime.fromtimestamp(ts).replace(tzinfo=pytz.utc)},
+            "$set": {"timestamp": datetime.fromtimestamp(ts).replace(tzinfo=pytz.utc)},
         }
     )

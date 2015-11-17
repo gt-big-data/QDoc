@@ -100,8 +100,7 @@ def adSelect(source): # this is the selector for ads, recommended articles, etc
     return filter
 
 def getContent(soup):
-    print soup
-    elems = soup.findAll(text = visible)
+    elems = soup.findAll(text=True and visible)
     buildText = []
     for elem in elems:
         if isinstance(elem, NavigableString):
@@ -151,8 +150,6 @@ def calcScore(el, txt):
 
 def visible(element):
     """Return true if the element is probably visible on page if you scrolled around."""
-    if not element.parent:
-        print element
     if element.parent.name in ['style', 'script', 'noscript', '[document]', 'head', 'title']:
         return False
     return True
