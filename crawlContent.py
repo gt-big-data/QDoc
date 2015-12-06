@@ -2,6 +2,7 @@ import urllib2, re
 from dateutil.parser import *
 from PIL import ImageFile
 from bs4 import BeautifulSoup, Comment, Doctype, NavigableString
+import re
 
 def htmlToSoup(article, html):
     soup = BeautifulSoup(html, 'html.parser')
@@ -55,7 +56,7 @@ def getBiggestImg(a, soup):
     return bestUrl
 
 def removeHeaderNavFooter(soup):
-    hnfs = soup.findAll({'header', 'nav', 'footer', 'aside'})
+    hnfs = soup.findAll({'header', 'nav', 'footer', 'aside', 'figure'})
     [hnf.extract() for hnf in hnfs]
     return soup
 def removeScriptStyle(soup):
@@ -80,11 +81,11 @@ def adSelect(source): # this is the selector for ads, recommended articles, etc
     ]
     classList = {}
     classList['cnn'] = ['pg-rail','ob_widget', 'zn-story-bottom', 'zn-staggered__col', 'el__video--standard', 'el__gallery--fullstandardwidth', 'el__gallery-showhide', 'el__gallery', 'el__gallery--standard', 'el__featured-video', 'zn-Rail', 'el__leafmedia', 'metadata']
-    classList['reuters'] = ['reuters-share', 'article-header', 'shr-overlay', 'related-photo-credit']
+    classList['reuters'] = ['reuters-share', 'article-header', 'shr-overlay', 'related-photo-credit', 'slider-module', 'column2']
     classList['business_insider'] = ['abusivetextareaDiv', 'LoginRegister', 'rhsb', 'TabsContList', 'rhs_nl', 'sticky', 'rhs', 'titleMoreLinks', 'ShareBox', 'Commentbox', 'commentsBlock', 'RecommendBlk', 'prvnxtbg', 'OUTBRAIN', 'AuthorBlock', 'seealso', 'Joindiscussion', 'subscribe_outer', 'ByLine', 'comment-class', 'bi_h2', 'margin-top']
     classList['venture_beat'] = ['vb_widget', 'entry-footer', 'navbar', 'site-header', 'mobile-post', 'widget-area', 'vb_image_source', 'wp-caption-text', 'boilerplate-label', 'post-boilerplate']
     classList['techcrunch'] = ['l-sidebar', 'article-extra', 'social-share', 'feature-island-container', 'announcement', 'header-ad', 'ad-top-mobile', 'ad-cluster-container', 'social-list', 'trending-title', 'trending-byline', 'nav', 'nav-col', 'nav-crunchbase', 'trending-head']
-    classList['bbc'] = ['site-brand', 'column--secondary', 'share', 'bbccom_slot']
+    classList['bbc'] = ['site-brand', 'column--secondary', 'share', 'bbccom_slot', 'index-title', 'container-width-only', 'story-body__mini-info-list-and-share', 'off-screen', 'story-more']
     classList['guardian'] = ['content-footer', 'site-message', 'content__meta-container', 'submeta', 'l-header', 'block-share', 'share-modal__content']
     classList['aljazeera'] = ['unsupported-browser', 'component-articleOpinion', 'hidden-phone', 'relatedResources', 'articleOpinion-secondary', 'articleOpinion-comments', 'dynamicStoryHighlightList', 'brightcovevideo']
     classList['france24'] = ['col-2', 'on-air-board-outer', 'short-cuts-outer', 'location', 'modification']
@@ -96,7 +97,10 @@ def adSelect(source): # this is the selector for ads, recommended articles, etc
             for className in classList[source]:
                 if className in c:
                     return True
+        if source == 'reuters' and tag.name == 'p' and 'reporting by' in tag.get_text().lower():
+            return True
         return False
+
     return filter
 
 def getContent(soup):
@@ -139,6 +143,9 @@ def calcScore(el, txt):
         for key in shareKeywords:
             if key in txtLower:
                 score -= 30
+    if '(reporting by' in txt:
+        score -= 100
+        return score
     if len(txt) <= 70:
         if ('created' in txtLower or 'date' in txtLower or 'photograph:' in txtLower or 'browser' in txtLower or 'adobe' in txtLower or 'try again' in txtLower or 'upgrade' in txtLower or 'please install' in txtLower):
             score -= 30
