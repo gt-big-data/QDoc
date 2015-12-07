@@ -17,19 +17,16 @@ def recrawlArt(art, article):
 	cleanHTML = soup.prettify().encode('utf8')
 	oldContent = art['content'].encode('utf8')
 	newContent = article.content.encode('utf8')
-	# f = open('latestCrawl.html', 'w'); f.write(cleanHTML); f.close();
-	# f = open('oldContent.txt', 'w'); f.write(oldContent); f.close();
-	# f = open('newContent.txt', 'w'); f.write(newContent); f.close();
 	print "-------------------------"
 	print art['_id']
 	print "Old: ", len(oldContent), " | New: ", len(newContent)
 	return newContent
 
-def recrawlSource(source):
+def recrawlSource(source=None):
 	left = 1
 	while left>0:
-		sort = 1;
-		articles = list(db.qdoc.find({'source': source, 'recrawl': {'$exists': True}}).sort('timestamp', sort).limit(50))
+		sort = -1
+		articles = list(db.qdoc.find({'recrawl': {'$exists': True}}).sort('timestamp', sort).limit(50))
 
 		qdocUpdate = db.qdoc.initialize_unordered_bulk_op()
 		for art in articles:
@@ -38,12 +35,12 @@ def recrawlSource(source):
 			if newContent:
 				qdocUpdate.find({'_id': art['_id']}).upsert().update({'$set': {'content': newContent}, '$unset': {'recrawl': True}})
 			else:
-				qdocUpdate.find({'_id': art['_id']}).upsert().update({'$set': {'recrawled': True}})
+				qdocUpdate.find({'_id': art['_id']}).upsert().update({'$unset': {'recrawl': True}})
 
 		qdocUpdate.execute()
-		left = db.qdoc.find({'source': source, 'recrawl': {'$exists': True}}).count()
+		left = db.qdoc.find({'recrawl': {'$exists': True}}).count()
 		print "-------------------------------------"		
 		print "-------------------------------------"		
 		print "Left: ", left
 
-recrawlSource('reuters')
+recrawlSource()
