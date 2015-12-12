@@ -55,7 +55,6 @@ class MongoWriter():
 
     def write(self, article):
         """Write an Article object to MongoDB.
-
         Arguments:
         article -- An Article object.
         """

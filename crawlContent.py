@@ -6,9 +6,10 @@ import re
 
 def htmlToSoup(article, html):
     soup = BeautifulSoup(html, 'html.parser')
-    art = soup.find('article')
-    if art is not None:
-        soup = art
+    # This screws up business insider
+    # art = soup.find('article')
+    # if art is not None:
+        # soup = art
 
     soup = removeHeaderNavFooter(soup)
     soup = removeComments(soup)
@@ -18,7 +19,7 @@ def htmlToSoup(article, html):
 
 def parse(article, html):
     soup = htmlToSoup(article, html)
-    article.content = getContent(soup)
+    article.content = getContent(soup, article.source)
     article.img = getBiggestImg(article, soup)
 
 def crawlContent(articles):
@@ -80,8 +81,8 @@ def adSelect(source): # this is the selector for ads, recommended articles, etc
     'social-plugins_bottom', 'social-plugins', 'avcslide' # Business Insider
     ]
     classList = {}
-    classList['cnn'] = ['pg-rail','ob_widget', 'zn-story-bottom', 'zn-body__footer', 'zn-staggered__col', 'el__video--standard', 'el__gallery--fullstandardwidth', 'el__gallery-showhide', 'el__gallery', 'el__gallery--standard', 'el__featured-video', 'zn-Rail', 'el__leafmedia', 'metadata']
-    classList['reuters'] = ['reuters-share', 'article-header', 'shr-overlay', 'related-photo-credit', 'slider-module', 'column2']
+    classList['cnn'] = ['pg-rail', 'ob_widget', 'zn-story-bottom', 'zn-body__footer', 'zn-staggered__col', 'el__video--standard', 'el__gallery--fullstandardwidth', 'el__gallery-showhide', 'el__gallery', 'el__gallery--standard', 'el__featured-video', 'zn-Rail', 'el__leafmedia', 'metadata', 'media__caption', 'el__embedded', 'ad--is-hidden', 'pg__branding']
+    classList['reuters'] = ['reuters-share', 'article-header', 'shr-overlay', 'related-photo-credit', 'slider-module', 'column2', 'articleLocation']
     classList['business_insider'] = ['abusivetextareaDiv', 'LoginRegister', 'rhsb', 'TabsContList', 'rhs_nl', 'sticky', 'rhs', 'titleMoreLinks', 'ShareBox', 'Commentbox', 'commentsBlock', 'RecommendBlk', 'prvnxtbg', 'OUTBRAIN', 'AuthorBlock', 'seealso', 'Joindiscussion', 'subscribe_outer', 'ByLine', 'comment-class', 'bi_h2', 'margin-top', 'source']
     classList['venture_beat'] = ['vb_widget', 'entry-footer', 'navbar', 'site-header', 'mobile-post', 'widget-area', 'vb_image_source', 'wp-caption-text', 'boilerplate-label', 'post-boilerplate']
     classList['techcrunch'] = ['l-sidebar', 'article-extra', 'social-share', 'feature-island-container', 'announcement', 'header-ad', 'ad-top-mobile', 'ad-cluster-container', 'social-list', 'trending-title', 'trending-byline', 'nav', 'nav-col', 'nav-crunchbase', 'trending-head']
@@ -97,13 +98,15 @@ def adSelect(source): # this is the selector for ads, recommended articles, etc
             for className in classList[source]:
                 if className in c:
                     return True
-        if source == 'reuters' and tag.name == 'p' and 'reporting by' in tag.get_text().lower():
-            return True
+        if source == 'reuters' and tag.name == 'p':
+            tt = tag.get_text().lower()
+            if 'reporting by' in tt or 'writing by' in tt or 'editing by' in tt:
+                return True
         return False
 
     return filter
 
-def getContent(soup):
+def getContent(soup, source):
     elems = soup.findAll(text=True and visible)
     buildText = []
     for elem in elems:
@@ -111,7 +114,6 @@ def getContent(soup):
             txt = elem
             if elem.parent.name in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] and txt[-1] not in ['.', '!', '?']:
                 txt += '.'
-
             score = calcScore(elem, txt)
             if score > 0:
                 buildText.append(txt)
@@ -138,7 +140,12 @@ def calcScore(el, txt):
         score -= 100
     if len(txt) > 100: # at least some sentence
         score += 50
+
+
     if isDate(txt):
+        score -= 100
+        return score
+    if el.parent.name == 'a' and txt[:6] == 'READ: ':
         score -= 100
         return score
     if len(txt) <= 25:
@@ -146,7 +153,7 @@ def calcScore(el, txt):
         for key in shareKeywords:
             if key in txtLower:
                 score -= 30
-    if '(reporting by' in txt:
+    if len(txt) < 40 and ('join us on facebook' in txtLower or 'watch the full video here' in txtLower or 'image credit' in txtLower or 'image source' in txtLower):
         score -= 100
         return score
     if len(txt) <= 70:
@@ -154,7 +161,7 @@ def calcScore(el, txt):
             score -= 30
     if ('http://' in txt or '.com' in txt or '.org' in txt or 'www.' in txt) and ' ' not in txt: # what if it's a link
         score -= 30
-    if txtLower in ['events', 'terms of service', 'home', 'privacy policy', 'venturebeat', 'mobile', 'guest', 'about', 'topics', 'more news', 'see also', 'close', 'watch the full video here:']:
+    if txtLower in ['events', 'terms of service', 'home', 'privacy policy', 'venturebeat', 'mobile', 'guest', 'about', 'topics', 'more news', 'see also', 'close']:
         score -= 100
     return score
 
