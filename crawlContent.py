@@ -80,9 +80,9 @@ def adSelect(source): # this is the selector for ads, recommended articles, etc
     'social-plugins_bottom', 'social-plugins', 'avcslide' # Business Insider
     ]
     classList = {}
-    classList['cnn'] = ['pg-rail','ob_widget', 'zn-story-bottom', 'zn-staggered__col', 'el__video--standard', 'el__gallery--fullstandardwidth', 'el__gallery-showhide', 'el__gallery', 'el__gallery--standard', 'el__featured-video', 'zn-Rail', 'el__leafmedia', 'metadata']
+    classList['cnn'] = ['pg-rail','ob_widget', 'zn-story-bottom', 'zn-body__footer', 'zn-staggered__col', 'el__video--standard', 'el__gallery--fullstandardwidth', 'el__gallery-showhide', 'el__gallery', 'el__gallery--standard', 'el__featured-video', 'zn-Rail', 'el__leafmedia', 'metadata']
     classList['reuters'] = ['reuters-share', 'article-header', 'shr-overlay', 'related-photo-credit', 'slider-module', 'column2']
-    classList['business_insider'] = ['abusivetextareaDiv', 'LoginRegister', 'rhsb', 'TabsContList', 'rhs_nl', 'sticky', 'rhs', 'titleMoreLinks', 'ShareBox', 'Commentbox', 'commentsBlock', 'RecommendBlk', 'prvnxtbg', 'OUTBRAIN', 'AuthorBlock', 'seealso', 'Joindiscussion', 'subscribe_outer', 'ByLine', 'comment-class', 'bi_h2', 'margin-top']
+    classList['business_insider'] = ['abusivetextareaDiv', 'LoginRegister', 'rhsb', 'TabsContList', 'rhs_nl', 'sticky', 'rhs', 'titleMoreLinks', 'ShareBox', 'Commentbox', 'commentsBlock', 'RecommendBlk', 'prvnxtbg', 'OUTBRAIN', 'AuthorBlock', 'seealso', 'Joindiscussion', 'subscribe_outer', 'ByLine', 'comment-class', 'bi_h2', 'margin-top', 'source']
     classList['venture_beat'] = ['vb_widget', 'entry-footer', 'navbar', 'site-header', 'mobile-post', 'widget-area', 'vb_image_source', 'wp-caption-text', 'boilerplate-label', 'post-boilerplate']
     classList['techcrunch'] = ['l-sidebar', 'article-extra', 'social-share', 'feature-island-container', 'announcement', 'header-ad', 'ad-top-mobile', 'ad-cluster-container', 'social-list', 'trending-title', 'trending-byline', 'nav', 'nav-col', 'nav-crunchbase', 'trending-head']
     classList['bbc'] = ['site-brand', 'column--secondary', 'share', 'bbccom_slot', 'index-title', 'container-width-only', 'story-body__mini-info-list-and-share', 'off-screen', 'story-more']
@@ -109,6 +109,9 @@ def getContent(soup):
     for elem in elems:
         if isinstance(elem, NavigableString):
             txt = elem
+            if elem.parent.name in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] and txt[-1] not in ['.', '!', '?']:
+                txt += '.'
+
             score = calcScore(elem, txt)
             if score > 0:
                 buildText.append(txt)
@@ -151,7 +154,7 @@ def calcScore(el, txt):
             score -= 30
     if ('http://' in txt or '.com' in txt or '.org' in txt or 'www.' in txt) and ' ' not in txt: # what if it's a link
         score -= 30
-    if txt in ['Events', 'Terms of Service', 'Home', 'Privacy Policy', 'VentureBeat', 'Mobile', 'Guest', 'About', 'Topics', 'More news', 'See Also', 'close']:
+    if txtLower in ['events', 'terms of service', 'home', 'privacy policy', 'venturebeat', 'mobile', 'guest', 'about', 'topics', 'more news', 'see also', 'close', 'watch the full video here:']:
         score -= 100
     return score
 
