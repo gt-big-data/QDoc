@@ -76,15 +76,15 @@ def removeAds(soup, source):
 
 def adSelect(source): # this is the selector for ads, recommended articles, etc
     idList = ['most-popular-parsely', 'specialFeature', # Reuters
-    'orb-footer', 'core-navigation', 'services-bar', # BBC
+    'orb-footer', 'core-navigation', 'services-bar', 'bbc-news-services', # BBC
     'profile-cards', #VentureBeat
     'social-plugins_bottom', 'social-plugins', 'avcslide', # Business Insider
     'mobile-article-extra', # techcrunch
     ]
     classList = {}
-    classList['cnn'] = ['pg-rail', 'ob_widget', 'zn-story-bottom', 'zn-body__footer', 'zn-staggered__col', 'el__video--standard', 'el__gallery--fullstandardwidth', 'el__gallery-showhide', 'el__gallery', 'el__gallery--standard', 'el__featured-video', 'zn-Rail', 'el__leafmedia', 'metadata', 'media__caption', 'el__embedded', 'ad--is-hidden', 'pg__branding']
+    classList['cnn'] = ['pg-rail', 'ob_widget', 'zn-story-bottom', 'zn-body__footer', 'zn-staggered__col', 'el__video--standard', 'el__gallery--fullstandardwidth', 'el__gallery-showhide', 'el__gallery', 'el__gallery--standard', 'el__featured-video', 'zn-Rail', 'el__leafmedia', 'metadata', 'media__caption', 'el__embedded', 'ad--is-hidden', 'pg__branding', 'nav--plain-header']
     classList['reuters'] = ['reuters-share', 'article-header', 'shr-overlay', 'related-photo-credit', 'slider-module', 'column2', 'articleLocation']
-    classList['business_insider'] = ['abusivetextareaDiv', 'LoginRegister', 'rhsb', 'TabsContList', 'rhs_nl', 'sticky', 'rhs', 'titleMoreLinks', 'ShareBox', 'Commentbox', 'commentsBlock', 'RecommendBlk', 'prvnxtbg', 'OUTBRAIN', 'AuthorBlock', 'seealso', 'Joindiscussion', 'subscribe_outer', 'ByLine', 'comment-class', 'bi_h2', 'margin-top', 'source']
+    classList['business_insider'] = ['abusivetextareaDiv', 'LoginRegister', 'rhsb', 'TabsContList', 'rhs_nl', 'sticky', 'rhs', 'titleMoreLinks', 'ShareBox', 'Commentbox', 'commentsBlock', 'RecommendBlk', 'prvnxtbg', 'OUTBRAIN', 'AuthorBlock', 'seealso', 'Joindiscussion', 'subscribe_outer', 'ByLine', 'comment-class', 'bi_h2', 'margin-top', 'source', 'image-container']
     classList['venture_beat'] = ['vb_widget', 'entry-footer', 'navbar', 'site-header', 'mobile-post', 'widget-area', 'vb_image_source', 'wp-caption-text', 'boilerplate-label', 'post-boilerplate']
     classList['techcrunch'] = ['l-sidebar', 'article-extra', 'social-share', 'feature-island-container', 'announcement', 'header-ad', 'ad-top-mobile', 'ad-cluster-container', 'social-list', 'trending-title', 'trending-byline', 'nav', 'nav-col', 'nav-crunchbase', 'trending-head', 'menu-nav-modal']
     classList['bbc'] = ['site-brand', 'column--secondary', 'share', 'bbccom_slot', 'index-title', 'container-width-only', 'story-body__mini-info-list-and-share', 'off-screen', 'story-more']
@@ -142,11 +142,10 @@ def calcScore(el, txt):
     if len(txt) > 100: # at least some sentence
         score += 50
 
-
     if isDate(txt):
         score -= 100
         return score
-    if el.parent.name == 'a' and txt[:6] == 'READ: ':
+    if el.parent.name == 'a' and (txt[:6].lower() == 'read: ' or txt[:9].lower() == 'read more'):
         score -= 100
         return score
     if len(txt) <= 25:
@@ -154,7 +153,7 @@ def calcScore(el, txt):
         for key in shareKeywords:
             if key in txtLower:
                 score -= 30
-    if len(txt) < 40 and ('join us on facebook' in txtLower or 'watch the full video here' in txtLower or 'image credit' in txtLower or 'image source' in txtLower):
+    if len(txt) < 40 and ('join us on facebook' in txtLower or 'watch the full video here' in txtLower or 'image credit' in txtLower or 'image source' in txtLower or 'just watched' in txtLower or 'must watch' in txtLower):
         score -= 100
         return score
     if len(txt) <= 70:
