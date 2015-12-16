@@ -71,7 +71,7 @@ feeds['bbc'].append({'name': 'bbc_entertainment', 'url': 'http://feeds.bbci.co.u
 feeds['guardian'] = []
 feeds['guardian'].append({'name': 'gua_world', 'url': 'http://www.theguardian.com/world/rss'})
 feeds['guardian'].append({'name': 'gua_politics', 'url': 'http://www.theguardian.com/politics/rss'})
-feeds['guardian'].append({'name': 'gua_politics', 'url': 'http://www.theguardian.com/culture/rss'})
+feeds['guardian'].append({'name': 'gua_culture', 'url': 'http://www.theguardian.com/culture/rss'})
 feeds['guardian'].append({'name': 'gua_business', 'url': 'http://www.theguardian.com/business/rss'})
 feeds['guardian'].append({'name': 'gua_environment', 'url': 'http://www.theguardian.com/environment/rss'})
 feeds['guardian'].append({'name': 'gua_travel', 'url': 'http://www.theguardian.com/travel/rss'})

@@ -55,8 +55,9 @@ class MongoWriter():
 
     def write(self, article):
         """Write an Article object to MongoDB.
-
         Arguments:
         article -- An Article object.
         """
         self.db.qdoc.update({'guid': article.guid}, {'$set': article.__dict__}, upsert=True)
+    def updateDuplicate(self, dupID, article):
+        self.db.qdoc.update({'_id': dupID}, {'$set': {'content': article.content}}) # update the content 
