@@ -15,7 +15,8 @@ def recrawlArt(art, article):
 	parse(article, html)
 
 	cleanHTML = soup.prettify().encode('utf8')
-	oldContent = art['content'].encode('utf8')
+
+	oldContent = art.get('content', '').encode('utf8')
 	newContent = article.content.encode('utf8')
 	print "-------------------------"
 	print art['_id']

@@ -45,6 +45,6 @@ class Article(object):
         if not self.isValid():
             print("Article from source: " + self.source + "feed: " + self.feed + " was invalid")
         elif dupID is not None: # we just update the content because this is a duplicate of something
-            writer.update(dupID, self)
+            writer.updateDuplicate(dupID, self)
         else: # Write full on article
             writer.write(self)
