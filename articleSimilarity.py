@@ -21,7 +21,6 @@ def similar(a, b):
 	return SequenceMatcher(None, a, b).ratio()
 
 topic = list(largestTopics(2,2))[0]['_id']
-print topic
 
 today = time.time()
 yesterday = today-86400
@@ -29,16 +28,17 @@ yesterday = today-86400
 arts = list(db.qdoc.find({'topic': topic}))
 print len(arts)
 
-for a in arts:
-	for b in arts:
-		if a['_id'] != b['_id']:
-			s = similar(a['content'], b['content'])
-			if s > 0.3:
-				print "-------------------------------------------"
-				print s
-				print a['source'], " vs. ", b['source']
-				print a['timestamp']-b['timestamp']
-				print a['title'].encode('utf-8')
-				print b['title'].encode('utf-8')
-				print a['url']
-				print b['url']
+
+for i in range(0, len(arts)):
+	for j in  range(i+1, len(arts)):
+		a = arts[i]; b = arts[j]
+		s = similar(a['content'], b['content'])
+		if s > 0.3:
+			print "-------------------------------------------"
+			print s
+			print a['source'], " vs. ", b['source']
+			print a['timestamp']-b['timestamp']
+			print a['title'].encode('utf-8')
+			print b['title'].encode('utf-8')
+			print a['url']
+			print b['url']
