@@ -58,7 +58,7 @@ def getBiggestImg(a, soup):
     return bestUrl
 
 def removeHeaderNavFooter(soup):
-    hnfs = soup.findAll({'header', 'nav', 'footer', 'aside', 'figure'})
+    hnfs = soup.findAll({'header', 'nav', 'footer', 'aside', 'figure', 'button'})
     [hnf.extract() for hnf in hnfs]
     return soup
 def removeScriptStyle(soup):
@@ -89,7 +89,7 @@ def adSelect(source): # this is the selector for ads, recommended articles, etc
     classList['venture_beat'] = ['vb_widget', 'entry-footer', 'navbar', 'site-header', 'mobile-post', 'widget-area', 'vb_image_source', 'wp-caption-text', 'boilerplate-label', 'post-boilerplate']
     classList['techcrunch'] = ['l-sidebar', 'article-extra', 'social-share', 'feature-island-container', 'announcement', 'header-ad', 'ad-top-mobile', 'ad-cluster-container', 'social-list', 'trending-title', 'trending-byline', 'nav', 'nav-col', 'nav-crunchbase', 'trending-head', 'menu-nav-modal']
     classList['bbc'] = ['site-brand', 'column--secondary', 'share', 'bbccom_slot', 'index-title', 'container-width-only', 'story-body__mini-info-list-and-share', 'off-screen', 'story-more']
-    classList['guardian'] = ['content-footer', 'site-message', 'content__meta-container', 'submeta', 'l-header', 'block-share', 'share-modal__content']
+    classList['guardian'] = ['content-footer', 'site-message', 'content__meta-container', 'submeta', 'l-header', 'block-share', 'share-modal__content', 'witness-cta-wrapper', 'blog__left-col', 'block-time__link', 'popup', 'popup__toggle', 'dropdown__button', 'block-time', 'liveblog-block-byline']
     classList['aljazeera'] = ['unsupported-browser', 'component-articleOpinion', 'hidden-phone', 'relatedResources', 'articleOpinion-secondary', 'articleOpinion-comments', 'dynamicStoryHighlightList', 'brightcovevideo']
     classList['france24'] = ['col-2', 'on-air-board-outer', 'short-cuts-outer', 'location', 'modification']
     def filter(tag):
@@ -128,7 +128,7 @@ def getContent(soup, source):
         returnString += re.sub(' +', ' ', st).replace('\t', '')
         if st[-1] in ['.', '!', '?']:
             returnString += '\n'
-    return returnString.replace("’", "'").replace("”", '"').replace("“", '"').replace('—', '-')
+    return returnString.replace("’", "'").replace("”", '"').replace("“", '"').replace('—', '-').replace('‘', "'")
 
 def isDate(txt):
     try:
