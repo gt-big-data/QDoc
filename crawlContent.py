@@ -1,8 +1,9 @@
+# -*- coding: utf-8 -*-
 import urllib2, re
 from dateutil.parser import *
 from PIL import ImageFile
 from bs4 import BeautifulSoup, Comment, Doctype, NavigableString
-import re
+import re, sys
 
 def htmlToSoup(article, html):
     soup = BeautifulSoup(html, 'html.parser')
@@ -108,6 +109,8 @@ def adSelect(source): # this is the selector for ads, recommended articles, etc
     return filter
 
 def getContent(soup, source):
+    reload(sys)
+    sys.setdefaultencoding('utf8') # magic sauce
     elems = soup.findAll(text=True and visible)
     buildText = []
     for elem in elems:
@@ -125,7 +128,7 @@ def getContent(soup, source):
         returnString += re.sub(' +', ' ', st).replace('\t', '')
         if st[-1] in ['.', '!', '?']:
             returnString += '\n'
-    return returnString
+    return returnString.replace("’", "'").replace("”", '"').replace("“", '"').replace('—', '-')
 
 def isDate(txt):
     try:
