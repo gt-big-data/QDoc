@@ -13,7 +13,7 @@ def recrawlArt(art):
 		print "Error 404: Not Found"
 		return {'id': art['_id'], 'content': None}
 
-	article = Article(guid=art['guid'], title=art['title'], url=art['url'], timestamp=art['timestamp'], source=art['source'], feed=art['feed'])
+	article = Article(guid=art['guid'], title=art['title'], url=art['url'], timestamp=0, source=art['source'], feed=art['feed'])
 	soup = htmlToSoup(article, html)
 	parse(article, html)
 
@@ -29,30 +29,28 @@ def recrawlArt(art):
 def recrawlSource(source=None):
 	left = db.qdoc.find({'recrawl': {'$exists': True}}).count()
 	while left>0:
-		sort = -1
-		articles = list(db.qdoc.find({'recrawl': {'$exists': True}}).sort('timestamp', sort).limit(50))
+		rand = int(2000*random.random())
+		any = False
+		match = {'$match': {'recrawl': {'$exists': True}}}
+		project = {'$project': {'_id': True, 'guid': True, 'url': True, 'feed': True, 'source': True, 'content': True, 'tsmod': {'$mod': ['$timestamp', rand]}}}
+		sort = {'$sort': {'tsmod': -1}}
+		limit = {'$limit': 30}
+
+		articles = list(db.qdoc.aggregate([match, project, sort, limit]))
 
 		qdocUpdate = db.qdoc.initialize_unordered_bulk_op()
 
-		batch = []
-		i = 0
-		while i < len(articles):
-			while len(batch) < min(20, left):
-				batch.append(articles[i])
-				i += 1
+		pool = eventlet.GreenPool()
 
-			pool = eventlet.GreenPool()
+		for ret in pool.imap(recrawlArt, articles):
+			if ret['content']:
+				any = True
+				qdocUpdate.find({'_id': ret['id']}).upsert().update({'$set': {'content': ret['content']}, '$unset': {'recrawl': True}})
+			# else: # for now we redo ...
+			# 	qdocUpdate.find({'_id': ret['id']}).upsert().update({'$unset': {'recrawl': True}})
 
-			for ret in pool.imap(recrawlArt, batch):
-				if ret['content']:
-					print len(ret['content'])
-					qdocUpdate.find({'_id': ret['id']}).upsert().update({'$set': {'content': ret['content']}, '$unset': {'recrawl': True}})
-				else:
-					qdocUpdate.find({'_id': ret['id']}).upsert().update({'$unset': {'recrawl': True}})
-			left -= len(batch)
-			batch = []
-
-		qdocUpdate.execute()
+		if any:
+			qdocUpdate.execute()
 		left = db.qdoc.find({'recrawl': {'$exists': True}}).count()
 		print "-------------------------------------"		
 		print "-------------------------------------"		
