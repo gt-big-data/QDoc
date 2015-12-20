@@ -148,7 +148,7 @@ def calcScore(el, txt):
     if isDate(txt):
         score -= 100
         return score
-    if (el.parent.name == 'a' and (txt[:6].lower() == 'read: ' or txt[:9].lower() == 'read more')) or txt[:14] == '(FRANCE24 with':
+    if (el.parent.name == 'a' and (txt[:6].lower() == 'read: ' or txt[:9].lower() == 'read more')) or txt[:14] == '(FRANCE24 with' or txt[:15] == '(FRANCE 24 with':
         score -= 100
         return score
     if len(txt) <= 25:

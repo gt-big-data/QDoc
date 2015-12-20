@@ -58,3 +58,4 @@ if __name__ == '__main__':
 		print "python fun.py avgEntity"
 		print "python fun.py popEntity"
 		print "python fun.py contRegex Reuters"
+		print "python fun.py recrawlRegex Reuters"

@@ -6,3 +6,7 @@ test.html
 *.out
 *.py.save
 test_files/
+newContent.txt
+oldContent.txt
+latestCrawl.html
+totalCrawl.html
