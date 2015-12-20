@@ -36,7 +36,7 @@ def contentRegexSource(st):
 	for r in ret:
 		print r
 
-	print [a['_id'] for a in list(db.qdoc.find(match['$match']).sort('timestamp', -1).limit(10))]
+	print [a['_id'] for a in list(db.qdoc.find(match['$match'], {'_id': 1}).sort('timestamp', -1).limit(10))]
 
 def recrawlRegex(st):
 	print db.qdoc.update({'content': {'$regex': st}}, {'$set': {'recrawl': True}}, multi=True)
