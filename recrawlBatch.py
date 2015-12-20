@@ -32,7 +32,7 @@ def recrawlSource(source=None):
 		rand = int(2000*random.random())
 		any = False
 		match = {'$match': {'recrawl': {'$exists': True}}}
-		project = {'$project': {'_id': True, 'guid': True, 'url': True, 'feed': True, 'source': True, 'content': True, 'tsmod': {'$mod': ['$timestamp', rand]}}}
+		project = {'$project': {'_id': True, 'guid': True, 'title': True, 'url': True, 'feed': True, 'source': True, 'content': True, 'tsmod': {'$mod': ['$timestamp', rand]}}}
 		sort = {'$sort': {'tsmod': -1}}
 		limit = {'$limit': 30}
 

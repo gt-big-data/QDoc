@@ -91,7 +91,7 @@ def adSelect(source): # this is the selector for ads, recommended articles, etc
     classList['bbc'] = ['site-brand', 'column--secondary', 'share', 'bbccom_slot', 'index-title', 'container-width-only', 'story-body__mini-info-list-and-share', 'off-screen', 'story-more']
     classList['guardian'] = ['content-footer', 'site-message', 'content__meta-container', 'submeta', 'l-header', 'block-share', 'share-modal__content', 'witness-cta-wrapper', 'blog__left-col', 'block-time__link', 'popup', 'popup__toggle', 'dropdown__button', 'block-time', 'liveblog-block-byline']
     classList['aljazeera'] = ['unsupported-browser', 'component-articleOpinion', 'hidden-phone', 'relatedResources', 'articleOpinion-secondary', 'articleOpinion-comments', 'dynamicStoryHighlightList', 'brightcovevideo']
-    classList['france24'] = ['col-2', 'on-air-board-outer', 'short-cuts-outer', 'location', 'modification']
+    classList['france24'] = ['col-2', 'on-air-board-outer', 'short-cuts-outer', 'location', 'modification', 'related-article', 'article-action']
     def filter(tag):
         if tag.has_attr('id') and tag.get('id') in idList:
             return True
@@ -148,7 +148,7 @@ def calcScore(el, txt):
     if isDate(txt):
         score -= 100
         return score
-    if el.parent.name == 'a' and (txt[:6].lower() == 'read: ' or txt[:9].lower() == 'read more'):
+    if (el.parent.name == 'a' and (txt[:6].lower() == 'read: ' or txt[:9].lower() == 'read more')) or txt[:14] == '(FRANCE24 with':
         score -= 100
         return score
     if len(txt) <= 25:
