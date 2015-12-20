@@ -26,7 +26,7 @@ def recrawlArt(art, article):
 def recrawlSource(source=None):
 	left = 1
 	while left>0:
-		sort = -1
+		sort = 1
 		articles = list(db.qdoc.find({'recrawl': {'$exists': True}}).sort('timestamp', sort).limit(50))
 
 		qdocUpdate = db.qdoc.initialize_unordered_bulk_op()
