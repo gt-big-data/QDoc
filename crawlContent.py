@@ -1,8 +1,9 @@
+# -*- coding: utf-8 -*-
 import urllib2, re
 from dateutil.parser import *
 from PIL import ImageFile
 from bs4 import BeautifulSoup, Comment, Doctype, NavigableString
-import re
+import re, sys
 
 def htmlToSoup(article, html):
     soup = BeautifulSoup(html, 'html.parser')
@@ -57,7 +58,7 @@ def getBiggestImg(a, soup):
     return bestUrl
 
 def removeHeaderNavFooter(soup):
-    hnfs = soup.findAll({'header', 'nav', 'footer', 'aside', 'figure'})
+    hnfs = soup.findAll({'header', 'nav', 'footer', 'aside', 'figure', 'button'})
     [hnf.extract() for hnf in hnfs]
     return soup
 def removeScriptStyle(soup):
@@ -88,9 +89,9 @@ def adSelect(source): # this is the selector for ads, recommended articles, etc
     classList['venture_beat'] = ['vb_widget', 'entry-footer', 'navbar', 'site-header', 'mobile-post', 'widget-area', 'vb_image_source', 'wp-caption-text', 'boilerplate-label', 'post-boilerplate']
     classList['techcrunch'] = ['l-sidebar', 'article-extra', 'social-share', 'feature-island-container', 'announcement', 'header-ad', 'ad-top-mobile', 'ad-cluster-container', 'social-list', 'trending-title', 'trending-byline', 'nav', 'nav-col', 'nav-crunchbase', 'trending-head', 'menu-nav-modal']
     classList['bbc'] = ['site-brand', 'column--secondary', 'share', 'bbccom_slot', 'index-title', 'container-width-only', 'story-body__mini-info-list-and-share', 'off-screen', 'story-more']
-    classList['guardian'] = ['content-footer', 'site-message', 'content__meta-container', 'submeta', 'l-header', 'block-share', 'share-modal__content']
+    classList['guardian'] = ['content-footer', 'site-message', 'content__meta-container', 'submeta', 'l-header', 'block-share', 'share-modal__content', 'witness-cta-wrapper', 'blog__left-col', 'block-time__link', 'popup', 'popup__toggle', 'dropdown__button', 'block-time', 'liveblog-block-byline']
     classList['aljazeera'] = ['unsupported-browser', 'component-articleOpinion', 'hidden-phone', 'relatedResources', 'articleOpinion-secondary', 'articleOpinion-comments', 'dynamicStoryHighlightList', 'brightcovevideo']
-    classList['france24'] = ['col-2', 'on-air-board-outer', 'short-cuts-outer', 'location', 'modification']
+    classList['france24'] = ['col-2', 'on-air-board-outer', 'short-cuts-outer', 'location', 'modification', 'related-article', 'article-action']
     def filter(tag):
         if tag.has_attr('id') and tag.get('id') in idList:
             return True
@@ -108,6 +109,8 @@ def adSelect(source): # this is the selector for ads, recommended articles, etc
     return filter
 
 def getContent(soup, source):
+    reload(sys)
+    sys.setdefaultencoding('utf8') # magic sauce
     elems = soup.findAll(text=True and visible)
     buildText = []
     for elem in elems:
@@ -125,7 +128,7 @@ def getContent(soup, source):
         returnString += re.sub(' +', ' ', st).replace('\t', '')
         if st[-1] in ['.', '!', '?']:
             returnString += '\n'
-    return returnString
+    return returnString.replace("’", "'").replace("”", '"').replace("“", '"').replace('—', '-').replace('‘', "'")
 
 def isDate(txt):
     try:
@@ -145,7 +148,7 @@ def calcScore(el, txt):
     if isDate(txt):
         score -= 100
         return score
-    if el.parent.name == 'a' and (txt[:6].lower() == 'read: ' or txt[:9].lower() == 'read more'):
+    if (el.parent.name == 'a' and (txt[:6].lower() == 'read: ' or txt[:9].lower() == 'read more')) or txt[:14] == '(FRANCE24 with':
         score -= 100
         return score
     if len(txt) <= 25:
