@@ -6,6 +6,7 @@ test.html
 *.out
 *.py.save
 test_files/
+_gsdata_
 newContent.txt
 oldContent.txt
 latestCrawl.html

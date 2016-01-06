@@ -16,6 +16,17 @@ def avgNbEntities():
 	avg /= total
 	print avg
 
+def popularKeywords():
+	match = {'$match': {'keywords': {'$exists': True, '$ne': []}}}
+	unwind = {'$unwind': '$keywords'}
+	group = {'$group': {'_id': '$keywords', 'count': {'$sum': 1}}}	
+	sort = {'$sort': {'count': -1}}
+	limit = {'$limit': 100}
+
+	ret = list(db.qdoc.aggregate([match, unwind, group, sort, limit]))
+	for r in ret:
+		print r
+
 def popularEntities():
 	match = {'$match': {'entities': {'$exists': True, '$ne': []}}}
 	unwind = {'$unwind': '$entities'}
@@ -38,6 +49,17 @@ def contentRegexSource(st):
 
 	print [a['_id'] for a in list(db.qdoc.find(match['$match'], {'_id': 1}).sort('timestamp', -1).limit(10))]
 
+def kw(st):
+	match = {'$match': {'keywords': st}}
+	group = {'$group': {'_id': '$source', 'count': {'$sum': 1}}}
+	sort = {'$sort': {'count': -1}}
+
+	ret = list(db.qdoc.aggregate([match, group, sort]))
+	for r in ret:
+		print r
+
+	print [a['_id'] for a in list(db.qdoc.find(match['$match'], {'_id': 1}).sort('timestamp', -1).limit(10))]
+
 def recrawlRegex(st):
 	print db.qdoc.update({'content': {'$regex': st}}, {'$set': {'recrawl': True}}, multi=True)
 
@@ -48,12 +70,16 @@ if __name__ == '__main__':
 	if len(sys.argv) > 1:
 		if sys.argv[1] == 'avgEntity':
 			avgNbEntities()
+		elif sys.argv[1] == 'popKeyword':
+			popularKeywords()
 		elif sys.argv[1] == 'popEntity':
 			popularEntities()
 		elif sys.argv[1] == 'contRegex':
 			contentRegexSource(sys.argv[2])
 		elif sys.argv[1] == 'recrawlRegex':
 			recrawlRegex(sys.argv[2])
+		elif sys.argv[1] == 'kw':
+			kw(sys.argv[2])
 	else:
 		print "python fun.py avgEntity"
 		print "python fun.py popEntity"

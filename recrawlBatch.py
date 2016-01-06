@@ -22,7 +22,7 @@ def recrawlArt(art):
 
 	oldContent = art.get('content', '').encode('utf8')
 	newContent = article.content.encode('utf8')
-	print art['_id'], " | Old: ", len(oldContent), " | New: ", len(newContent)
+	print art['_id'], " | Old: "+ str(len(oldContent)).center(5)+ " | New: "+str(len(newContent)).center(5)
 	return {'id': art['_id'], 'content': newContent}
 
 def recrawlSource(source=None):
