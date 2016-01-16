@@ -1,5 +1,5 @@
 #!/bin/sh -eu
 
-cd /home/QDoc/
+cd /home/bdc/QDoc/
 echo $(date) >> QDocRuns.log
 python crawler.py
