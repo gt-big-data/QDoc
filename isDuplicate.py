@@ -30,4 +30,4 @@ if __name__ == '__main__':
 	source = 'reuters'
 	dupID = isDuplicate(content, source)
 
-	print "This content is a duplicate of", dupID 
+	print "This content is a duplicate of", dupID

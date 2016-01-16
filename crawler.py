@@ -1,7 +1,6 @@
-# TODO: Figure out what these IPs and ranges are for and then probably delete them.
-#128.0.0.0/8, 143.0.0.0/8, 10.0.0.0/8, 127.0.0.0/8, 24.98.127.49, 130.211.151.156, 98.251.6.21, 130.211.122.221
 from feedCrawl import *
-import time
+import time, eventlet
+from eventlet.green import urllib2
 
 start_time = time.time()
 
@@ -82,8 +81,24 @@ feeds['aljazeera'].append({'name': 'alj_allfeeds', 'url': 'http://america.aljaze
 feeds['france24'] = []
 feeds['france24'].append({'name': 'f24_livenews', 'url': 'http://www.france24.com/en/timeline/rss'})
 
-for source in sources:
-    for feed in feeds[source]:
-        crawlFeed(source, feed['name'], feed['url'])
+feedList = []
+for source in feeds.keys():
+	for feed in feeds[source]:
+		feed['source'] = source
+		feedList.append(feed)
+
+def prepareCrawlfeed(feed):
+	crawlFeed(feed['source'], feed['name'], feed['url'])
+
+pool = eventlet.GreenPool()
+i=0
+
+while i < len(feedList):
+	tempSize = min(10, (len(feedList)-i))
+	tempList = feedList[i:(i+tempSize)]
+	for ret in pool.imap(prepareCrawlfeed, tempList):
+		pass
+		# print ret
+	i += tempSize
 
 print("--- %s seconds ---" % round(time.time() - start_time, 2))

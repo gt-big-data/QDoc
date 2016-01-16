@@ -1,15 +1,10 @@
 from urllib import urlopen
 from bs4 import BeautifulSoup
-
 from pymongo import MongoClient, errors
-
 from dateutil import parser
-
 from datetime import datetime
 import pytz
-
 from stamps import * # saving last stamps
-
 from article import *
 from crawlContent import *
 
