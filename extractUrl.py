@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup, Comment, Doctype, NavigableString
-from getContent import *
+from newContentCrawl import *
 import sys, urllib2
 
 # Things that can be added:
