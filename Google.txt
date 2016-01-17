@@ -3,15 +3,15 @@ What Google News uses:
 
 10news.com -> http://www.10news.com/feeds/rssFeed?siteId=100002&obfType=RSS_FEED&categoryId=20000
 10tv.com -> www.10tv.com/content/syndication/news_central-ohio.xml || www.10tv.com/content/syndication/news_national.xml
-121carhire.com
+121carhire.com # not news site
 11alive.com # complicated
-1340wgau.com
-13wham.com
-14wfie.com
-234next.com
-247wallst.com
-24dash.com
-24hourhiphop.com
+1340wgau.com # Radio, only podcasts
+13wham.com # No rss feed
+14wfie.com -> 14news.com -> http://www.14news.com/category/216452/kpho-newstream?clienttype=rss
+234next.com # not existing anymore
+247wallst.com # http://feeds.feedburner.com/typepad/RyNm?format=xml
+24dash.com # http://24dash.com/rss/feed.rss?t=news
+24hourhiphop.com # No rss feed
 2dayfm.com.au
 2point6billion.com
 2theadvocate.com

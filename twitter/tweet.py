@@ -3,6 +3,9 @@ from collections import namedtuple
 import json, re
 from dbco import *
 
+global cacheToSave
+cacheToSave = []
+
 stopW = set(stopwords.words('english'))
 commW = ['http', 'like', 'ga', 'job', 'love', 'atlanta', 'amp', 'hiring', 'day', 'lol', 'know', 'time', 'want', 'got', 'good', 'shit', 'need', 'people', 'thank', 'today', 'really', 'make', 'careerarc', 'work', 'happy', 'great', 'going', 'nigga', 'think', 'come', 'new', 'life', 'school', 'right', 'll', 'feel', 'look', 'girl', 'night', 'thing', 'man', 'say', 've', 'friend', 'let', 'fuck', 'year', 'best', 'alway', 'way', 'wanna', 'tonight', 'game', 'better', 'birthday', 'mi', 'hate', 'latest', 'ain', 'im', 'tomorrow', 'u', 'gonna', 'home', 'god', 'getting', 'week', 'real', 'guy', 'oh', 'bad', 'sleep', 'morning', 'hope', 'tell', 'gotta', 'opening', 'bitch', 'said', 'click', 'baby', 'wait', 'ready', 'yall', 'boy', 'stop', 'didn', 'lmao', 'ya', 'start', 'damn', 'cause', 'talk', 'retail', 'team', 'follow', 'little', 'clas', 'mean', 'play']
 commW.extend(stopW)
@@ -13,9 +16,21 @@ class Tweet(namedtuple('Tweet', ['guid', 'text', 'author', 'timestamp', 'lon', '
     def __new__(cls, guid='', text='', author='', timestamp=0, lon=0, lat=0, words=[], hashtags=[], mentions=[]):
         return super(Tweet, cls).__new__(cls, guid, text, author, timestamp, lon, lat, words, hashtags, mentions)
 
+def sendCache():
+	global cacheToSave
+	if len(cacheToSave) >= 30:
+		tweetInsert = db.tweet.initialize_unordered_bulk_op()
+		for T in cacheToSave:
+			tweetInsert.insert(T)
+		tweetInsert.execute()
+		cacheToSave = []
+
 def saveNewTweet(T):
+	global cacheToSave
 	if isValid(T):
-		insertTweet(T._asdict())
+		cacheToSave.append(T._asdict())
+	if len(cacheToSave) >= 30:
+		sendCache() # insertTweet(T._asdict())
 
 def remove_non_ascii_1(text):
 	return ''.join(i for i in text if ord(i)<128)
