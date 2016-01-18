@@ -3,17 +3,8 @@ import time, eventlet
 from eventlet.green import urllib2
 
 start_time = time.time()
-# GUID Available: (Globally Unique IDentifier)
-	# CNN: Yes
-	# Reuters: Yes
-	# Business Insider: Yes
-	# VentureBeat: Yes
-	# TechCrunch: Yes
-	# BBC: Yes
-	# Guardian: Yes
 
 # Sources to add:
-	# Associated Press
 	# Wikinews
 	# NY Times
 	# EuroNews

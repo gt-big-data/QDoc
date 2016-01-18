@@ -1,6 +1,5 @@
 from os import mkdir
-import re
-import json
+import re, json
 
 class PrintWriter(object):
     """Class for writing JSON data to the screen."""

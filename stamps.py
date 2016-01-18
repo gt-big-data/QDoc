@@ -14,7 +14,7 @@ def loadLastStamp(name):
     db_obj = list(db.rss_stamps.find({'feed': name}).limit(1))
     if len(db_obj) > 0:
         return db_obj[0]['stamp']
-    return (time.time()-3*86400) # if we cannot find it, by default say it was a day ago...
+    return 0 # if we cannot find it, by default say it was a day ago...
 
 def saveLastStamp(name, stamp):
     """Save a timestamp from an RSS feed for later.

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup, Comment, Doctype, NavigableString
-from bson.objectid import ObjectId
 from dbco import *
 from article import *
 import sys, urllib2
@@ -26,7 +25,7 @@ def removeScriptStyle(soup):
 def removeBadContent(soup):
 	for el in soup.findAll(True):
 		classes = " ".join(el.get('class', [])).lower()
-		badClasses = [' ad ', 'metadata', 'byline', 'dateline', 'location', 'modification', ' footer', 'discussion', 'carousel', 'short-cuts']
+		badClasses = [' ad ', 'metadata', 'byline', 'dateline', 'published', 'location', 'modification', ' footer', 'discussion', 'carousel', 'short-cuts']
 		for cl in badClasses:
 			if cl in classes:
 				el.extract()
@@ -78,8 +77,7 @@ def removeClasses(soup, classes):
 	classes = set(classes)
 	[el.extract() for el in soup.findAll(True) if len(set(el.get('class', [])) & classes) > 0]
 def removeIds(soup, ids):
-	for i in ids:
-		[el.extract() for el in soup.find(id=i)]
+	[el.extract() for el in soup.findAll(True) if el.get('id', '') in ids]
 
 def genericCleaning(soup):
 	removeComments(soup)
@@ -97,6 +95,9 @@ def sourceSpecificcleaning(soup, source):
 	if source == 'business_insider':
 		removeClasses(soup, ['seealso', 'comment-class'])
 		removeIds(soup, ['avcslide'])
+	if source == 'wikinews':
+		removeClasses(soup, ['infobox'])
+		removeIds(soup, ['footer', 'mw-navigation'])
 
 def url2soup(url):
 	cookieprocessor = urllib2.HTTPCookieProcessor()
@@ -117,6 +118,8 @@ def getText(soup, putAlready=True):
 				txt += '.'
 			score = calcScore(elem, txt)
 			if score > 0:
+				if txt[-1] not in ['.', '!', '?'] and elem.parent.name in ['p', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li'] and len(elem.find_next_siblings()) == 0:
+					txt += '\n' # we are at the end of a paragraph
 				buildText.append(txt)
 				if putAlready:
 					elem.already = True
@@ -174,7 +177,7 @@ def crawlContent(articles):
 	return articles
 if __name__ == '__main__':
 	if len(sys.argv) > 1:
-		newContent = getContent(url2soup(sys.argv[1]), 'nosource')
+		newContent = getContent(url2soup(sys.argv[1]), 'wikinews')
 		print newContent
 	else:
 		print "Provide a URL"

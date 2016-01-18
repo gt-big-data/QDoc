@@ -41,7 +41,7 @@ class Article(object):
         """Write this article to the preferred method of writing.
         This method will print out an error if the article is not valid.
         """
-        dupID = isDuplicate(self.content, self.source)
+        dupID = isDuplicate(self.content, self.title, self.source)
         if not self.isValid():
             print("Article from source: " + self.source + "feed: " + self.feed + " was invalid")
         elif dupID is not None: # we just update the content because this is a duplicate of something
