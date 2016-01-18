@@ -1,12 +1,8 @@
-from feedCrawl import *
+from crawlFeed import *
 import time, eventlet
 from eventlet.green import urllib2
 
 start_time = time.time()
-
-# TODO: Remove need for this array. Should be inferred from the feeds object.
-sources = ['cnn', 'reuters', 'business_insider', 'venture_beat', 'techcrunch', 'bbc', 'guardian', 'aljazeera', 'france24']
-# sources = ['france24']
 # GUID Available: (Globally Unique IDentifier)
 	# CNN: Yes
 	# Reuters: Yes
@@ -18,6 +14,7 @@ sources = ['cnn', 'reuters', 'business_insider', 'venture_beat', 'techcrunch', '
 
 # Sources to add:
 	# Associated Press
+	# Wikinews
 	# NY Times
 	# EuroNews
 	# AFP
@@ -81,6 +78,17 @@ feeds['aljazeera'].append({'name': 'alj_allfeeds', 'url': 'http://america.aljaze
 feeds['france24'] = []
 feeds['france24'].append({'name': 'f24_livenews', 'url': 'http://www.france24.com/en/timeline/rss'})
 
+feeds['ap'] = []
+feeds['ap'].append({'name': 'ap_top', 'url': 'http://hosted2.ap.org/atom/APDEFAULT/3d281c11a96b4ad082fe88aa0db04305'})
+feeds['ap'].append({'name': 'ap_us', 'url': 'http://hosted2.ap.org/atom/APDEFAULT/386c25518f464186bf7a2ac026580ce7'})
+feeds['ap'].append({'name': 'ap_world', 'url': 'http://hosted2.ap.org/atom/APDEFAULT/cae69a7523db45408eeb2b3a98c0c9c5'})
+feeds['ap'].append({'name': 'ap_politics', 'url': 'http://hosted2.ap.org/atom/APDEFAULT/89ae8247abe8493fae24405546e9a1aa'})
+feeds['ap'].append({'name': 'ap_business', 'url': 'http://hosted2.ap.org/atom/APDEFAULT/f70471f764144b2fab526d39972d37b3'})
+feeds['ap'].append({'name': 'ap_technology', 'url': 'http://hosted2.ap.org/atom/APDEFAULT/495d344a0d10421e9baa8ee77029cfbd'})
+feeds['ap'].append({'name': 'ap_sports', 'url': 'http://hosted2.ap.org/atom/APDEFAULT/347875155d53465d95cec892aeb06419'})
+feeds['ap'].append({'name': 'ap_health', 'url': 'http://hosted2.ap.org/atom/APDEFAULT/bbd825583c8542898e6fa7d440b9febc'})
+feeds['ap'].append({'name': 'ap_science', 'url': 'http://hosted2.ap.org/atom/APDEFAULT/b2f0ca3a594644ee9e50a8ec4ce2d6de'})
+
 feedList = []
 for source in feeds.keys():
 	for feed in feeds[source]:
@@ -92,13 +100,10 @@ def prepareCrawlfeed(feed):
 
 pool = eventlet.GreenPool()
 i=0
-
 while i < len(feedList):
-	tempSize = min(10, (len(feedList)-i))
+	tempSize = min(30, (len(feedList)-i))
 	tempList = feedList[i:(i+tempSize)]
 	for ret in pool.imap(prepareCrawlfeed, tempList):
 		pass
-		# print ret
 	i += tempSize
-
 print("--- %s seconds ---" % round(time.time() - start_time, 2))
