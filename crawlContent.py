@@ -4,7 +4,7 @@ from dbco import *
 from article import *
 import sys, urllib2
 
-class MyHTTPRedirectHandler(urllib2.HTTPRedirectHandler):
+class MyHTTPRedirectHandler(urllib2.HTTPRedirectHandler): # This handles redirects on the url :)
 	def http_error_302(self, req, fp, code, msg, headers):
 		return urllib2.HTTPRedirectHandler.http_error_302(self, req, fp, code, msg, headers)
 	http_error_301 = http_error_303 = http_error_307 = http_error_302
@@ -96,12 +96,12 @@ def sourceSpecificcleaning(soup, source):
 		removeClasses(soup, ['seealso', 'comment-class'])
 		removeIds(soup, ['avcslide'])
 	if source == 'wikinews':
-		removeClasses(soup, ['infobox'])
+		removeClasses(soup, ['infobox', 'thumb'])
 		removeIds(soup, ['footer', 'mw-navigation'])
 
 def url2soup(url):
 	cookieprocessor = urllib2.HTTPCookieProcessor()
-	urllib2.install_opener(urllib2.build_opener(MyHTTPRedirectHandler, cookieprocessor))
+	urllib2.install_opener(urllib2.build_opener(MyHTTPRedirectHandler, cookieprocessor)) # to handle redirects
 	html = urllib2.urlopen(url).read()
 	html = html.replace('<br>', '<br />')
 	return BeautifulSoup(html, 'html.parser')
@@ -173,7 +173,7 @@ def crawlContent(articles):
 			continue
 		soup = url2soup(article.url)
 		article.content = getContent(soup, article.source)
-		article.img = '' # not done anymore
+		article.img = '' # not handled anymore
 	return articles
 if __name__ == '__main__':
 	if len(sys.argv) > 1:

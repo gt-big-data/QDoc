@@ -5,7 +5,6 @@ from eventlet.green import urllib2
 start_time = time.time()
 
 # Sources to add:
-	# Wikinews
 	# NY Times
 	# EuroNews
 	# AFP
@@ -79,6 +78,9 @@ feeds['ap'].append({'name': 'ap_technology', 'url': 'http://hosted2.ap.org/atom/
 feeds['ap'].append({'name': 'ap_sports', 'url': 'http://hosted2.ap.org/atom/APDEFAULT/347875155d53465d95cec892aeb06419'})
 feeds['ap'].append({'name': 'ap_health', 'url': 'http://hosted2.ap.org/atom/APDEFAULT/bbd825583c8542898e6fa7d440b9febc'})
 feeds['ap'].append({'name': 'ap_science', 'url': 'http://hosted2.ap.org/atom/APDEFAULT/b2f0ca3a594644ee9e50a8ec4ce2d6de'})
+
+feeds['wikinews'] = []
+feeds['wikinews'].append({'name': 'wikinews_main', 'url': 'https://en.wikinews.org/w/index.php?title=Special:NewsFeed&feed=rss&categories=Published&notcategories=No%20publish%7CArchived%7cAutoArchived%7cdisputed&namespace=0&count=15&ordermethod=categoryadd&stablepages=only'})
 
 feedList = []
 for source in feeds.keys():
