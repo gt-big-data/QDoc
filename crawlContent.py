@@ -1,13 +1,9 @@
 # -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup, Comment, Doctype, NavigableString
-from dbco import *
+from url2soup import *
 from article import *
-import sys, urllib2
-
-class MyHTTPRedirectHandler(urllib2.HTTPRedirectHandler): # This handles redirects on the url :)
-	def http_error_302(self, req, fp, code, msg, headers):
-		return urllib2.HTTPRedirectHandler.http_error_302(self, req, fp, code, msg, headers)
-	http_error_301 = http_error_303 = http_error_307 = http_error_302
+from dbco import *
+import sys
 
 def removeComments(soup):
 	[e.extract() for e in soup(text=lambda text: isinstance(text, Comment))]
@@ -25,7 +21,7 @@ def removeScriptStyle(soup):
 def removeBadContent(soup):
 	for el in soup.findAll(True):
 		classes = " ".join(el.get('class', [])).lower()
-		badClasses = [' ad ', 'metadata', 'byline', 'dateline', 'published', 'location', 'modification', ' footer', 'discussion', 'carousel', 'short-cuts']
+		badClasses = [' ad ', 'metadata', 'byline', 'dateline', 'published', 'location', 'modification', ' footer', 'discussion', 'carousel', 'short-cuts', 'nocontent']
 		for cl in badClasses:
 			if cl in classes:
 				el.extract()
@@ -98,13 +94,6 @@ def sourceSpecificcleaning(soup, source):
 	if source == 'wikinews':
 		removeClasses(soup, ['infobox', 'thumb'])
 		removeIds(soup, ['footer', 'mw-navigation'])
-
-def url2soup(url):
-	cookieprocessor = urllib2.HTTPCookieProcessor()
-	urllib2.install_opener(urllib2.build_opener(MyHTTPRedirectHandler, cookieprocessor)) # to handle redirects
-	html = urllib2.urlopen(url).read()
-	html = html.replace('<br>', '<br />')
-	return BeautifulSoup(html, 'html.parser')
 
 def getText(soup, putAlready=True):
 	reload(sys)

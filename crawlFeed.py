@@ -1,12 +1,13 @@
+# -*- coding: utf-8 -*-
 from urllib import urlopen
 from bs4 import BeautifulSoup
-from pymongo import MongoClient, errors
 from dateutil import parser
 from datetime import datetime
 import pytz, sys
 from stamps import * # saving last stamps
 from article import *
 from crawlContent import *
+from url2soup import *
 
 def crawlFeed(source, feedName, feedUrl, toSave=True):
     """Crawl an RSS feed.
@@ -21,8 +22,7 @@ def crawlFeed(source, feedName, feedUrl, toSave=True):
         # Non-standard: <entry> Associated Press: http://hosted2.ap.org/atom/APDEFAULT/3d281c11a96b4ad082fe88aa0db04305
 
     startStamp = loadLastStamp(feedName)
-    html = urlopen(feedUrl).read()
-    soup = BeautifulSoup(html, 'html.parser')
+    soup = url2soup(feedUrl)
     if not toSave:
         f = open('feed.xml', 'w'); f.write(soup.prettify().encode('utf-8')); f.close()
 
