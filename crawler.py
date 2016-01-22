@@ -5,14 +5,15 @@ from eventlet.green import urllib2
 start_time = time.time()
 
 # Sources to add:
-	# EuroNews
-	# AFP
-	# Anadolu Agency
 	# The Independent
-	# UberGizmo
 	# Russia Today
+	# UberGizmo
+	# AFP
 
 feeds = {}
+
+feeds['anadolu'] = [] # Anadolu Agency english
+feeds['anadolu'].append({'name': 'aa_live', 'url': 'https://www.aa.com.tr/en/rss/default?cat=live'})
 
 feeds['aljazeera'] = []
 feeds['aljazeera'].append({'name': 'alj_allfeeds', 'url': 'http://america.aljazeera.com/content/ajam/articles.rss'})
@@ -67,6 +68,9 @@ feeds['guardian'].append({'name': 'gua_business', 'url': 'http://www.theguardian
 feeds['guardian'].append({'name': 'gua_environment', 'url': 'http://www.theguardian.com/environment/rss'})
 feeds['guardian'].append({'name': 'gua_travel', 'url': 'http://www.theguardian.com/travel/rss'})
 
+feeds['middle_east_eye'] = []
+feeds['middle_east_eye'].append({'name': 'mee_main', 'url': 'http://www.middleeasteye.net/rss'})
+
 feeds['nytimes'] = []
 feeds['nytimes'].append({'name': 'nyt_world', 'url': 'http://www.nytimes.com/services/xml/rss/nyt/World.xml'})
 feeds['nytimes'].append({'name': 'nyt_us', 'url': 'http://www.nytimes.com/services/xml/rss/nyt/US.xml'})
@@ -74,7 +78,6 @@ feeds['nytimes'].append({'name': 'nyt_ny', 'url': 'http://www.nytimes.com/servic
 feeds['nytimes'].append({'name': 'nyt_business', 'url': 'http://feeds.nytimes.com/nyt/rss/Business'})
 feeds['nytimes'].append({'name': 'nyt_technology', 'url': 'http://feeds.nytimes.com/nyt/rss/Technology'})
 feeds['nytimes'].append({'name': 'nyt_sports', 'url': 'http://www.nytimes.com/services/xml/rss/nyt/Sports.xml'})
-
 
 feeds['reuters'] = [] # http://www.reuters.com/tools/rss
 feeds['reuters'].append({'name': 'reuters_arts', 'url': 'http://feeds.reuters.com/news/artsculture?format=xml'})

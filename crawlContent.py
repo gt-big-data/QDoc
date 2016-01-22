@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup, Comment, Doctype, NavigableString
 from url2soup import *
 from article import *
 from dbco import *
-import sys
+import sys, re
 
 def removeComments(soup):
 	[e.extract() for e in soup(text=lambda text: isinstance(text, Comment))]
@@ -82,18 +82,20 @@ def genericCleaning(soup):
 	removeBadContent(soup)
 
 def sourceSpecificcleaning(soup, source):
-	if source == 'reuters':
-		removeClasses(soup, ['column2'])
-	if source == 'cnn':
-		removeClasses(soup, ['nav--plain-header', 'pg-rail--right', 'media__video'])
-	if source == 'guardian':
-		removeClasses(soup, ['submeta', 'content-footer'])
-	if source == 'business_insider':
-		removeClasses(soup, ['seealso', 'comment-class'])
-		removeIds(soup, ['avcslide'])
+	if source == 'anadolu':
+		[elem.extract() for elem in soup(text=re.compile(r'(Anadolu Agency website contains only a|Please contact us)'))] # Very tricky ...
 	if source == 'ap':
 		removeClasses(soup, ['ap_story_photo'])
 		removeIds(soup, ['sourceOrganization', 'CopyrightLine'])
+	if source == 'business_insider':
+		removeClasses(soup, ['seealso', 'comment-class'])
+		removeIds(soup, ['avcslide'])
+	if source == 'cnn':
+		removeClasses(soup, ['nav--plain-header', 'pg-rail--right', 'media__video'])
+	if source == 'reuters':
+		removeClasses(soup, ['column2'])
+	if source == 'guardian':
+		removeClasses(soup, ['submeta', 'content-footer'])
 	if source == 'wikinews':
 		removeClasses(soup, ['infobox', 'thumb'])
 		removeIds(soup, ['footer', 'mw-navigation'])
@@ -169,7 +171,7 @@ def crawlContent(articles):
 	return articles
 if __name__ == '__main__':
 	if len(sys.argv) > 1:
-		newContent = getContent(url2soup(sys.argv[1]), 'ap')
+		newContent = getContent(url2soup(sys.argv[1]), 'anadolu')
 		print newContent
 	else:
 		print "Provide a URL"
