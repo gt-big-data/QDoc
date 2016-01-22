@@ -30,7 +30,7 @@ def saveNewTweet(T):
 	if isValid(T):
 		cacheToSave.append(T._asdict())
 	if len(cacheToSave) >= 30:
-		sendCache() # insertTweet(T._asdict())
+		sendCache()
 
 def remove_non_ascii_1(text):
 	return ''.join(i for i in text if ord(i)<128)

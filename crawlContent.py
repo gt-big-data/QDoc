@@ -91,6 +91,9 @@ def sourceSpecificcleaning(soup, source):
 	if source == 'business_insider':
 		removeClasses(soup, ['seealso', 'comment-class'])
 		removeIds(soup, ['avcslide'])
+	if source == 'ap':
+		removeClasses(soup, ['ap_story_photo'])
+		removeIds(soup, ['sourceOrganization', 'CopyrightLine'])
 	if source == 'wikinews':
 		removeClasses(soup, ['infobox', 'thumb'])
 		removeIds(soup, ['footer', 'mw-navigation'])
@@ -166,7 +169,7 @@ def crawlContent(articles):
 	return articles
 if __name__ == '__main__':
 	if len(sys.argv) > 1:
-		newContent = getContent(url2soup(sys.argv[1]), 'wikinews')
+		newContent = getContent(url2soup(sys.argv[1]), 'ap')
 		print newContent
 	else:
 		print "Provide a URL"

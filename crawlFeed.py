@@ -75,17 +75,19 @@ def extractGuid(item, source):
         return guid
     elif item.id is not None:
         return item.id.text
+    elif item.find('feedburner:origlink') is not None:
+        return item.find('feedburner:origlink').text
     print "[PROBLEM] CANNOT PARSE GUID"
     return ''
 
 def extractLink(item):
+    if item.find('feedburner:origlink') is not None: # this link is usually better ... no redirect
+        return item.find('feedburner:origlink').text
     if item.link is not None:
         if item.link.get('href'):
             return item.link.get('href')
         elif item.link.text is not None:
             return item.link.text
-    elif item.find('feedburner:origlink') is not None:
-        return item.find('feedburner:origlink').text
     print "[PROBLEM] CANNOT PARSE URL"    
     return ''
 

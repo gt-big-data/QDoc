@@ -3,6 +3,7 @@ from crawlContent import *
 from article import *
 from dbco import *
 import sys, socket, eventlet
+from url2soup import *
 from eventlet.green import urllib2
 socket.setdefaulttimeout(5)
 
@@ -15,8 +16,8 @@ def recrawlArt(art):
 
 	article = Article(guid=art['guid'], title=art['title'], url=art['url'], timestamp=0, source=art['source'], feed=art['feed'])
 
-	soup = htmlToSoup(article, html)
-	parse(article, html)
+	soup = url2soup(art['url'])
+	crawlContent([article])
 
 	cleanHTML = soup.prettify().encode('utf8')
 
@@ -25,7 +26,7 @@ def recrawlArt(art):
 	print art['_id'], " | Old: "+ str(len(oldContent)).center(5)+ " | New: "+str(len(newContent)).center(5)
 	return {'id': art['_id'], 'content': newContent}
 
-def recrawlSource(source=None):
+def recrawlSource():
 	left = db.qdoc.find({'recrawl': {'$exists': True}}).count()
 	while left>0:
 		rand = int(2000*random.random())

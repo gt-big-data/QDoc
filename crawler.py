@@ -5,7 +5,6 @@ from eventlet.green import urllib2
 start_time = time.time()
 
 # Sources to add:
-	# NY Times
 	# EuroNews
 	# AFP
 	# Anadolu Agency
@@ -48,6 +47,14 @@ feeds['cnn'].append({'name': 'cnn_entertainment', 'url': 'http://rss.cnn.com/rss
 feeds['cnn'].append({'name': 'cnn_sport', 'url': 'http://rss.cnn.com/rss/edition_sport.rss'})
 feeds['cnn'].append({'name': 'cnn_travel', 'url': 'http://travel.cnn.com/rss.xml'})
 feeds['cnn'].append({'name': 'cnn_us', 'url': 'http://rss.cnn.com/rss/edition_us.rss'})
+
+feeds['euronews'] = []
+feeds['euronews'].append({'name': 'eun_news', 'url': 'http://feeds.feedburner.com/euronews/en/home/'})
+feeds['euronews'].append({'name': 'eun_business', 'url': 'http://feeds.feedburner.com/euronews/en/business/'})
+feeds['euronews'].append({'name': 'eun_europe', 'url': 'http://feeds.feedburner.com/euronews/en/europa/'})
+feeds['euronews'].append({'name': 'eun_scitech', 'url': 'http://feeds.feedburner.com/euronews/en/sci-tech/'})
+feeds['euronews'].append({'name': 'eun_scitech', 'url': 'http://feeds.feedburner.com/euronews/en/sci-tech/'})
+feeds['euronews'].append({'name': 'eun_lifestyle', 'url': 'http://feeds.feedburner.com/euronews/en/lifestyle/'})
 
 feeds['france24'] = []
 feeds['france24'].append({'name': 'f24_livenews', 'url': 'http://www.france24.com/en/timeline/rss'})
