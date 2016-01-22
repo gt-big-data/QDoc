@@ -1,6 +1,5 @@
 from crawlFeed import *
 import time, eventlet
-from eventlet.green import urllib2
 
 start_time = time.time()
 
@@ -107,8 +106,10 @@ for source in feeds.keys():
 		feed['source'] = source
 		feedList.append(feed)
 
+requests = eventlet.import_patched('requests.__init__')
+
 def prepareCrawlfeed(feed):
-	crawlFeed(feed['source'], feed['name'], feed['url'])
+	crawlFeed(feed['source'], feed['name'], feed['url'], requests)
 
 pool = eventlet.GreenPool()
 i=0

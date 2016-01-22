@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from urllib import urlopen
 from bs4 import BeautifulSoup
 from dateutil import parser
 from datetime import datetime
@@ -10,13 +9,6 @@ from crawlContent import *
 from url2soup import *
 
 def crawlFeed(source, feedName, feedUrl, toSave=True):
-    """Crawl an RSS feed.
-    Arguments:
-    source -- Main name of the news site (e.g. cnn, nyt, etc.).
-    feedName -- The title of the RSS feed (e.g. 'cnn_world', 'cnn_sport').
-    feedUrl -- An RSS feed url to extract links from (e.g. 'http://*.rss').
-    toSave -- Whether to save to the database or not (maybe it's a test).
-    """
     # Different types of feeds to hadle:
         # Standard:     <item>  http://rss.cnn.com/rss/edition_world.rss
         # Non-standard: <entry> Associated Press: http://hosted2.ap.org/atom/APDEFAULT/3d281c11a96b4ad082fe88aa0db04305
@@ -98,7 +90,6 @@ def extractTitle(item):
     return ''
 
 if __name__ == '__main__':
-    url = 'http://rss.cnn.com/rss/edition_world.rss'
     if len(sys.argv) > 1:
         url = sys.argv[1]
-    crawlFeed('test', 'test', url, False)
+        crawlFeed('test', 'test', url, False)
