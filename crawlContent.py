@@ -99,6 +99,10 @@ def sourceSpecificcleaning(soup, source):
 	if source == 'wikinews':
 		removeClasses(soup, ['infobox', 'thumb'])
 		removeIds(soup, ['footer', 'mw-navigation'])
+	if source == 'independent':
+		removeClasses(soup, ['image', 'inline-pipes-list'])
+	if source == 'timesofindia':
+		removeIds(soup, ['main-header'])
 
 def getText(soup, putAlready=True):
 	reload(sys)
@@ -136,16 +140,19 @@ def getContent(soup, source=''):
 	f = open("content.html", 'w'); f.write(soup.prettify().encode('utf-8')); f.close();
 
 	# Finding content in the tree
-	bestElem = None; bestText = ''
+	bestElem = None; bestText = '';
 	for el in soup.findAll(True):
-		score = 0.0
+		score = 0.0;  hasTitle = False
 		if el.name in ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7'] and el.parent.name == '[document]':
 			score += 3
 		for c in el:
 			if c.name == 'br': # business insider style
 				score += 0.5
-			if c.name in ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7']:
+			if c.name == 'p':
 				score += 1.0
+			if not hasTitle and c.name in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7']:
+				score += 1.0
+				hasTitle = True
 		if score >= 3.0: # at least 3 paragraphs
 			textOutput = getText(el)
 			if float(len(textOutput))/score > 20.0: # we need at least 20 characters per container
@@ -171,7 +178,7 @@ def crawlContent(articles):
 	return articles
 if __name__ == '__main__':
 	if len(sys.argv) > 1:
-		newContent = getContent(url2soup(sys.argv[1]), 'anadolu')
+		newContent = getContent(url2soup(sys.argv[1]), 'independent')
 		print newContent
 	else:
 		print "Provide a URL"

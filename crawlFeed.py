@@ -44,7 +44,7 @@ def crawlFeed(source, feedName, feedUrl, toSave=True):
         print "Found ", len(newArticles), " articles"
         print "---------------------------------------"
         for a in newArticles:
-            print a.guid, "|", a.title,"|", a.timestamp, "|", a.url
+            print a.guid.encode('utf8'), "|", a.title.encode('utf8') ,"|", a.timestamp, "|", a.url.encode('utf8')
             print "------------------------------------"
 
 def extractPubTime(item):
