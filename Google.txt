@@ -1659,7 +1659,6 @@ ems.gmnews.com
 en.ammonnews.net
 en.apa.az
 en.canoe.ca
-en.mercopress.com
 en.news.maktoob.com
 en.rian.ru
 en.terra.com

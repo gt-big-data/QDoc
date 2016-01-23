@@ -43,6 +43,12 @@ feeds['bnamericas'].append({'name': 'bnam_main', 'url': 'http://feeds.feedburner
 feeds['business_insider'] = [] # http://www.businessinsider.in/rss_feeds.cms
 feeds['business_insider'].append({'name': 'bi_allfeeds', 'url': 'http://www.businessinsider.in/rss_section_feeds/2147477994.cms'})
 
+feeds['chinadaily'] = []
+feeds['chinadaily'].append({'name': 'chiday_china', 'url': 'http://www.chinadaily.com.cn/rss/china_rss.xml'})
+feeds['chinadaily'].append({'name': 'chiday_world', 'url': 'http://www.chinadaily.com.cn/rss/world_rss.xml'})
+feeds['chinadaily'].append({'name': 'chiday_sports', 'url': 'http://www.chinadaily.com.cn/rss/sports_rss.xml'})
+
+
 feeds['cnn'] = [] # http://edition.cnn.com/services/rss/
 feeds['cnn'].append({'name': 'cnn_world', 'url': 'http://rss.cnn.com/rss/edition_world.rss'})
 feeds['cnn'].append({'name': 'cnn_technology', 'url': 'http://rss.cnn.com/rss/edition_technology.rss'})
