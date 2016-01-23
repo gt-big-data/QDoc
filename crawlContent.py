@@ -21,6 +21,7 @@ def removeScriptStyle(soup):
 def removeBadContent(soup):
 	for el in soup.findAll(True):
 		classes = " ".join(el.get('class', [])).lower()
+		removeIds(soup, ['comments'])
 		badClasses = [' ad ', 'metadata', 'byline', 'dateline', 'published', 'location', 'modification', ' footer', 'discussion', 'carousel', 'short-cuts', 'nocontent']
 		for cl in badClasses:
 			if cl in classes:
@@ -103,6 +104,8 @@ def sourceSpecificcleaning(soup, source):
 		removeClasses(soup, ['image', 'inline-pipes-list'])
 	if source == 'timesofindia':
 		removeIds(soup, ['main-header'])
+	if source == 'bnamericas':
+		removeIds(soup, ['editorialchoice'])
 
 def getText(soup, putAlready=True):
 	reload(sys)
@@ -181,7 +184,7 @@ def crawlContent(articles):
 	return articles
 if __name__ == '__main__':
 	if len(sys.argv) > 1:
-		newContent = getContent(url2soup(sys.argv[1]), 'independent')
+		newContent = getContent(url2soup(sys.argv[1]), 'bnamericas')
 		print newContent
 	else:
 		print "Provide a URL"

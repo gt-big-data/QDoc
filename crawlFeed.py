@@ -2,7 +2,7 @@
 from bs4 import BeautifulSoup
 from dateutil import parser
 from datetime import datetime
-import pytz, sys
+import pytz, sys, re
 from stamps import * # saving last stamps
 from article import *
 from crawlContent import *
@@ -55,7 +55,7 @@ def extractPubTime(item):
         pubText = item.published.text
     if pubText == '':
         print "[PROBLEM] CANNOT PARSE PUBDATE"
-    return parser.parse(pubText).replace(tzinfo=pytz.utc)
+    return parser.parse((re.sub("[\(\[].*?[\)\]]", "", pubText))).replace(tzinfo=pytz.utc) # also remove anything between parentheses
 
 def extractGuid(item, source):
     if item.guid is not None:

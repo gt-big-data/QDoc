@@ -4,6 +4,7 @@ import time, eventlet
 start_time = time.time()
 
 # Sources to add:
+	# RioTimesOnline
 	# The Independent
 	# Russia Today
 	# UberGizmo
@@ -35,6 +36,9 @@ feeds['bbc'].append({'name': 'bbc_politics', 'url': 'http://feeds.bbci.co.uk/new
 feeds['bbc'].append({'name': 'bbc_science', 'url': 'http://feeds.bbci.co.uk/news/science_and_environment/rss.xml'})
 feeds['bbc'].append({'name': 'bbc_technology', 'url': 'http://feeds.bbci.co.uk/news/technology/rss.xml'})
 feeds['bbc'].append({'name': 'bbc_entertainment', 'url': 'http://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml'})
+
+feeds['bnamericas'] = []
+feeds['bnamericas'].append({'name': 'bnam_main', 'url': 'http://feeds.feedburner.com/BusinessNewsAmericas-TopStoriesEN'})
 
 feeds['business_insider'] = [] # http://www.businessinsider.in/rss_feeds.cms
 feeds['business_insider'].append({'name': 'bi_allfeeds', 'url': 'http://www.businessinsider.in/rss_section_feeds/2147477994.cms'})
@@ -80,6 +84,9 @@ feeds['indiatimes'].append({'name': 'it_science', 'url': 'http://timesofindia.in
 
 feeds['latimes'] = []
 feeds['latimes'].append({'name': 'lat_main', 'url': 'http://www.latimes.com/rss2.0.xml'})
+
+feeds['mercopress'] = []
+feeds['mercopress'].append({'name': 'merco_main', 'url': 'http://en.mercopress.com/rss/brazil'})
 
 feeds['middle_east_eye'] = []
 feeds['middle_east_eye'].append({'name': 'mee_main', 'url': 'http://www.middleeasteye.net/rss'})
