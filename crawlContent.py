@@ -22,6 +22,7 @@ def removeBadContent(soup):
 	for el in soup.findAll(True):
 		classes = " ".join(el.get('class', [])).lower()
 		removeIds(soup, ['comments'])
+		removeClasses(soup, ['bottom', 'footer', 'notes'])
 		badClasses = [' ad ', 'metadata', 'byline', 'dateline', 'published', 'location', 'modification', ' footer', 'discussion', 'carousel', 'short-cuts', 'nocontent']
 		for cl in badClasses:
 			if cl in classes:

@@ -5,8 +5,6 @@ start_time = time.time()
 
 # Sources to add:
 	# RioTimesOnline
-	# The Independent
-	# Russia Today
 	# UberGizmo
 	# AFP
 
@@ -17,6 +15,9 @@ feeds['anadolu'].append({'name': 'aa_live', 'url': 'https://www.aa.com.tr/en/rss
 
 feeds['aljazeera'] = []
 feeds['aljazeera'].append({'name': 'alj_allfeeds', 'url': 'http://america.aljazeera.com/content/ajam/articles.rss'})
+
+feeds['allafrica'] = [{'name': 'allaf_main', 'url': 'http://allafrica.com/tools/headlines/rdf/latest/headlines.rdf'},
+{'name': 'allaf_africa', 'url': 'http://allafrica.com/tools/headlines/rdf/africa/headlines.rdf'}]
 
 feeds['ap'] = []
 feeds['ap'].append({'name': 'ap_top', 'url': 'http://hosted2.ap.org/atom/APDEFAULT/3d281c11a96b4ad082fe88aa0db04305'})
@@ -47,7 +48,6 @@ feeds['chinadaily'] = []
 feeds['chinadaily'].append({'name': 'chiday_china', 'url': 'http://www.chinadaily.com.cn/rss/china_rss.xml'})
 feeds['chinadaily'].append({'name': 'chiday_world', 'url': 'http://www.chinadaily.com.cn/rss/world_rss.xml'})
 feeds['chinadaily'].append({'name': 'chiday_sports', 'url': 'http://www.chinadaily.com.cn/rss/sports_rss.xml'})
-
 
 feeds['cnn'] = [] # http://edition.cnn.com/services/rss/
 feeds['cnn'].append({'name': 'cnn_world', 'url': 'http://rss.cnn.com/rss/edition_world.rss'})
@@ -145,7 +145,7 @@ def prepareCrawlfeed(feed):
 pool = eventlet.GreenPool()
 i=0
 while i < len(feedList):
-	tempSize = min(30, (len(feedList)-i))
+	tempSize = min(50, (len(feedList)-i))
 	tempList = feedList[i:(i+tempSize)]
 	for ret in pool.imap(prepareCrawlfeed, tempList):
 		pass
