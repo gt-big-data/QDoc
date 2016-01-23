@@ -69,6 +69,8 @@ def extractGuid(item, source):
         return item.id.text
     elif item.find('feedburner:origlink') is not None:
         return item.find('feedburner:origlink').text
+    elif item.find('link') is not None: # this should be last resort (latimes)
+        return item.find('link').text
     print "[PROBLEM] CANNOT PARSE GUID"
     return ''
 

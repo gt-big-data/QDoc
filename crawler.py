@@ -71,6 +71,16 @@ feeds['independent'] = []
 feeds['independent'].append({'name': 'indep_news', 'url': 'http://www.independent.co.uk/news/rss'})
 feeds['independent'].append({'name': 'indep_sport', 'url': 'http://www.independent.co.uk/sport/rss'})
 
+feeds['indiatimes'] = []
+feeds['indiatimes'].append({'name': 'it_top', 'url': 'http://timesofindia.indiatimes.com/rssfeedstopstories.cms'})
+feeds['indiatimes'].append({'name': 'it_india', 'url': 'http://timesofindia.indiatimes.com/rssfeeds/-2128936835.cms'})
+feeds['indiatimes'].append({'name': 'it_world', 'url': 'http://timesofindia.indiatimes.com/rssfeeds/296589292.cms'})
+feeds['indiatimes'].append({'name': 'it_sports', 'url': 'http://timesofindia.indiatimes.com/rssfeeds/4719148.cms'})
+feeds['indiatimes'].append({'name': 'it_science', 'url': 'http://timesofindia.indiatimes.com/rssfeeds/-2128672765.cms'})
+
+feeds['latimes'] = []
+feeds['latimes'].append({'name': 'lat_main', 'url': 'http://www.latimes.com/rss2.0.xml'})
+
 feeds['middle_east_eye'] = []
 feeds['middle_east_eye'].append({'name': 'mee_main', 'url': 'http://www.middleeasteye.net/rss'})
 
@@ -95,16 +105,12 @@ feeds['reuters'].append({'name': 'reuters_technology', 'url': 'http://feeds.reut
 feeds['reuters'].append({'name': 'reuters_us', 'url': 'http://feeds.reuters.com/Reuters/domesticNews?format=xml'})
 feeds['reuters'].append({'name': 'reuters_world', 'url': 'http://feeds.reuters.com/Reuters/worldNews?format=xml'})
 
+feeds['russiatoday'] = []
+feeds['russiatoday'].append({'name': 'rt_allfeeds', 'url': 'https://www.rt.com/rss/news/'})
+
+
 feeds['techcrunch'] = []
 feeds['techcrunch'].append({'name': 'tc_allfeeds', 'url': 'http://feeds.feedburner.com/TechCrunch/'})
-
-feeds['indiatimes'] = []
-feeds['indiatimes'].append({'name': 'it_top', 'url': 'http://timesofindia.indiatimes.com/rssfeedstopstories.cms'})
-feeds['indiatimes'].append({'name': 'it_india', 'url': 'http://timesofindia.indiatimes.com/rssfeeds/-2128936835.cms'})
-feeds['indiatimes'].append({'name': 'it_world', 'url': 'http://timesofindia.indiatimes.com/rssfeeds/296589292.cms'})
-feeds['indiatimes'].append({'name': 'it_sports', 'url': 'http://timesofindia.indiatimes.com/rssfeeds/4719148.cms'})
-feeds['indiatimes'].append({'name': 'it_science', 'url': 'http://timesofindia.indiatimes.com/rssfeeds/-2128672765.cms'})
-
 
 feeds['venture_beat'] = []
 feeds['venture_beat'].append({'name': 'vb_allfeeds', 'url': 'http://feeds.venturebeat.com/VentureBeat'})

@@ -118,6 +118,8 @@ def getText(soup, putAlready=True):
 			if score > 0:
 				if txt[-1] not in ['.', '!', '?'] and elem.parent.name in ['p', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li'] and len(elem.find_next_siblings()) == 0:
 					txt += '\n' # we are at the end of a paragraph
+				if elem.parent.name == 'p' and len(elem.find_previous_siblings()) == 0:
+					txt = '\n'+txt # we are at the beginning of a paragraph
 				buildText.append(txt)
 				if putAlready:
 					elem.already = True
@@ -166,7 +168,8 @@ def getContent(soup, source=''):
 					bestElem = el; bestText = a
 	if len(newContent) == 0 and bestElem is not None: # in case nothing had a score of 3, but something had a score of 1 or more
 		newContent.append(bestText)
-	return '\n'.join(newContent).encode('utf-8').replace("’", "'").replace("”", '"').replace("“", '"').replace('—', '-').replace('‘', "'")
+	finalText = '\n'.join(newContent).encode('utf-8').replace("’", "'").replace("”", '"').replace("“", '"').replace('—', '-').replace('‘', "'")
+	return finalText.replace('\n\n', '\n')
 
 def crawlContent(articles):
 	for article in articles:
