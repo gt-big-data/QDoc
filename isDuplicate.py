@@ -11,7 +11,8 @@ def similar(a, b):
 
 def isDuplicate(content, title, source):
 	last = db.qdoc.find({'source': source, 'timestamp': {'$gte': (time.time()-3*86400)}}) # last 3 days
+	content = unicode(content)
 	for a in last:
-		if title == a['title'] or similar(content, a['content']) > 0.9:
+		if title == a['title'] or similar(content, unicode(a['content'])) > 0.9:
 			return a['_id']
 	return None

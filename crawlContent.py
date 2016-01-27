@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup, Comment, Doctype, NavigableString
 from url2soup import *
 from article import *
 from dbco import *
-import sys, re
+import sys, re, tld
 
 def removeComments(soup):
 	[e.extract() for e in soup(text=lambda text: isinstance(text, Comment))]
@@ -179,7 +179,9 @@ def crawlContent(articles):
 	for article in articles:
 		if article.url == '':
 			continue
+		article.url = finalURL(article.url) # after all redirects
 		soup = url2soup(article.url)
+		article.source = tld.get_tld(article.url)
 		article.content = getContent(soup, article.source)
 		article.img = '' # not handled anymore
 	return articles

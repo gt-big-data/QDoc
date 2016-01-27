@@ -3,34 +3,32 @@ from bs4 import BeautifulSoup
 from dateutil import parser
 from datetime import datetime
 import pytz, sys, re
-from stamps import * # saving last stamps
 from article import *
 from crawlContent import *
 from url2soup import *
 
-def crawlFeed(source, feedName, feedUrl, toSave=True):
-    # Different types of feeds to hadle:
+def crawlFeed(feedUrl, startStamp, toSave=True):
+    # Different types of feeds to handle:
         # Standard:     <item>  http://rss.cnn.com/rss/edition_world.rss
         # Non-standard: <entry> Associated Press: http://hosted2.ap.org/atom/APDEFAULT/3d281c11a96b4ad082fe88aa0db04305
 
-    startStamp = loadLastStamp(feedName)
     soup = url2soup(feedUrl)
     if not toSave:
         f = open('feed.xml', 'w'); f.write(soup.prettify().encode('utf-8')); f.close()
 
     epoch = datetime(1970, 1, 1).replace(tzinfo=pytz.utc)
 
-    latestStamp = startStamp
     newArticles = []
+    latestStamp = startStamp
 
     for it in soup.find_all(['item', 'entry']):
         url = extractLink(it)
         title = extractTitle(it)
-        guid = extractGuid(it, source)
+        guid = extractGuid(it)
         timestamp = (extractPubTime(it) - epoch).total_seconds() # Hacky way of going from Datetime object to timestamp
         if timestamp > startStamp: # new article
             latestStamp = max(timestamp, latestStamp)
-            newArticles.append(Article(guid=guid, title=title, url=url, timestamp=timestamp, source=source, feed=feedName))
+            newArticles.append(Article(guid=guid, title=title, url=url, timestamp=timestamp, feed=feedUrl))
         else:
             break # we're done, this assumes articles are ordered by descending pubDate
 
@@ -38,8 +36,8 @@ def crawlFeed(source, feedName, feedUrl, toSave=True):
         newArticles = crawlContent(newArticles) # crawls for content
         for article in newArticles:
             article.save()
-        print feedName, " => +"+str(len(newArticles))
-        saveLastStamp(feedName, latestStamp) # save to not reload articles
+        print feedUrl, " => +"+str(len(newArticles))
+        db.feed.update({'feed': feedUrl}, {'$set': {'stamp': int(latestStamp)}})
     else:
         print "Found ", len(newArticles), " articles"
         print "---------------------------------------"
@@ -57,12 +55,12 @@ def extractPubTime(item):
         print "[PROBLEM] CANNOT PARSE PUBDATE"
     return parser.parse((re.sub("[\(\[].*?[\)\]]", "", pubText))).replace(tzinfo=pytz.utc) # also remove anything between parentheses
 
-def extractGuid(item, source):
+def extractGuid(item):
     if item.guid is not None:
         guid = item.guid.text
-        if source == 'reuters' and 'http' in guid: # assholes
+        if 'reuters' in guid and 'http' in guid: # assholes
             toks = guid.split('?')
-            tok2 = toks[0].split('/') # take out the GET paramaters
+            tok2 = toks[0].split('/') # take out the GET parameters
             guid = tok2[len(tok2)-1][:-8] # 1) keep last piece of url, 2) take out 8 digits of date lol
         return guid
     elif item.id is not None:
@@ -94,4 +92,4 @@ def extractTitle(item):
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         url = sys.argv[1]
-        crawlFeed('test', 'test', url, False)
+        crawlFeed('test', url, False)
