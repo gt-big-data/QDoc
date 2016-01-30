@@ -2,21 +2,19 @@ from bson.objectid import ObjectId
 from crawlContent import *
 from article import *
 from dbco import *
-import sys, socket, eventlet
-from url2soup import *
-from eventlet.green import urllib2
+import sys, socket
+from getUrl import *
 socket.setdefaulttimeout(5)
 
-def recrawlArt(art):
-	try:
-		html = urllib2.urlopen(art['url']).read()
-	except:
-		print "Error 404: Not Found"
-		return {'id': art['_id'], 'content': None}
+def recrawlArt(art,urlReturn):
 
 	article = Article(guid=art['guid'], title=art['title'], url=art['url'], timestamp=0, source=art['source'], feed=art['feed'])
 
-	soup = url2soup(art['url'])
+	urlReturn = getUrl(art['url'])
+	if 'error' in urlReturn:
+		print 'Error', urlReturn['error'], 'in article', art['_id']
+		break
+	soup = 
 	crawlContent([article])
 
 	cleanHTML = soup.prettify().encode('utf8')
@@ -40,14 +38,12 @@ def recrawlSource():
 
 		qdocUpdate = db.qdoc.initialize_unordered_bulk_op()
 
-		pool = eventlet.GreenPool()
-
-		for ret in pool.imap(recrawlArt, articles):
+		results = getURLs([a['url'] for a in articles])
+		for res, art in zip(results, articles):
+			ret = recrawlArt(art,res)
 			if ret['content']:
 				any = True
 				qdocUpdate.find({'_id': ret['id']}).upsert().update({'$set': {'content': ret['content']}, '$unset': {'recrawl': True}})
-			# else: # for now we redo ...
-			# 	qdocUpdate.find({'_id': ret['id']}).upsert().update({'$unset': {'recrawl': True}})
 
 		if any:
 			qdocUpdate.execute()

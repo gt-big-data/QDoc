@@ -5,14 +5,12 @@ from datetime import datetime
 import pytz, sys, re
 from article import *
 from crawlContent import *
-from url2soup import *
+from getUrl import *
 
-def crawlFeed(feedUrl, startStamp, toSave=True):
-    # Different types of feeds to handle:
-        # Standard:     <item>  http://rss.cnn.com/rss/edition_world.rss
-        # Non-standard: <entry> Associated Press: http://hosted2.ap.org/atom/APDEFAULT/3d281c11a96b4ad082fe88aa0db04305
-
-    soup = url2soup(feedUrl)
+def crawlFeed(feedUrl, urlReturn, startStamp=0, toSave=True):
+    if 'error' in urlReturn:
+        return 'Feed ', feedUrl, ' returned error:', urlReturn['error']
+    soup = urlReturn['soup']
     if not toSave:
         f = open('feed.xml', 'w'); f.write(soup.prettify().encode('utf-8')); f.close()
 
@@ -21,11 +19,19 @@ def crawlFeed(feedUrl, startStamp, toSave=True):
     newArticles = []
     latestStamp = startStamp
 
-    for it in soup.find_all(['item', 'entry']):
-        url = extractLink(it)
-        title = extractTitle(it)
-        guid = extractGuid(it)
-        timestamp = (extractPubTime(it) - epoch).total_seconds() # Hacky way of going from Datetime object to timestamp
+    items = soup.find_all(['item', 'entry'])
+    if len(items) == 0:
+        return "No items found"
+
+    for it in items:
+        url, error1 = extractLink(it)
+        title, error2 = extractTitle(it)
+        guid, error3 = extractGuid(it)
+        pubtime, error4 = extractPubTime(it)
+        errors = ''.join([error1, error2, error3, error4])
+        if len(errors) > 0:
+            return errors # This exits ...
+        timestamp = (pubtime - epoch).total_seconds() # Hacky way of going from Datetime object to timestamp
         if timestamp > startStamp: # new article
             latestStamp = max(timestamp, latestStamp)
             newArticles.append(Article(guid=guid, title=title, url=url, timestamp=timestamp, feed=feedUrl))
@@ -38,12 +44,7 @@ def crawlFeed(feedUrl, startStamp, toSave=True):
             article.save()
         print feedUrl, " => +"+str(len(newArticles))
         db.feed.update({'feed': feedUrl}, {'$set': {'stamp': int(latestStamp)}})
-    else:
-        print "Found ", len(newArticles), " articles"
-        print "---------------------------------------"
-        for a in newArticles:
-            print a.guid.encode('utf8'), "|", a.title.encode('utf8') ,"|", a.timestamp, "|", a.url.encode('utf8')
-            print "------------------------------------"
+    return ''
 
 def extractPubTime(item):
     pubText = ''
@@ -52,8 +53,12 @@ def extractPubTime(item):
     elif item.published is not None:
         pubText = item.published.text
     if pubText == '':
-        print "[PROBLEM] CANNOT PARSE PUBDATE"
-    return parser.parse((re.sub("[\(\[].*?[\)\]]", "", pubText))).replace(tzinfo=pytz.utc) # also remove anything between parentheses
+        return datetime.now(), "CANNOT PARSE PUBDATE"
+    try:
+        trial = parser.parse((re.sub("[\(\[].*?[\)\]]", "", pubText))).replace(tzinfo=pytz.utc)
+        return trial, "" # also remove anything between parentheses
+    except:
+        return "CANNOT PARSE PUBDATE OF", pubText
 
 def extractGuid(item):
     if item.guid is not None:
@@ -62,34 +67,31 @@ def extractGuid(item):
             toks = guid.split('?')
             tok2 = toks[0].split('/') # take out the GET parameters
             guid = tok2[len(tok2)-1][:-8] # 1) keep last piece of url, 2) take out 8 digits of date lol
-        return guid
+        return guid, ''
     elif item.id is not None:
-        return item.id.text
+        return item.id.text, ''
     elif item.find('feedburner:origlink') is not None:
-        return item.find('feedburner:origlink').text
+        return item.find('feedburner:origlink').text, ''
     elif item.find('link') is not None: # this should be last resort (latimes)
-        return item.find('link').text
-    print "[PROBLEM] CANNOT PARSE GUID"
-    return ''
+        return item.find('link').text, ''
+    return '', 'CANNOT PARSE GUID'
 
 def extractLink(item):
     if item.find('feedburner:origlink') is not None: # this link is usually better ... no redirect
-        return item.find('feedburner:origlink').text
+        return item.find('feedburner:origlink').text, ''
     if item.link is not None:
         if item.link.get('href'):
-            return item.link.get('href')
+            return item.link.get('href'), ''
         elif item.link.text is not None:
-            return item.link.text
-    print "[PROBLEM] CANNOT PARSE URL"    
-    return ''
+            return item.link.text, ''
+    return '', 'CANNOT EXTRACT LINK'
 
 def extractTitle(item):
     if item.title is not None:
-        return item.title.text
-    print "[PROBLEM] CANNOT PARSE TITLE"
-    return ''
+        return item.title.text, ''
+    return '', 'CANNOT EXTRACT TITLE'
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         url = sys.argv[1]
-        crawlFeed('test', url, False)
+        crawlFeed(url, getUrl(url), 0, False)

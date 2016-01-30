@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup, Comment, Doctype, NavigableString
-from url2soup import *
+from getUrl import *
 from article import *
 from dbco import *
 import sys, re, tld
@@ -179,15 +179,18 @@ def crawlContent(articles):
 	for article in articles:
 		if article.url == '':
 			continue
-		article.url = finalURL(article.url) # after all redirects
-		soup = url2soup(article.url)
+		urlReturn = getUrl(article.url)
+		if 'error' in urlReturn:
+			continue
+		soup = urlReturn['soup']
+		article.url = urlReturn['finalURL'] # after all redirects
 		article.source = tld.get_tld(article.url)
 		article.content = getContent(soup, article.source)
 		article.img = '' # not handled anymore
 	return articles
 if __name__ == '__main__':
 	if len(sys.argv) > 1:
-		newContent = getContent(url2soup(sys.argv[1]), 'bnamericas')
+		newContent = getContent(getUrl(sys.argv[1])['soup'], 'bnamericas')
 		print newContent
 	else:
 		print "Provide a URL"
