@@ -8,7 +8,6 @@ from crawlFeed import *
 warnings.filterwarnings("ignore")
 
 # STEP 1: See if an RSS feed is available
-
 while db.test_sources.find({'tested': {'$exists': False}}).count() > 0:
 	sources = list(db.test_sources.find({'tested': {'$exists': False}}).limit(50))
 	sourceUpdate = db.test_sources.initialize_unordered_bulk_op()
@@ -27,7 +26,6 @@ while db.test_sources.find({'tested': {'$exists': False}}).count() > 0:
 	sourceUpdate.execute()
 
 # STEP 2: See if the format is right
-
 while db.test_sources.find({'rss': {'$exists': True}, 'validFormat': {'$exists': False}, 'formatError': {'$exists': False}}).count() > 0:
 	sources = list(db.test_sources.find({'rss': {'$exists': True}, 'validFormat': {'$exists': False}, 'formatError': {'$exists': False}}).limit(50)) # a little yolo
 	results = getURLs([src['rss'] for src in sources])
