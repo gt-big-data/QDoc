@@ -2,7 +2,7 @@
 from bs4 import BeautifulSoup
 from dateutil import parser
 from datetime import datetime
-import pytz, sys, re
+import pytz, sys, re, time
 from article import *
 from crawlContent import *
 from getUrl import *
@@ -43,7 +43,7 @@ def crawlFeed(feedUrl, urlReturn, startStamp=0, toSave=True):
         for article in newArticles:
             article.save()
         print feedUrl, " => +"+str(len(newArticles))
-        db.feed.update({'feed': feedUrl}, {'$set': {'stamp': int(latestStamp)}})
+        db.feed.update({'feed': feedUrl}, {'$set': {'stamp': int(latestStamp), 'lastCrawl': int(time.time())}})
     return ''
 
 def extractPubTime(item):

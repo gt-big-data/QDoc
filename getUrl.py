@@ -27,8 +27,8 @@ def getURLsEventlet(urls): # this is legacy now, it is slower...
 if __name__ == '__main__':
 	urls = [a['url'] for a in list(db.qdoc.find({}, {'url': True}).limit(1200))]
 	time2 = time.time()
-	bla= getURLs2(urls)
+	bla= getURLs(urls)
 	print "MULTITHREADING : ", (time.time()-time2) ,"s"
 	time1 = time.time()
-	bla= getURLs(urls)
+	bla= getURLsEventlet(urls)
 	print "EVENTLET METHOD: ", (time.time()-time1) ,"s"

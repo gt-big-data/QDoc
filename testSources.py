@@ -4,6 +4,7 @@ from getUrl import *
 from urlparse import urljoin
 from bson import ObjectId
 from crawlFeed import *
+import time
 
 warnings.filterwarnings("ignore")
 
@@ -24,6 +25,7 @@ while db.test_sources.find({'tested': {'$exists': False}}).count() > 0:
 		sourceUpdate.find({'source': src['source']}).upsert().update({'$set': toSet})
 
 	sourceUpdate.execute()
+print "Done with STEP 1"
 
 # STEP 2: See if the format is right
 while db.test_sources.find({'rss': {'$exists': True}, 'validFormat': {'$exists': False}, 'formatError': {'$exists': False}}).count() > 0:
@@ -41,3 +43,22 @@ while db.test_sources.find({'rss': {'$exists': True}, 'validFormat': {'$exists':
 
 	sourceUpdate.execute()
 	print db.test_sources.find({'rss': {'$exists': True}, 'validFormat': {'$exists': False}, 'formatError': {'$exists': False}}).count(), "left"
+print "Done with STEP 2"
+
+# STEP 3: Add them as inactive sources to the main thread
+
+alreadySource = set([s['feed'] for s in list(db.feed.find({}, {'feed': 1}))]) # can't find a better way to do this
+feedUpdate = db.feed.initialize_unordered_bulk_op(); any = False
+for src in db.test_sources.find({'validFormat': {'$exists': True}}):
+	if src['rss'] not in alreadySource:
+		any = True
+		feedUpdate.find({'feed': src['rss']}).upsert().update({'$set': {'feed': src['rss'], 'active': False, 'crawlFreq': 240, 'lastCrawl': int(time.time()-240)}})
+if any:
+	feedUpdate.execute()
+print "Done with STEP 3"
+
+# feedUpdate = db.feed.initialize_unordered_bulk_op()
+# feeds = db.feed.find({'active': False}).limit(300)
+# for f in feeds:
+# 	feedUpdate.find({'feed': f['feed']}).upsert().update({'$set': {'active': True}})
+# feedUpdate.execute()
