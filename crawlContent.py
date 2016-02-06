@@ -176,18 +176,16 @@ def getContent(soup, source=''):
 	return finalText.replace('\n\n', '\n')
 
 def crawlContent(articles):
-	for article in articles:
-		if article.url == '':
-			continue
-		urlReturn = getUrl(article.url)
+	returns = getURLs([a['url'] for a in articles])
+	for urlReturn, a in zip(returns, articles):
 		if 'error' in urlReturn:
 			continue
 		soup = urlReturn['soup']
-		article.url = urlReturn['finalURL'] # after all redirects
-		article.source = tld.get_tld(article.url)
-		article.content = getContent(soup, article.source)
-		article.img = '' # not handled anymore
+		a['url'] = urlReturn['finalURL'] # after all redirects
+		a['source'] = tld.get_tld(a['url'])
+		a['content'] = getContent(soup, a['source'])
 	return articles
+
 if __name__ == '__main__':
 	if len(sys.argv) > 1:
 		newContent = getContent(getUrl(sys.argv[1])['soup'], 'bnamericas')

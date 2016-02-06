@@ -30,21 +30,17 @@ def crawlFeed(feedUrl, urlReturn, startStamp=0, toSave=True):
         pubtime, error4 = extractPubTime(it)
         errors = ''.join([error1, error2, error3, error4])
         if len(errors) > 0:
-            return errors # This exits ...
+            return errors # This exits, there was some error ...
         timestamp = (pubtime - epoch).total_seconds() # Hacky way of going from Datetime object to timestamp
         if timestamp > startStamp: # new article
             latestStamp = max(timestamp, latestStamp)
-            newArticles.append(Article(guid=guid, title=title, url=url, timestamp=timestamp, feed=feedUrl))
+            newArticles.append({'guid': guid, 'title': title, 'url': url, 'timestamp': timestamp, 'feed': feedUrl})
         else:
             break # we're done, this assumes articles are ordered by descending pubDate
 
     if toSave:
-        newArticles = crawlContent(newArticles) # crawls for content
-        for article in newArticles:
-            article.save()
-        print feedUrl, " => +"+str(len(newArticles))
         db.feed.update({'feed': feedUrl}, {'$set': {'stamp': int(latestStamp), 'lastCrawl': int(time.time())}})
-    return ''
+    return newArticles
 
 def extractPubTime(item):
     pubText = ''
