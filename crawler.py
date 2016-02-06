@@ -33,7 +33,6 @@ for a in newArticles:
 	if not qa.isValid(a):
 		print("Article from source: " + a.get('source','') + "feed: " + a.get('feed','') + " was invalid")
 		continue # skip bad articles
-
 	dupID = qa.isDuplicate(a)
 	if dupID is not None: # Update duplicate
 		db.qdoc.update({'_id': dupID}, {'$set': {'content': a['content']}}) # update the content
