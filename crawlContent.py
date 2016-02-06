@@ -84,29 +84,29 @@ def genericCleaning(soup):
 	removeBadContent(soup)
 
 def sourceSpecificcleaning(soup, source):
-	if source == 'anadolu':
+	if source == 'aa.com.tr':
 		[elem.extract() for elem in soup(text=re.compile(r'(Anadolu Agency website contains only a|Please contact us)'))] # Very tricky ...
-	if source == 'ap':
+	if source == 'ap.org':
 		removeClasses(soup, ['ap_story_photo'])
 		removeIds(soup, ['sourceOrganization', 'CopyrightLine'])
-	if source == 'business_insider':
+	if source == 'businessinsider.in':
 		removeClasses(soup, ['seealso', 'comment-class'])
 		removeIds(soup, ['avcslide'])
-	if source == 'cnn':
+	if source == 'cnn.com':
 		removeClasses(soup, ['nav--plain-header', 'pg-rail--right', 'media__video'])
-	if source == 'reuters':
+	if source == 'reuters.com':
 		removeClasses(soup, ['column2'])
-	if source == 'guardian':
+	if source == 'theguardian.com':
 		removeClasses(soup, ['submeta', 'content-footer'])
-	if source == 'wikinews':
+	if source == 'independent.co.uk':
+		removeClasses(soup, ['image', 'inline-pipes-list'])
+	if source == 'indiatimes.com':
+		removeIds(soup, ['main-header'])
+	if source == 'bnamericas.com':
+		removeIds(soup, ['editorialchoice'])
+	if source == 'wikinews.org':
 		removeClasses(soup, ['infobox', 'thumb'])
 		removeIds(soup, ['footer', 'mw-navigation'])
-	if source == 'independent':
-		removeClasses(soup, ['image', 'inline-pipes-list'])
-	if source == 'timesofindia':
-		removeIds(soup, ['main-header'])
-	if source == 'bnamericas':
-		removeIds(soup, ['editorialchoice'])
 
 def getText(soup, putAlready=True):
 	reload(sys)
