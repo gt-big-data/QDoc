@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup, Comment, Doctype, NavigableString
 import concurrent.futures as futures # for multithreading
-import sys, eventlet, time, warnings, requests
+import sys, time, warnings, requests
 from dbco import *
 
 warnings.filterwarnings("ignore")
@@ -18,7 +18,11 @@ def getUrl(url):
 
 def getURLs(urls):
 	with futures.ThreadPoolExecutor(max_workers=100) as executor:
-		return executor.map(getUrl, urls)
+		downloaded_urls = executor.map(getUrl, urls)
+		# Force all feeds to download before finishing to prevent weird issues with the
+		# ThreadPool shutting down before all of the tasks finishing.
+		downloaded_urls = [d for d in downloaded_urls]
+	return downloaded_urls
 
 def getURLsEventlet(urls): # this is legacy now, it is slower...
 	pool = eventlet.GreenPool()
