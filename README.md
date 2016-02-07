@@ -66,6 +66,19 @@ By default, the crawler is pointing to the production database (this will be cha
 
     client = MongoClient('mongodb://127.0.0.1:27017/')
 
+### Load the feeds from the real database
+
+We now store the list of feeds to crawl from the production database. To get them, open up `mongo` (make sure `mongod` is still running in a separate window).
+
+    mongo
+
+Then switch to the `big_data` database. This is where we store all of our data. Mongo automatically makes databases that don't exist so there's no special procedure for making a new database.
+
+    use big_data
+
+Finally, copy the `feeds` collection from the production database to your local database.
+
+    db.cloneCollection('api.retinanews.net', 'feed')
 
 ### Actually Run the Crawler!
 
@@ -85,4 +98,4 @@ If the last command prints out a lot of text and it looks like a news article, c
 
 If you have any questions, feel free to talk to Sam (smarder3@gatech.edu) or Matt (mersted@gatech.edu).
 
-Also, Philippe (plaban3@gatech.edu) originally created the crawler. You should ask him about any weird things you see in the code. 
+Also, Philippe (plaban3@gatech.edu) originally created the crawler. You should ask him about any weird things you see in the code.

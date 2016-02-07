@@ -24,15 +24,8 @@ def getURLs(urls):
 		downloaded_urls = [d for d in downloaded_urls]
 	return downloaded_urls
 
-def getURLsEventlet(urls): # this is legacy now, it is slower...
-	pool = eventlet.GreenPool()
-	return [ret for ret in pool.imap(getUrl, urls)]
-
 if __name__ == '__main__':
 	urls = [a['url'] for a in list(db.qdoc.find({}, {'url': True}).limit(1200))]
 	time2 = time.time()
 	bla= getURLs(urls)
 	print "MULTITHREADING : ", (time.time()-time2) ,"s"
-	time1 = time.time()
-	bla= getURLsEventlet(urls)
-	print "EVENTLET METHOD: ", (time.time()-time1) ,"s"
