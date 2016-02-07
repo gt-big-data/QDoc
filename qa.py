@@ -1,6 +1,7 @@
 from difflib import SequenceMatcher
 from dbco import *
 import sys, time
+#Quality control for single articles
 
 def similar(a, b):
 	rat = len(a)/float(len(b))
@@ -29,10 +30,10 @@ def isValid(a):
 		return False
 	return True
 
-def isDuplicate(content, title, source):
-	last = db.qdoc.find({'source': source, 'timestamp': {'$gte': (time.time()-3*86400)}}).sort('timestamp', -1) # last 3 days
-	content = unicode(content)
-	for a in last:
-		if title == a['title'] or similar(content, unicode(a['content'])) > 0.9:
-			return a['_id']
+def isDuplicate(a):
+	last = db.qdoc.find({'source': a['source'], 'timestamp': {'$gte': (time.time()-3*86400)}}).sort('timestamp', -1) # last 3 days
+	content = unicode(a['content'])
+	for a2 in last:
+		if a['title'] == a2['title'] or similar(content, unicode(a2['content'])) > 0.9:
+			return a2['_id']
 	return None
