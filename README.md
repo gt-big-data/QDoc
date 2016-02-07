@@ -60,12 +60,6 @@ If that complains about directories not being writable (probably on OSX and Linu
 
 If all of the setup stuff worked, just type `mongod` in a terminal window and you're good to go. You'll need to leave that window open in the background while you do stuff with the crawler.
 
-### Point the Crawler to Your Local Database
-
-By default, the crawler is pointing to the production database (this will be changed pretty soon). In the meantime, open up `dbco.py` in your text [editor of choice](https://atom.io/) and change line 4 to this:
-
-    client = MongoClient('mongodb://127.0.0.1:27017/')
-
 ### Load the feeds from the real database
 
 We now store the list of feeds to crawl from the production database. To get them, open up `mongo` (make sure `mongod` is still running in a separate window).
