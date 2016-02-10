@@ -1,12 +1,13 @@
-from bson.objectid import ObjectId
+# TODO: This script is definitely broken. Either salvage it or delete it.
+
 from crawlContent import *
-from article import *
-from dbco import *
-import sys, random
+from article import Article
+import db
+import sys
 
 # This file can help testing the crawling of a given ID: it'll produce the HTML, the old content and the new content (for comparison)
-def recrawlTest(id):
-	art = list(db.qdoc.find({'_id': ObjectId(id)}).limit(1))[0]
+def recrawlTest(art):
+	art = db.getArticleById(id))
 	art['url'] = art['url'].split('?')[0]
 	html = urllib2.urlopen(art['url']).read()
 	article = Article(guid=art['guid'], title=art['title'], url=art['url'], timestamp=art['timestamp'], source=art['source'], feed=art['feed'])
@@ -24,8 +25,7 @@ def recrawlTest(id):
 
 if __name__ == '__main__':
 	if len(sys.argv) > 1:
-		recrawlTest(sys.argv[1])
+		art = db.getArticleById(sys.argv[1])
 	else:
-		rand = int(random.random()*1000)
-		art = list(db.qdoc.find({}).sort('timestamp', -1).skip(rand).limit(1))[0]
-		recrawlTest(art['_id'])
+		art = db.getRandomRecentArticle()
+	recrawlTest(art)
