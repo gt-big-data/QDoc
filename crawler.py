@@ -1,7 +1,8 @@
 from crawlFeed import *
 from utils import downloader
-import time, qa, datetime
+import time, datetime
 from utils import ip
+from article import Article
 
 start_time = time.time()
 
@@ -31,10 +32,11 @@ while i < len(feedList):
 crawlContent(newArticles)
 dupCount = 0
 for a in newArticles:
-	if not qa.isValid(a):
+	article = Article(a)
+	if not Article(a).isValid():
 		print("Article from source: " + a.get('source','') + "feed: " + a.get('feed','') + " was invalid")
 		continue # skip bad articles
-	dupID = qa.isDuplicate(a)
+	dupID = a.isDuplicate()
 	if dupID is not None: # Update duplicate
 		db.qdoc.update({'_id': dupID}, {'$set': {'content': a['content']}}) # update the content
 		dupCount += 1

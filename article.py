@@ -1,6 +1,6 @@
 # TODO: Grab this from a config file.
 from writers import *
-from isDuplicate import *
+from utils import articleQa
 writer = MongoWriter()
 
 def good(val):
@@ -14,9 +14,12 @@ class Article(object):
         self.timestamp = timestamp
         self.source = source
         self.feed = feed
-        self.content = content
+        self.content = unicode(content)
         self.img = ''
         self.keywords = []
+
+    def isDuplicate(self):
+        return article_qa.isDuplicate(self)
 
     def isValid(self):
         """Check if the article has enough data to be considered "crawled"."""
@@ -41,7 +44,7 @@ class Article(object):
         """Write this article to the preferred method of writing.
         This method will print out an error if the article is not valid.
         """
-        dupID = isDuplicate(self.content, self.title, self.source)
+        dupID = article_qa.isDuplicate(self)
         if not self.isValid():
             print("Article from source: " + self.source + "feed: " + self.feed + " was invalid")
         elif dupID is not None: # we just update the content because this is a duplicate of something
