@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup, Comment, Doctype, NavigableString
 from utils import downloader
-from article import *
-from dbco import *
+from article import Article
 import sys, re, tld
 
 def removeComments(soup):
@@ -172,6 +171,7 @@ def getContent(soup, source=''):
 					bestElem = el; bestText = a
 	if len(newContent) == 0 and bestElem is not None: # in case nothing had a score of 3, but something had a score of 1 or more
 		newContent.append(bestText)
+	# TODO: Use a library that converts unicode to the closest approximation of ASCII.
 	finalText = '\n'.join(newContent).encode('utf-8').replace("’", "'").replace("”", '"').replace("“", '"').replace('—', '-').replace('‘', "'")
 	return finalText.replace('\n\n', '\n')
 

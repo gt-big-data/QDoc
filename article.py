@@ -19,7 +19,7 @@ class Article(object):
         self.keywords = []
 
     def isDuplicate(self):
-        return article_qa.isDuplicate(self)
+        return articleQa.isDuplicate(self)
 
     def isValid(self):
         """Check if the article has enough data to be considered "crawled"."""

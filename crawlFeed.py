@@ -6,6 +6,7 @@ import pytz, sys, re, time
 from article import *
 from crawlContent import *
 from utils import downloader
+import db
 
 def crawlFeed(feedUrl, urlReturn, startStamp=0, toSave=True):
     if 'error' in urlReturn:

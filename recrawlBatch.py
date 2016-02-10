@@ -25,7 +25,7 @@ def recrawlArt(art,urlReturn):
 	return {'id': art['_id'], 'content': newContent}
 
 def recrawlSource():
-	left = db.qdoc.find({'recrawl': {'$exists': True}}).count()
+	left = db.countArticles({'recrawl': {'$exists': True}})
 	while left>0:
 		rand = int(2000*random.random())
 		any = False

@@ -10,6 +10,6 @@ def _set_ip_address():
 
 def get_ip_address():
     # Only get the IP address once because it won't change and it's (relatively) expensive to obtain.
-    if ip is None:
+    if _ip is None:
         _set_ip_address()
     return _ip

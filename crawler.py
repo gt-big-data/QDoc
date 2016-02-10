@@ -1,4 +1,5 @@
-import time, datetime
+import time
+from datetime import datetime
 
 from crawlFeed import *
 from utils import ip, downloader
@@ -33,16 +34,17 @@ while i < len(feedList):
 crawlContent(newArticles)
 dupCount = 0
 for a in newArticles:
-	article = Article(a)
-	if not Article(a).isValid():
+	article = Article(**a)
+	if not article.isValid():
 		print("Article from source: " + a.get('source','') + "feed: " + a.get('feed','') + " was invalid")
 		continue # skip bad articles
-	dupID = a.isDuplicate()
+	dupID = article.isDuplicate()
 	if dupID is not None: # Update duplicate
 		db.updateArticle(dupID, {'content': a['content']})
 		dupCount += 1
 	else: # Write full on article
 		db.insertArticle(a['guid'], a)
 
-db.log({'crawl_time': datetime.datetime.now().isoformat(), 'ip': ip.get_ip_address(), 'run_time': round(time.time() - start_time, 2), 'crawl_feeds': len(feedList), 'new_articles': len(newArticles), 'duplicate_count': dupCount})
+crawl_time = datetime.now().isoformat()
+db.log({'crawl_time': crawl_time, 'ip': ip.get_ip_address(), 'run_time': round(time.time() - start_time, 2), 'crawl_feeds': len(feedList), 'new_articles': len(newArticles), 'duplicate_count': dupCount})
 print("--- %s seconds ---" % round(time.time() - start_time, 2))

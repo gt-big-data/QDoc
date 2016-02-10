@@ -2,45 +2,37 @@ from bson.objectid import ObjectId
 import random
 
 from dbco import db
-from article import Article
 
 # For backwards compatibility.
 # Also for queries that don't fit any of the standard functions.
 qdoc = db.qdoc
+feed = db.feed
 
-def _returnOrYieldArticles(query, shouldYield):
+def _returnOrYield(query, shouldYield):
     if shouldYield:
-        for article in query:
-            yield Article(article)
-    else:
-        articles = []
-        for article in query:
-            articles.append(Article(article))
-        return articles
-
-def _returnOrYieldGeneral(query, shouldYield):
-    if shouldYield:
-        for general in query:
-            yield general
+        def generator():
+            for obj in query:
+                yield obj
+        return generator
     else:
         objects = []
-        for general in query:
-            objects.append(general)
+        for obj in query:
+            objects.append(obj)
         return objects
 
 def getLatestArticles(findQuery=None, limit=None, shouldYield=False):
     findQuery = findQuery or {}
     query = db.qdoc.find(findQuery).sort('timestamp', -1)
-    if limit is not None:
-        query = query.limit(limit)
-    return _returnOrYieldArticles(query, shouldYield)
+    query = query.limit(limit or 0)
+
+    return _returnOrYield(query, shouldYield)
 
 def getFieldsOfLatestArticles(findQuery, fields, limit, shouldYield=False):
     findQuery = findQuery or {}
     query = db.qdoc.find(findQuery, fields).sort('timestamp', -1)
-    if limit is not None:
-        query = query.limit(limit)
-    return _returnOrYieldGeneral(query, shouldYield)
+    query = query.limit(limit or 0)
+
+    return _returnOrYield(query, shouldYield)
 
 def countArticles(findQuery=None):
     findQuery = findQuery or {}
@@ -51,7 +43,7 @@ def getArticle(findQuery=None):
     query = db.qdoc.find(findQuery).limit(1)
     # Return the single article if it exists.
     for article in query:
-        return Article(article)
+        return toArticle(article)
     return None
 
 def getArticleById(idString):
@@ -61,7 +53,7 @@ def getRandomRecentArticle():
     skipAmount = random.randint(0, 10000)
     query = db.qdoc.find({}).skip(skipAmount).limit(1)
     for article in query:
-        return Article(article)
+        return toArticle(article)
     return None
 
 def updateArticle(id, updatedValues):
@@ -72,11 +64,11 @@ def insertArticle(guid, values):
 
 def aggregateArticles(operations, shouldYield=False):
     query = db.qdoc.aggregate(operations)
-    return _returnOrYieldArticles(query, shouldYield)
+    return _returnOrYield(query, shouldYield)
 
 def aggregateFeeds(operations, shouldYield=False):
     query = db.feed.aggregate(operations)
-    return _returnOrYieldGeneral(general, shouldYield)
+    return _returnOrYield(query, shouldYield)
 
 def log(data):
     db.qdoc_log.insert_one(data)

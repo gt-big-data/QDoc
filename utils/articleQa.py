@@ -11,8 +11,8 @@ def _similar(str1, str2):
 
 def isDuplicate(article):
 	threeDays = time.time() - (3 * 86400)
-	otherArticles = db.getLatestArticles({'source': a.source, 'timestamp': {'$gte': threeDays}})
+	otherArticles = db.getLatestArticles({'source': article.source, 'timestamp': {'$gte': threeDays}})
 	for otherArticle in otherArticles:
-		if article.title == otherArticles.title or _similar(article.content, otherArticle.content) > 0.9:
+		if article.title == otherArticle['title'] or _similar(article.content, otherArticle['content']) > 0.9:
 			return otherArticle['_id']
 	return None
