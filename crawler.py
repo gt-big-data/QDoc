@@ -1,8 +1,9 @@
-from crawlFeed import *
-from utils import downloader
 import time, datetime
-from utils import ip
+
+from crawlFeed import *
+from utils import ip, downloader
 from article import Article
+import db
 
 start_time = time.time()
 
@@ -12,7 +13,7 @@ match2 = {'$match': {'secondsUntilRedo': {'$gte': 0}}} # only get the ones that 
 sort = {'$sort': {'secondsUntilRedo': -1}} # most important ones first
 limit = {'$limit': 150} # we only get the 150 most pressing sources :)
 
-feedList = list(db.feed.aggregate([match, project, match2, sort, limit]))
+feedList = db.aggregateFeeds([match, project, match2, sort, limit])
 
 i=0
 newArticles = []
@@ -38,10 +39,10 @@ for a in newArticles:
 		continue # skip bad articles
 	dupID = a.isDuplicate()
 	if dupID is not None: # Update duplicate
-		db.qdoc.update({'_id': dupID}, {'$set': {'content': a['content']}}) # update the content
+		db.updateArticle(dupID, {'content': a['content']})
 		dupCount += 1
 	else: # Write full on article
-		db.qdoc.update({'guid': a['guid']}, {'$set': a}, upsert=True)
+		db.insertArticle(a['guid'], a)
 
-db.qdoc_log.insert_one({'crawl_time': datetime.datetime.now().isoformat(), 'ip': ip.get_ip_address(), 'run_time': round(time.time() - start_time, 2), 'crawl_feeds': len(feedList), 'new_articles': len(newArticles), 'duplicate_count': dupCount})
+db.log({'crawl_time': datetime.datetime.now().isoformat(), 'ip': ip.get_ip_address(), 'run_time': round(time.time() - start_time, 2), 'crawl_feeds': len(feedList), 'new_articles': len(newArticles), 'duplicate_count': dupCount})
 print("--- %s seconds ---" % round(time.time() - start_time, 2))
