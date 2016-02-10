@@ -5,7 +5,7 @@ from datetime import datetime
 import pytz, sys, re, time
 from article import *
 from crawlContent import *
-from getUrl import *
+from utils import downloader
 
 def crawlFeed(feedUrl, urlReturn, startStamp=0, toSave=True):
     if 'error' in urlReturn:
@@ -90,4 +90,4 @@ def extractTitle(item):
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         url = sys.argv[1]
-        crawlFeed(url, getUrl(url), 0, False)
+        crawlFeed(url, downloader.getUrl(url), 0, False)

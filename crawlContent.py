@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup, Comment, Doctype, NavigableString
-from getUrl import *
+from utils import downloader
 from article import *
 from dbco import *
 import sys, re, tld
@@ -142,7 +142,7 @@ def getContent(soup, source=''):
 	# Cleanning phase
 	genericCleaning(soup)
 	sourceSpecificcleaning(soup, source)
-	
+
 	f = open("content.html", 'w'); f.write(soup.prettify().encode('utf-8')); f.close();
 
 	# Finding content in the tree
@@ -176,7 +176,7 @@ def getContent(soup, source=''):
 	return finalText.replace('\n\n', '\n')
 
 def crawlContent(articles):
-	returns = getURLs([a['url'] for a in articles])
+	returns = downloader.getUrls([a['url'] for a in articles])
 	for urlReturn, a in zip(returns, articles):
 		if 'error' in urlReturn:
 			continue
@@ -188,7 +188,7 @@ def crawlContent(articles):
 
 if __name__ == '__main__':
 	if len(sys.argv) > 1:
-		newContent = getContent(getUrl(sys.argv[1])['soup'], 'bnamericas')
+		newContent = getContent(downloader.getUrl(sys.argv[1])['soup'], 'bnamericas')
 		print newContent
 	else:
 		print "Provide a URL"

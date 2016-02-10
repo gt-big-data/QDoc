@@ -3,18 +3,18 @@ from crawlContent import *
 from article import *
 from dbco import *
 import sys, socket
-from getUrl import *
+from utils import downloader
 socket.setdefaulttimeout(5)
 
 def recrawlArt(art,urlReturn):
 
 	article = Article(guid=art['guid'], title=art['title'], url=art['url'], timestamp=0, source=art['source'], feed=art['feed'])
 
-	urlReturn = getUrl(art['url'])
+	urlReturn = downloader.getUrl(art['url'])
 	if 'error' in urlReturn:
 		print 'Error', urlReturn['error'], 'in article', art['_id']
 		break
-	soup = 
+	soup =
 	crawlContent([article])
 
 	cleanHTML = soup.prettify().encode('utf8')
@@ -38,7 +38,7 @@ def recrawlSource():
 
 		qdocUpdate = db.qdoc.initialize_unordered_bulk_op()
 
-		results = getURLs([a['url'] for a in articles])
+		results = downloader.getUrls([a['url'] for a in articles])
 		for res, art in zip(results, articles):
 			ret = recrawlArt(art,res)
 			if ret['content']:
@@ -48,7 +48,7 @@ def recrawlSource():
 		if any:
 			qdocUpdate.execute()
 		left = db.qdoc.find({'recrawl': {'$exists': True}}).count()
-		print "-------------------------------------"		
+		print "-------------------------------------"
 		print "Left: ", left
 
 recrawlSource()

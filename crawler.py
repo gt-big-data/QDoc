@@ -1,5 +1,5 @@
 from crawlFeed import *
-from getUrl import *
+from utils import downloader
 import time, qa, datetime
 from utils import ip
 
@@ -18,7 +18,7 @@ newArticles = []
 while i < len(feedList):
 	tempSize = min(50, (len(feedList)-i))
 	tempList = feedList[i:(i+tempSize)]
-	results = getURLs([f['feed'] for f in tempList])
+	results = downloader.getUrls([f['feed'] for f in tempList])
 	for res, feed in zip(results, tempList):
 		feedReturn = crawlFeed(feed['feed'], res, feed.get('stamp',0))
 		if type(feedReturn) is list:

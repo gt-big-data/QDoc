@@ -15,7 +15,7 @@ def getUrl(url):
 	html = (req.text).replace('<br>', '<br />')
 	return {'soup': BeautifulSoup(html, 'html.parser'), 'finalURL': req.url}
 
-def getURLs(urls):
+def getUrls(urls):
 	with futures.ThreadPoolExecutor(max_workers=100) as executor:
 		downloaded_urls = executor.map(getUrl, urls)
 		# Force all feeds to download before finishing to prevent weird issues with the
