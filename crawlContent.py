@@ -84,29 +84,13 @@ def genericCleaning(soup):
 	removeBadContent(soup)
 
 def sourceSpecificcleaning(soup, source):
-	if source == 'aa.com.tr':
-		[elem.extract() for elem in soup(text=re.compile(r'(Anadolu Agency website contains only a|Please contact us)'))] # Very tricky ...
-	if source == 'ap.org':
-		removeClasses(soup, ['ap_story_photo'])
-		removeIds(soup, ['sourceOrganization', 'CopyrightLine'])
-	if source == 'businessinsider.in':
-		removeClasses(soup, ['seealso', 'comment-class'])
-		removeIds(soup, ['avcslide'])
-	if source == 'cnn.com':
-		removeClasses(soup, ['nav--plain-header', 'pg-rail--right', 'media__video'])
-	if source == 'reuters.com':
-		removeClasses(soup, ['column2'])
-	if source == 'theguardian.com':
-		removeClasses(soup, ['submeta', 'content-footer'])
-	if source == 'independent.co.uk':
-		removeClasses(soup, ['image', 'inline-pipes-list'])
-	if source == 'indiatimes.com':
-		removeIds(soup, ['main-header'])
-	if source == 'bnamericas.com':
-		removeIds(soup, ['editorialchoice'])
-	if source == 'wikinews.org':
-		removeClasses(soup, ['infobox', 'thumb'])
-		removeIds(soup, ['footer', 'mw-navigation'])
+	sourceCleaning = list(db.source_cleaning.find({'source': source})) # Load the source specific data
+	if len(sourceCleaning) > 0:
+		sourceCleaning = sourceCleaning[0]
+		removeClasses(soup, sourceCleaning.get('classList', []))
+		removeIds(soup, sourceCleaning.get('idList', []))
+		for text in sourceCleaning.get('textList', []):
+			[elem.extract() for elem in soup(text=re.compile(r''+text))]
 
 def getText(soup, putAlready=True):
 	reload(sys)
