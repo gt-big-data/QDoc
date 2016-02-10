@@ -74,5 +74,12 @@ def aggregateFeeds(operations, shouldYield=False):
     query = db.feed.aggregate(operations)
     return _returnOrYield(query, shouldYield)
 
+def bulkUpdateArticles(callback):
+    bulkUpdate = db.qdoc.initialize_unordered_bulk_op()
+    def updater(condition, updatedValues):
+        bulkUpdate.find(condtion).upsert().update(updatedValues)
+    callback(updater)
+    bulkUpdate.execute()
+
 def log(data):
     db.qdoc_log.insert_one(data)
