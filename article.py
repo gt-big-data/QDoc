@@ -1,7 +1,5 @@
-# TODO: Grab this from a config file.
-from writers import *
 from utils import articleQa
-writer = MongoWriter()
+import db
 
 def good(val):
     return val and len(val) > 0
@@ -41,13 +39,16 @@ class Article(object):
         return True
 
     def save(self):
-        """Write this article to the preferred method of writing.
+        """Save the article to the database.
         This method will print out an error if the article is not valid.
+
+        Return True if this is an original article and False if it's a duplicate.
         """
         dupID = article_qa.isDuplicate(self)
         if not self.isValid():
             print("Article from source: " + self.source + "feed: " + self.feed + " was invalid")
         elif dupID is not None: # we just update the content because this is a duplicate of something
-            writer.updateDuplicate(dupID, self)
+            db.updateArticle(dupID, self)
         else: # Write full on article
-            writer.write(self)
+            db.insertArticle(self.guid, self)
+        return dupID is not None

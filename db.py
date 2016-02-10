@@ -60,6 +60,10 @@ def updateArticle(id, updatedValues):
     db.qdoc.update({'_id': ObjectId(id)}, {'$set': updatedValues})
 
 def insertArticle(guid, values):
+    try:
+        values = values.__dict__
+    except AttributeError:
+        pass
     db.qdoc.update({'guid': guid}, {'$set': values}, upsert=True)
 
 def aggregateArticles(operations, shouldYield=False):
