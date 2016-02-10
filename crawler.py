@@ -1,6 +1,7 @@
 from crawlFeed import *
 from getUrl import *
-import time, qa, datetime, ip
+import time, qa, datetime
+from utils import ip
 
 start_time = time.time()
 
