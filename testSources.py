@@ -1,11 +1,12 @@
 import warnings
-from dbco import *
+from dbco import db
 from utils import downloader
 from urlparse import urljoin
 from bson import ObjectId
 from crawlFeed import *
 import time
 
+# TODO: What does this do?
 warnings.filterwarnings("ignore")
 
 # STEP 1: See if an RSS feed is available

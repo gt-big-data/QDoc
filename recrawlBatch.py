@@ -1,4 +1,4 @@
-from crawlContent import *
+from crawlContent import crawlContent
 from article import Article
 import db
 import sys, socket
@@ -8,8 +8,6 @@ from utils import downloader
 # TODO: Do we still need this.
 socket.setdefaulttimeout(5)
 
-
-
 def recrawlArt(art, urlReturn):
 	article = Article(**art)
 
@@ -17,6 +15,7 @@ def recrawlArt(art, urlReturn):
 	if 'error' in urlReturn:
 		print 'Error', urlReturn['error'], 'in article', art['_id']
 		break
+	# TODO: I have absolutely no idea what the second half of this line is supposed to be.
 	soup =
 	crawlContent([article])
 
