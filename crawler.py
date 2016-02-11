@@ -1,7 +1,7 @@
 import time
 from datetime import datetime
 
-from crawlFeed import *
+from feed import Feed, downloadFeeds, parseFeeds
 from utils import ip, downloader
 from article import Article
 import db
@@ -16,22 +16,21 @@ limit = {'$limit': 150} # we only get the 150 most pressing sources :)
 
 feedList = db.aggregateFeeds([match, project, match2, sort, limit])
 
-i=0
+i = 0
 newArticles = []
 while i < len(feedList):
-	tempSize = min(50, (len(feedList)-i))
-	tempList = feedList[i:(i+tempSize)]
-	results = downloader.getUrls([f['feed'] for f in tempList])
-	for res, feed in zip(results, tempList):
-		feedReturn = crawlFeed(feed['feed'], res, feed.get('stamp',0))
-		if type(feedReturn) is list:
-			print feed['feed'], " => +"+str(len(feedReturn))
-			newArticles.extend(feedReturn)
-		else:
-			print feed['feed'], "=>", feedReturn
-	i += tempSize
+	tempList = feedList[i:(i + batchSize)]
+	feeds = [Feed(url=feed['feed'], stamp=feed.get('stamp', 0)) for feed in tempList]
+	feeds = downloadFeeds(feeds)
+	feeds = parseFeeds(feeds)
+	for feed in feeds:
+		print '%s => +%d' % (feed.url, len(feed.articles))
+		# TODO: Download and parse articles immediately.
+		newArticles.extend(feed.articles)
+		feed.save()
+	i += batchSize
 
-crawlContent(newArticles)
+# TODO: Things are working up to here.
 dupCount = 0
 for a in newArticles:
 	article = Article(**a)
@@ -44,6 +43,8 @@ for a in newArticles:
 		dupCount += 1
 	else: # Write full on article
 		db.insertArticle(a['guid'], a)
+
+# TODO: Call feed.save() on all of the feeds.
 
 crawl_time = datetime.now().isoformat()
 db.log({'crawl_time': crawl_time, 'ip': ip.get_ip_address(), 'run_time': round(time.time() - start_time, 2), 'crawl_feeds': len(feedList), 'new_articles': len(newArticles), 'duplicate_count': dupCount})

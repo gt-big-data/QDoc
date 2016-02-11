@@ -1,6 +1,7 @@
 """This file deals with everything related to taking an individual item on a feed and turning it into an article."""
 from dateutil import parser
 import pytz
+import re
 
 from article import Article
 
@@ -39,7 +40,8 @@ def _extractPubTime(item):
         # TODO: Strongly consider removing dependency on dateutil and pytz.
         pubtime = parser.parse((re.sub("[\(\[].*?[\)\]]", "", pubText))).replace(tzinfo=pytz.utc)
         return pubtime # also remove anything between parentheses
-    except:
+    except Exception as e:
+        print e
         return None
 
 def _extractGuid(item):
