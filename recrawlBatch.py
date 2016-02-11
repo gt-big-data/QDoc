@@ -1,26 +1,23 @@
 from bson.objectid import ObjectId
 from crawlContent import *
-from article import *
 from dbco import *
-import sys, socket
 from getUrl import *
+import sys, socket, random
 socket.setdefaulttimeout(5)
 
 def recrawlArt(art,urlReturn):
 
-	article = Article(guid=art['guid'], title=art['title'], url=art['url'], timestamp=0, source=art['source'], feed=art['feed'])
-
 	urlReturn = getUrl(art['url'])
 	if 'error' in urlReturn:
 		print 'Error', urlReturn['error'], 'in article', art['_id']
-		break
-	soup = 
-	crawlContent([article])
+		return None
+
+	soup = urlReturn['soup']
 
 	cleanHTML = soup.prettify().encode('utf8')
 
 	oldContent = art.get('content', '').encode('utf8')
-	newContent = article.content.encode('utf8')
+	newContent = getContent(soup, art['source']).encode('utf8')
 	print art['_id'], " | Old: "+ str(len(oldContent)).center(5)+ " | New: "+str(len(newContent)).center(5)
 	return {'id': art['_id'], 'content': newContent}
 

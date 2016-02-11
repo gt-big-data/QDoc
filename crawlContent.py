@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup, Comment, Doctype, NavigableString
 from getUrl import *
-from article import *
 from dbco import *
 import sys, re, tld
 

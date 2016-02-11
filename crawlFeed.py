@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 from dateutil import parser
 from datetime import datetime
 import pytz, sys, re, time
-from article import *
 from crawlContent import *
 from getUrl import *
 

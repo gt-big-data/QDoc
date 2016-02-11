@@ -1,6 +1,6 @@
 from bson.objectid import ObjectId
 from crawlContent import *
-from article import *
+from getUrl import *
 from dbco import *
 import sys, random
 
@@ -8,19 +8,15 @@ import sys, random
 def recrawlTest(id):
 	art = list(db.qdoc.find({'_id': ObjectId(id)}).limit(1))[0]
 	art['url'] = art['url'].split('?')[0]
-	html = urllib2.urlopen(art['url']).read()
-	article = Article(guid=art['guid'], title=art['title'], url=art['url'], timestamp=art['timestamp'], source=art['source'], feed=art['feed'])
 
 	header = art['source']+" - "+str(art['_id'])+"\n----------------------------------------------\n\n"
-	soup = htmlToSoup(article, html)
-	parse(article, html)
+	urlReturn = getUrl(art['url'])
+	newContent = getContent(url['soup'], art['source'])
 
-	f = open('totalCrawl.html', 'w'); f.write(html); f.close();
-	f = open('latestCrawl.html', 'w'); f.write(soup.prettify().encode('utf-8')); f.close();
+	f = open('latestCrawl.html', 'w'); f.write(urlReturn['soup'].prettify().encode('utf-8')); f.close();
 	f = open('oldContent.txt', 'w'); f.write((header+art['content']).encode('utf-8')); f.close();
-	f = open('newContent.txt', 'w'); f.write((header+article.content).encode('utf-8')); f.close();
-
-	print article.url
+	f = open('newContent.txt', 'w'); f.write((header+newContent).encode('utf-8')); f.close();
+	print art['url']
 
 if __name__ == '__main__':
 	if len(sys.argv) > 1:
