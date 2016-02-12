@@ -61,7 +61,7 @@ class Feed(object):
             print "No HTML present. Not attempting to parse."
             return NO_HTML_FOUND
 
-        soup = BeautifulSoup(self.html)
+        soup = BeautifulSoup(self.html, 'html.parser')
         if self.articles is not None and len(self.articles) > 0:
             print 'WARNING: Recrawling a feed with existing articles.'
             print 'Number of existing articles: %d' % len(self.articles)
@@ -84,7 +84,7 @@ class Feed(object):
                 continue
             article.feed = self.url
             self.articles.append(article)
-        stamps = [datetime.fromtimestamp(self.lastTimeStamp).replace(tzinfo=pytz.utc)] + [article.timestamp for article in self.articles]
+        stamps = [self.lastTimeStamp.replace(tzinfo=pytz.utc)] + [article.timestamp for article in self.articles]
         self.lastTimeStamp = max(stamps)
         return None
 
@@ -103,9 +103,25 @@ def _parse(feed):
     feed.parseFeed()
     return feed
 
-def parseFeeds(feeds, maxWorkers=4):
-    print 'Parsing %d feeds with %d threads.' % (len(feeds), maxWorkers)
+def parseFeeds(feeds):
+    # Not threading because GIL would make the efforts worthless.
+    # Not using processes because the total amount of work here is very small.
+    print 'Parsing %d feeds.' % (len(feeds))
+    for feed in feeds:
+        print 'Parsing %s' % feed.url
+        feed.parseFeed()
+    return feeds
+
+def _downloadArticles(feed):
+    # Sequentially download every article in a feed.
+    # Prevents us from causing excessive load to any single source.
+    for article in feed.articles:
+        article.downloadArticle()
+    return feed
+
+def downloadArticlesInFeeds(feeds, maxWorkers=4):
+    print 'Downloading articles from %d feeds with %d threads.' % (len(feeds), maxWorkers)
     with futures.ThreadPoolExecutor(max_workers=maxWorkers) as executor:
-        feedFutures = executor.map(_parse, feeds)
+        feedFutures = executor.map(_downloadArticles, feeds)
         feeds = [feed for feed in feedFutures]
     return feeds

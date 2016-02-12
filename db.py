@@ -3,8 +3,7 @@ import random
 
 from dbco import db
 
-# For backwards compatibility.
-# Also for queries that don't fit any of the standard functions.
+# Expose the tables that other things need from dbco.
 qdoc = db.qdoc
 feed = db.feed
 

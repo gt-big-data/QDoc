@@ -1,20 +1,24 @@
-import time
 from datetime import datetime
 
-from feed import Feed, downloadFeeds, parseFeeds
-from utils import ip, downloader
-from article import Article
+from feed import Feed, downloadFeeds, parseFeeds, downloadArticlesInFeeds
+from utils import ip
+from article import Article, parseArticles
 import db
 
-start_time = time.time()
+startTime = datetime.utcnow()
 
 match = {'$match': {'active': True}}
-project = {'$project': {'secondsUntilRedo': {'$subtract': [{'$subtract': [int(time.time()), '$lastCrawl']}, '$crawlFreq']}, 'feed': 1, 'stamp': 1, 'lastCrawl': 1, 'active': 1}}
+project = {'$project': {'secondsUntilRedo': {'$subtract': [{'$subtract': [startTime, '$lastCrawl']}, '$crawlFreq']}, 'feed': 1, 'stamp': 1, 'lastCrawl': 1, 'active': 1}}
 match2 = {'$match': {'secondsUntilRedo': {'$gte': 0}}} # only get the ones that must be redone
 sort = {'$sort': {'secondsUntilRedo': -1}} # most important ones first
 limit = {'$limit': 150} # we only get the 150 most pressing sources :)
 
 feedList = db.aggregateFeeds([match, project, match2, sort, limit])
+
+newArticlesCount = 0
+duplicateArticlesCount = 0
+validArticlesCount = 0
+feedsCount = 0
 
 i = 0
 newArticles = []
@@ -23,29 +27,33 @@ while i < len(feedList):
 	feeds = [Feed(url=feed['feed'], stamp=feed.get('stamp', 0)) for feed in tempList]
 	feeds = downloadFeeds(feeds)
 	feeds = parseFeeds(feeds)
+	feeds = downloadArticlesInFeeds(feeds)
+	newArticles = []
+	for feed in feeds:
+		newArticles.extend(feed.articles)
+	newArticles = parseArticles(newArticles)
+	validArticles = [article for article in newArticles if article.isValid()]
+	duplicateArticlesCount = [article.save() for article in validArticles].count(True)
 	for feed in feeds:
 		print '%s => +%d' % (feed.url, len(feed.articles))
-		# TODO: Download and parse articles immediately.
-		newArticles.extend(feed.articles)
 		feed.save()
 	i += batchSize
 
-# TODO: Things are working up to here.
-dupCount = 0
-for a in newArticles:
-	article = Article(**a)
-	if not article.isValid():
-		print("Article from source: " + a.get('source','') + "feed: " + a.get('feed','') + " was invalid")
-		continue # skip bad articles
-	dupID = article.isDuplicate()
-	if dupID is not None: # Update duplicate
-		db.updateArticle(dupID, {'content': a['content']})
-		dupCount += 1
-	else: # Write full on article
-		db.insertArticle(a['guid'], a)
+	newArticlesCount += len(newArticles)
+	duplicateArticlesCount += duplicateArticlesCount
+	validArticlesCount += len(validArticles)
+	feedsCount += len(feeds)
 
-# TODO: Call feed.save() on all of the feeds.
+endTime = datetime.utcnow()
+runTime = round((endTime - startTime).total_seconds(), 2)
+db.log({
+	'startTime': startTime,
+	'runTime': runTime,
+	'ip': ip.get_ip_address(),
+	'feeds': feedsCount,
+	'newArticles': newArticlesCount,
+	'duplicateArticles': duplicateArticlesCount,
+	'validArticles': validArticlesCount
+})
 
-crawl_time = datetime.now().isoformat()
-db.log({'crawl_time': crawl_time, 'ip': ip.get_ip_address(), 'run_time': round(time.time() - start_time, 2), 'crawl_feeds': len(feedList), 'new_articles': len(newArticles), 'duplicate_count': dupCount})
-print("--- %s seconds ---" % round(time.time() - start_time, 2))
+print("--- %s seconds ---" % runTime)

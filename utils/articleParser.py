@@ -1,8 +1,19 @@
 # -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup, Comment, Doctype, NavigableString
-from utils import downloader
-from article import Article
 import sys, re, tld
+
+def parseArticle(article):
+    print 'Parsing %s' % article.url
+    if len(article.html) == 0:
+        print 'Article has no HTML. Cannot parse.'
+        return False
+
+    article.source = tld.get_tld(article.url)
+
+    soup = BeautifulSoup(article.html, 'html.parser')
+    # TODO: Heavily refactor getContent(...) and everything it calls.
+    article.content = getContent(soup, article.source)
+    return True
 
 def removeComments(soup):
 	[e.extract() for e in soup(text=lambda text: isinstance(text, Comment))]
@@ -174,21 +185,3 @@ def getContent(soup, source=''):
 	# TODO: Use a library that converts unicode to the closest approximation of ASCII.
 	finalText = '\n'.join(newContent).encode('utf-8').replace("’", "'").replace("”", '"').replace("“", '"').replace('—', '-').replace('‘', "'")
 	return finalText.replace('\n\n', '\n')
-
-def crawlContent(articles):
-	returns = downloader.getUrls([a['url'] for a in articles])
-	for urlReturn, a in zip(returns, articles):
-		if 'error' in urlReturn:
-			continue
-		soup = urlReturn['soup']
-		a['url'] = urlReturn['finalURL'] # after all redirects
-		a['source'] = tld.get_tld(a['url'])
-		a['content'] = getContent(soup, a['source'])
-	return articles
-
-if __name__ == '__main__':
-	if len(sys.argv) > 1:
-		newContent = getContent(downloader.getUrl(sys.argv[1])['soup'], 'bnamericas')
-		print newContent
-	else:
-		print "Provide a URL"
