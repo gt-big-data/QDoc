@@ -1,4 +1,5 @@
 from sys import argv
+from pprint import pprint
 
 import db
 
@@ -21,8 +22,23 @@ def checkBadSources(args):
     for error in formatErrors:
         print 'REASON: "%s"; COUNT: %d' % (error['_id'], error['sum'])
 
+def getBadSource(args):
+    if len(args) != 1:
+        print 'No reason given. Run `python %s groupbadsources` for reasons.' % argv[0]
+        return
+
+    reason = args[0]
+    badFeeds = db.test_sources.find({'formatError': reason}).limit(1)
+    # badFeeds either has 0 or 1 feed in it.
+    for onlyFeed in badFeeds:
+        print 'Feed with error: %s' % reason
+        pprint(onlyFeed, width=1)
+        return
+    print 'Could not find a feed with error: %s' % reason
+
 commands = {
-    'groupbadsources': checkBadSources
+    'groupbadsources': checkBadSources,
+    'getbadsource': getBadSource
 }
 
 if __name__ == '__main__':
