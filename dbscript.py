@@ -2,6 +2,7 @@ from sys import argv
 from pprint import pprint
 
 import db
+from feed import Feed
 
 def printHelp(*args):
     print 'Usage: python %s <command> [args]' % argv[0]
@@ -36,9 +37,48 @@ def getBadSource(args):
         return
     print 'Could not find a feed with error: %s' % reason
 
+def feedStatus(args):
+    if len(args) != 1:
+        print 'No feed given. Please specify a link to an RSS feed to view.'
+        return
+    feed = args[0]
+    feeds = db.test_sources.find({'rss': feed}).limit(1)
+    # feeds either has 0 or 1 feed in it.
+    for onlyFeed in feeds:
+        pprint(onlyFeed, width=1)
+        return
+    print 'We do not know about a feed at %s' % feed
+
+def checkFeed(args):
+    if len(args) != 1:
+        print 'No feed given. Please specify a link to an RSS feed to re-classify.'
+        return
+
+    print 'Existing feed data:'
+    feedStatus(args)
+
+    feed = Feed(url=args[0])
+    print 'Working with: %s' % feed.url
+
+    print 'Attempting to download the feed.'
+    couldDownload = feed.downloadFeed()
+    if not couldDownload:
+        print 'Could not download the feed. Is the URL correct? Is their site up? Is GTWifi working for you right now?'
+        return
+    print 'Successfully downloaded the feed.'
+
+    print 'Attempting to parse the feed.'
+    parseError = feed.parseFeed()
+    if parseError is None:
+        print 'Successfully parsed the feed. This feed should be enabled and tested.'
+    else:
+        print 'Could not parse the feed. Reason: %s' % parseError
+
 commands = {
     'groupbadsources': checkBadSources,
-    'getbadsource': getBadSource
+    'getbadsource': getBadSource,
+    'feedstatus': feedStatus,
+    'checkfeed': checkFeed
 }
 
 if __name__ == '__main__':
