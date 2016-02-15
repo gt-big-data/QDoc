@@ -19,11 +19,11 @@ PARSE_FEED_ITEM_FAILED = 'PARSE_FEED_ITEM_FAILED'
 NO_HTML_FOUND = 'NO_HTML_FOUND'
 
 class Feed(object):
-    def __init__(self, url, stamp=0, html='', articles=None):
+    def __init__(self, url, stamp=None, html='', articles=None):
         # Expecting most Feed objects to just be initialized with a URL and stamp.
         self.url = url
         self.originalUrl = url
-        self.lastTimeStamp = stamp
+        self.lastTimeStamp = stamp or datetime(1970, 1, 1, 0, 0, 0).replace(tzinfo=pytz.utc)
         self.html = html
         self.articles = articles or None
         self.lastCrawlTime = None
@@ -31,6 +31,8 @@ class Feed(object):
     def downloadFeed(self):
         try:
             response = requests.get(self.url, timeout=5)
+            if response.status_code == 404:
+                raise Exception('404 - Could not find a feed at the given address.')
         except Exception as e:
             print 'Could not download the feed: %s' % self.url
             print e
@@ -57,15 +59,16 @@ class Feed(object):
         }})
 
     def parseFeed(self):
+        if self.articles is not None and len(self.articles) > 0:
+            print 'WARNING: Recrawling a feed with existing articles.'
+            print 'Number of existing articles: %d' % len(self.articles)
+        self.articles = [] # In the event that articles have already been crawled, clear it anyways.
+
         if len(self.html) == 0:
             print "No HTML present. Not attempting to parse."
             return NO_HTML_FOUND
 
         soup = BeautifulSoup(self.html, 'html.parser')
-        if self.articles is not None and len(self.articles) > 0:
-            print 'WARNING: Recrawling a feed with existing articles.'
-            print 'Number of existing articles: %d' % len(self.articles)
-        self.articles = [] # In the event that articles have already been crawled, clear it anyways.
 
         # Each one of these has the HTML containing a link to an article and probably some basic information.
         feedItems = soup.find_all(['item', 'entry'])
@@ -86,6 +89,7 @@ class Feed(object):
             self.articles.append(article)
         stamps = [self.lastTimeStamp.replace(tzinfo=pytz.utc)] + [article.timestamp for article in self.articles]
         self.lastTimeStamp = max(stamps)
+        # TODO: Return total number of articles attempted and how many where successfully parsed.
         return None
 
 def _download(feed):
