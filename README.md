@@ -58,7 +58,7 @@ If that complains about directories not being writable (probably on OSX and Linu
 
 ### Run a Local MongoDB Instance
 
-If all of the setup stuff worked, just type `mongod` in a terminal window and you're good to go. You'll need to leave that window open in the background while you do stuff with the crawler. If `mongod` exits with an error, the process failed to start. You should talk to a someone to get that fixed.
+If all of the setup stuff worked, just type `mongod` in a terminal window and you're good to go. You'll need to leave that window open in the background while you do stuff with the crawler. If `mongod` exits with an error, the process failed to start. You should talk to someone to get that fixed.
 
 ### Load the feeds from the real database
 
