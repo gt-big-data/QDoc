@@ -33,7 +33,7 @@ You should also [add `pip` to your path](https://java.com/en/download/help/path.
 
 ### Install Mongo
 
-Out of the box, computers generally don't ship with Mongo. Unless you know you've already installed it, you probably don't have it.
+Out of the box, computers generally don't ship with Mongo. Unless you know you've already installed it, you probably don't have it. We currently use version 3.2; version 3.0 will not work, and we cannot vouch for 3.1 either.
 
 Windows and OSX: [Download and install it](https://www.mongodb.org/downloads#production)
 
@@ -44,7 +44,7 @@ You also need to create the directory `/data/db`. This is where Mongo stores its
 * OSX and Linux: `sudo mkdir -p -m 777 /data/db`
 * Windows: Create the folder `C:\data` and then create the folder `C:\data\db`.
 
-If you're on Windows, you'll also need to add Mongo to your path. It's probably located at `C:\mongodb\bin\` or `C:\Program Files\mongodb\bin`.
+If you're on Windows, you'll also need to add Mongo to your path. It's probably located at `C:\mongodb\bin\`, `C:\Program Files\mongodb\bin`, or `C:\Program Files\MongoDB\Server\x.x\bin` (`x.x` denotes the version number, please don't literally put `x.x`).
 
 ### Install Our Python Dependencies
 
@@ -58,7 +58,7 @@ If that complains about directories not being writable (probably on OSX and Linu
 
 ### Run a Local MongoDB Instance
 
-If all of the setup stuff worked, just type `mongod` in a terminal window and you're good to go. You'll need to leave that window open in the background while you do stuff with the crawler.
+If all of the setup stuff worked, just type `mongod` in a terminal window and you're good to go. You'll need to leave that window open in the background while you do stuff with the crawler. If `mongod` exits with an error, the process failed to start. You should talk to a someone to get that fixed.
 
 ### Load the feeds from the real database
 
@@ -69,10 +69,16 @@ We now store the list of feeds to crawl from the production database. To get the
 Then switch to the `big_data` database. This is where we store all of our data. Mongo automatically makes databases that don't exist so there's no special procedure for making a new database.
 
     use big_data
+    
+If you don't know what state your local database is in, then you need to drop the `feed` and `test_sources` collections.
+    
+    db.feed.drop()
+    db.test_sources.drop()
 
-Finally, copy the `feeds` collection from the production database to your local database.
+Finally, copy the `feed` and `test_sources` collections from the production database to your local database.
 
-    db.cloneCollection('api.retinanews.net', 'feed')
+    db.cloneCollection(‘db.retinanews.net’, ‘feed’)
+    db.cloneCollection(‘db.retinanews.net’, ‘test_sources’)
 
 ### Actually Run the Crawler!
 
