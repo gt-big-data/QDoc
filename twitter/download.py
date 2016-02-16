@@ -9,7 +9,7 @@ class TweetSampler(twython.TwythonStreamer):
             words, hashtags, mentions = cleanTweet(data['text'])
             longitude = 0
             latitude = 0
-            if 'boundingbox' in data['place']:
+            if 'bounding_box' in data['place']:
                 bbox = data['place']['bounding_box']['coordinates'][0]
                 longitude = ((bbox[0][0]+bbox[2][0])/2.0)
                 latitude = ((bbox[0][1]+bbox[1][1])/2.0)
