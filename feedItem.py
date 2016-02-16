@@ -34,6 +34,8 @@ def _extractPubTime(item):
         pubText = item.pubdate.text
     elif item.published is not None:
         pubText = item.published.text
+    elif item.find('dc:date') is not None:
+        pubText = item.find('dc:date').text
     if pubText == '':
         return None
     try:
