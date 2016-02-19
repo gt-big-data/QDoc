@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup, Comment, Doctype, NavigableString
-<<<<<<< HEAD:crawlContent.py
-from getUrl import *
-from dbco import *
-=======
->>>>>>> 541401bafa43b07aa882bdca7939a8c583666543:utils/articleParser.py
 import sys, re, tld
+import db
 
 def parseArticle(article):
     print 'Parsing %s' % article.url

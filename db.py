@@ -7,6 +7,7 @@ from dbco import db
 qdoc = articles = db.qdoc # Crawled articles.
 feed = feeds = db.feed # RSS feeds that may or not be in use right now.
 test_sources = newFeeds = db.test_sources # RSS feeds that we think exist but haven't tried to use yet.
+source_cleaning = source_cleaning = db.source_cleaning # Specific tags to remove for certain sources.
 
 def _returnOrYield(query, shouldYield):
     if shouldYield:
