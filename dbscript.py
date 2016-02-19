@@ -70,7 +70,11 @@ def checkFeed(args):
     print 'Attempting to parse the feed.'
     parseError = feed.parseFeed()
     if parseError is None:
-        print 'Successfully parsed the feed. This feed should be enabled and tested.'
+        print 'Successfully parsed the feed.'
+
+    if len(feed.articles) == 0:
+        print 'No articles parsed. Something is wrong'
+
     else:
         print 'Could not parse the feed. Reason: %s' % parseError
 
