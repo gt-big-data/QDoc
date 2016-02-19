@@ -3,22 +3,15 @@
 import db
 from datetime import datetime
 
-
 def fixArticleIntStamps():
-    bulkUpdate = db.qdoc.initialize_unordered_bulk_op()
     query = db.qdoc.find({'$or': [
         {'timestamp': {'$type': 'int'}},
         {'timestamp': {'$type': 'double'}},
     ]})
-    shouldExecute = False
     for article in query:
-        shouldExecute = True
         stamp = article.get('timestamp', 0)
         date = datetime.utcfromtimestamp(stamp)
-        bulkUpdate.find({'timestamp': stamp}).update({'$set': {'timestamp': date}})
-
-    if shouldExecute:
-        bulkUpdate.execute()
+        db.qdoc.update({'_id': article['_id']}, {'$set': {'timestamp': date}})
 
 def fixIntStamps():
     bulkUpdate = db.feed.initialize_unordered_bulk_op()
