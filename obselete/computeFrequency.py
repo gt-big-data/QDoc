@@ -1,11 +1,13 @@
-from dbco import *
+import db
 import time
 import numpy as np
 
 basic = 480
 
 # UPDATE articles without a crawl frequency
+# TODO: Document what this does.
 feedUpdate = db.feed.initialize_unordered_bulk_op()
+
 sourcesWithoutCrawlFreq = db.feed.find({'crawlFreq': {'$exists': False}})
 for src in sourcesWithoutCrawlFreq:
 	feedUpdate.find({'feed': src['feed']}).upsert().update({'$set': {'crawlFreq': basic}})
@@ -15,7 +17,7 @@ for src in sourcesWithoutCrawlFreq:
 match = {'$match': {'timestamp': {'$gte': time.time()-30*86400}}}
 sort = {'$sort': {'timestamp': 1}}
 group = {'$group': {'_id': '$feed', 'tsVec': {'$push': '$timestamp'}, 'count': {'$sum': 1}}}
-for d in db.qdoc.aggregate([match, sort, group]):
+for d in db.aggregateArticles([match, sort, group], shouldYield=True):
 	updateFrequency = basic # By default: update every 8 minutes
 	if d['count'] > 1:
 		diffVec = np.diff(d['tsVec'])
