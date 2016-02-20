@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 import pytz
 import concurrent.futures as futures # for multithreading
-import db
+import db, time
 
 from feedItem import feedItemToArticle
 
@@ -38,7 +38,7 @@ class Feed(object):
             print 'Could not download the feed: %s' % self.url
             print e.encode('utf8')
             return False
-        self.lastCrawlTime = datetime.utcnow()
+        self.lastCrawlTime = time.time()
         self.html = response.text
         self.url = response.url # URL may have been redirected or slightly modified during the request.
         return True
@@ -65,7 +65,7 @@ class Feed(object):
         Return tuple of (err, metadata) where err is a semi-generic string if an error occurred or None.
         metadata is a dict of a few statistics about the articles that were found or None if an error occured.
         """
-        self.lastCrawlTime = datetime.utcnow()
+        self.lastCrawlTime = time.time()
         if self.articles is not None and len(self.articles) > 0:
             print 'WARNING: Recrawling a feed with existing articles.'
             print 'Number of existing articles: %d' % len(self.articles)

@@ -1,8 +1,12 @@
+# -*- coding: utf-8 -*-
 import concurrent.futures as futures # for multithreading
 import requests
 
 from utils import articleQa, articleParser
-import db
+import db, sys
+
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 def good(val):
     return val and len(val) > 0
