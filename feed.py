@@ -98,7 +98,6 @@ class Feed(object):
                 articleStats['invalidArticles'] += 1
                 continue
             elif article.timestamp < self.lastTimeStamp:
-                print 'Got to end of the feed.'
                 break
             articleStats['newArticles'] += 1
             article.feed = self.url

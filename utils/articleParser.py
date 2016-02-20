@@ -95,17 +95,13 @@ def genericCleaning(soup):
     removeBadContent(soup)
 
 def sourceSpecificcleaning(soup, source):
-    startTime = time.time()
     sourceCleaning = list(db.source_cleaning.find({'source': source})) # Load the source specific data
-    postDB = time.time()
     if len(sourceCleaning) > 0:
         sourceCleaning = sourceCleaning[0]
         removeClasses(soup, sourceCleaning.get('classList', []))
         removeIds(soup, sourceCleaning.get('idList', []))
         for text in sourceCleaning.get('textList', []):
             [elem.extract() for elem in soup(text=re.compile(r''+text))]
-    postCleaning = time.time()
-    print 'DB: %d, Cleaning: %d' % (postDB - startTime, postCleaning - postDB)
 
 def getText(soup, putAlready=True):
     reload(sys)
