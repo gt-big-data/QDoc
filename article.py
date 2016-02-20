@@ -26,8 +26,8 @@ class Article(object):
         try:
             response = requests.get(self.url, timeout=5)
         except Exception as e:
-            print 'Could not download the feed: %s' % self.url
-            print e
+            print 'Could not download the article: %s' % self.url.encode('utf8')
+            print e.encode('utf8')
             return False
         self.url = response.url # Could have changed during redirects.
         self.html = response.text

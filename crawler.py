@@ -34,14 +34,14 @@ while i < len(feedList):
 		newArticles.extend(feed.articles)
 	newArticles = parseArticles(newArticles)
 	validArticles = [article for article in newArticles if article.isValid()]
-	duplicateArticlesCount = [article.save() for article in validArticles].count(True)
+	duplicateArticlesC = [article.save() for article in validArticles].count(True)
 	for feed in feeds:
 		print '%s => +%d' % (feed.url, len(feed.articles))
 		feed.save()
 	i += batchSize
 
 	newArticlesCount += len(newArticles)
-	duplicateArticlesCount += duplicateArticlesCount
+	duplicateArticlesCount += duplicateArticlesC
 	validArticlesCount += len(validArticles)
 	feedsCount += len(feeds)
 
