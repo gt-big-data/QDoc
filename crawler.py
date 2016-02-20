@@ -25,7 +25,7 @@ newArticles = []
 batchSize = 50
 while i < len(feedList):
 	tempList = feedList[i:(i + batchSize)]
-	feeds = [Feed(url=feed['feed'], stamp=feed.get('stamp', 0)) for feed in tempList]
+	feeds = [Feed(url=feed['feed'], stamp=feed.get('stamp', None)) for feed in tempList]
 	feeds = downloadFeeds(feeds)
 	feeds = parseFeeds(feeds)
 	feeds = downloadArticlesInFeeds(feeds)

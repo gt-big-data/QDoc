@@ -23,7 +23,8 @@ class Feed(object):
         # Expecting most Feed objects to just be initialized with a URL and stamp.
         self.url = url
         self.originalUrl = url
-        self.lastTimeStamp = stamp or datetime(1970, 1, 1, 0, 0, 0).replace(tzinfo=pytz.utc)
+        self.lastTimeStamp = stamp or datetime(1970, 1, 1, 0, 0, 0)
+        self.lastTimeStamp = self.lastTimeStamp.replace(tzinfo=pytz.utc)
         self.html = html
         self.articles = articles or None
         self.lastCrawlTime = None
@@ -37,6 +38,7 @@ class Feed(object):
             print 'Could not download the feed: %s' % self.url
             print e
             return False
+        self.lastCrawlTime = datetime.utcnow()
         self.html = response.text
         self.url = response.url # URL may have been redirected or slightly modified during the request.
         return True
@@ -59,6 +61,11 @@ class Feed(object):
         }})
 
     def parseFeed(self):
+        """
+        Return tuple of (err, metadata) where err is a semi-generic string if an error occurred or None.
+        metadata is a dict of a few statistics about the articles that were found or None if an error occured.
+        """
+        self.lastCrawlTime = datetime.utcnow()
         if self.articles is not None and len(self.articles) > 0:
             print 'WARNING: Recrawling a feed with existing articles.'
             print 'Number of existing articles: %d' % len(self.articles)
@@ -66,7 +73,7 @@ class Feed(object):
 
         if len(self.html) == 0:
             print "No HTML present. Not attempting to parse."
-            return NO_HTML_FOUND
+            return NO_HTML_FOUND, None
 
         soup = BeautifulSoup(self.html, 'html.parser')
 
@@ -75,22 +82,30 @@ class Feed(object):
         if len(feedItems) == 0:
             print "Could not find any articles in the feed: %s" % self.url
             print "Please disable the feed because it requires manual inspection."
-            return NO_ARTICLES_FOUND
+            return NO_ARTICLES_FOUND, None
 
-        self.lastCrawlTime = datetime.utcnow()
+        articleStats = {
+            'foundArticles': len(feedItems),
+            'newArticles': 0,
+            'invalidArticles': 0
+        }
 
         for item in feedItems:
             article = feedItemToArticle(item)
             if article is None:
                 print "Could not create an article from the given item:"
                 print item
+                articleStats['invalidArticles'] += 1
                 continue
+            elif article.timestamp < self.lastTimeStamp:
+                print 'Got to end of the feed.'
+                break
+            articleStats['newArticles'] += 1
             article.feed = self.url
             self.articles.append(article)
-        stamps = [self.lastTimeStamp.replace(tzinfo=pytz.utc)] + [article.timestamp for article in self.articles]
+        stamps = [self.lastTimeStamp] + [article.timestamp for article in self.articles]
         self.lastTimeStamp = max(stamps)
-        # TODO: Return total number of articles attempted and how many where successfully parsed.
-        return None
+        return None, articleStats
 
 def _download(feed):
     feed.downloadFeed()
