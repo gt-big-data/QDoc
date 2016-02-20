@@ -47,7 +47,7 @@ class Feed(object):
         if self.lastCrawlTime is None:
             print 'Cannot save a feed before crawling it. Doing nothing.'
             return
-        print 'Saving feed %s (stamp: %s, lastCrawl: %s)' % (self.url, self.lastCrawlTime.strftime('%c'), self.lastTimeStamp.strftime('%c'))
+        print 'Saving feed %s (stamp: %s, lastCrawl: %s)' % (self.url, datetime.fromtimestamp(self.lastCrawlTime).strftime('%c'), self.lastTimeStamp.strftime('%c'))
         db.feed.update({'feed': self.originalUrl}, {'$set': {
             'feed': self.url,
             'stamp': self.lastTimeStamp,
