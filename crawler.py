@@ -5,7 +5,7 @@ from utils import ip
 from article import Article, parseArticles
 import db
 
-startTime = datetime.utcnow()
+startTime = time.time()
 
 match = {'$match': {'active': True}}
 project = {'$project': {'secondsUntilRedo': {'$subtract': [{'$subtract': [startTime, '$lastCrawl']}, '$crawlFreq']}, 'feed': 1, 'stamp': 1, 'lastCrawl': 1, 'active': 1}}
@@ -30,7 +30,7 @@ while i < len(feedList):
 	feeds = parseFeeds(feeds)
 	feeds = downloadArticlesInFeeds(feeds)
 	newArticles = []
-	for feed in feeds:
+	for feed in feeds:3
 		newArticles.extend(feed.articles)
 	newArticles = parseArticles(newArticles)
 	validArticles = [article for article in newArticles if article.isValid()]
