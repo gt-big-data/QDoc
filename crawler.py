@@ -3,12 +3,13 @@ from datetime import datetime
 from feed import Feed, downloadFeeds, parseFeeds, downloadArticlesInFeeds
 from utils import ip
 from article import Article, parseArticles
-import db
+import db, time
 
-startTime = time.time()
+startTime = datetime.utcnow()
+nowTs = time.time()
 
 match = {'$match': {'active': True}}
-project = {'$project': {'secondsUntilRedo': {'$subtract': [{'$subtract': [startTime, '$lastCrawl']}, '$crawlFreq']}, 'feed': 1, 'stamp': 1, 'lastCrawl': 1, 'active': 1}}
+project = {'$project': {'secondsUntilRedo': {'$subtract': [{'$subtract': [nowTs, '$lastCrawl']}, '$crawlFreq']}, 'feed': 1, 'stamp': 1, 'lastCrawl': 1, 'active': 1}}
 match2 = {'$match': {'secondsUntilRedo': {'$gte': 0}}} # only get the ones that must be redone
 sort = {'$sort': {'secondsUntilRedo': -1}} # most important ones first
 limit = {'$limit': 150} # we only get the 150 most pressing sources :)
