@@ -30,7 +30,7 @@ while i < len(feedList):
 	feeds = parseFeeds(feeds)
 	feeds = downloadArticlesInFeeds(feeds)
 	newArticles = []
-	for feed in feeds:3
+	for feed in feeds:
 		newArticles.extend(feed.articles)
 	newArticles = parseArticles(newArticles)
 	validArticles = [article for article in newArticles if article.isValid()]
