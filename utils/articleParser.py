@@ -170,3 +170,12 @@ def getContent(soup, source=''):
     # TODO: Use a library that converts unicode to the closest approximation of ASCII.
     finalText = '\n'.join(newContent).encode('utf-8').replace("’", "'").replace("”", '"').replace("“", '"').replace('—', '-').replace('‘', "'")
     return finalText.replace('\n\n', '\n')
+
+if __name__ == '__main__':
+    import requests
+    if len(sys.argv) > 1:
+        url  = sys.argv[1]
+        html = requests.get(url).text.replace('<br>', '<br />')
+        soup = BeautifulSoup(html, 'html.parser')
+        source = tld.get_tld(url)
+        print getContent(soup, source)

@@ -34,7 +34,7 @@ class Article(object):
             print e.encode('utf8')
             return False
         self.url = response.url # Could have changed during redirects.
-        self.html = response.text
+        self.html = response.text.replace('<br>', '<br />') # the replace is important, don't omit
         return True
 
     def parseArticle(self):
