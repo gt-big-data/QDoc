@@ -6,12 +6,11 @@ from article import Article, parseArticles
 import db, time
 
 startTime = datetime.utcnow()
-nowTs = time.time() # For now using a timestamp
 
 match = {'$match': {'active': True}}
-project = {'$project': {'secondsUntilRedo': {'$subtract': [{'$subtract': [nowTs, '$lastCrawl']}, '$crawlFreq']}, 'feed': 1, 'stamp': 1, 'lastCrawl': 1, 'active': 1}} # Substracting datetime and a number of seconds doesn't work
-match2 = {'$match': {'secondsUntilRedo': {'$gte': 0}}} # only get the ones that must be redone
-sort = {'$sort': {'secondsUntilRedo': -1}} # most important ones first
+project = {'$project': {'milliSecondsUntilRedo': {'$subtract': [{'$subtract': [startTime, '$lastCrawl']}, {'$multiply': [1000, '$crawlFreq']}]}, 'feed': 1, 'stamp': 1, 'lastCrawl': 1, 'active': 1}} # Substracting datetime and a number of seconds doesn't work
+match2 = {'$match': {'milliSecondsUntilRedo': {'$gte': 0}}} # only get the ones that must be redone
+sort = {'$sort': {'milliSecondsUntilRedo': -1}} # most important ones first
 limit = {'$limit': 150} # we only get the 150 most pressing sources :)
 
 feedList = db.aggregateFeeds([match, project, match2, sort, limit])
