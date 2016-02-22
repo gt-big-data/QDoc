@@ -57,8 +57,8 @@ def getRandomRecentArticle():
         return toArticle(article)
     return None
 
-def updateArticle(id, updatedValues):
-    db.qdoc.update({'_id': ObjectId(id)}, {'$set': updatedValues})
+def updateArticle(id, newArticle): # this is an article object now
+    db.qdoc.update({'_id': ObjectId(id)}, {'$set': {'content': newArticle.content, 'keywords': []}})
 
 def insertArticle(guid, values):
     try:

@@ -57,5 +57,4 @@ db.log({
 	'duplicateArticles': duplicateArticlesCount,
 	'validArticles': validArticlesCount
 })
-
 print("--- %s seconds ---" % runTime)

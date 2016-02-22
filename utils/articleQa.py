@@ -1,6 +1,5 @@
 from difflib import SequenceMatcher
-import db
-import datetime
+import db, datetime
 #Quality control for single articles
 
 def _similar(str1, str2):
