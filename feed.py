@@ -36,7 +36,7 @@ class Feed(object):
                 raise Exception('404 - Could not find a feed at the given address.')
         except Exception as e:
             print 'Could not download the feed: %s' % self.url
-            print e.encode('utf8')
+            print e
             return False
         self.lastCrawlTime = time.time()
         self.html = response.text

@@ -69,16 +69,17 @@ We now store the list of feeds to crawl from the production database. To get the
 Then switch to the `big_data` database. This is where we store all of our data. Mongo automatically makes databases that don't exist so there's no special procedure for making a new database.
 
     use big_data
-    
+
 If you don't know what state your local database is in, then you need to drop the `feed` and `test_sources` collections.
-    
+
     db.feed.drop()
     db.test_sources.drop()
 
 Finally, copy the `feed` and `test_sources` collections from the production database to your local database.
 
-    db.cloneCollection(‘db.retinanews.net’, ‘feed’)
-    db.cloneCollection(‘db.retinanews.net’, ‘test_sources’)
+    db.cloneCollection('db.retinanews.net', 'feed')
+    db.cloneCollection('db.retinanews.net', 'test_sources')
+    db.cloneCollection('db.retinanews.net', 'source_cleaning')
 
 ### Actually Run the Crawler!
 

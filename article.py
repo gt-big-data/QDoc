@@ -31,7 +31,7 @@ class Article(object):
             response = requests.get(self.url, timeout=5)
         except Exception as e:
             print 'Could not download the article: %s' % self.url.encode('utf8')
-            print e.encode('utf8')
+            print e
             return False
         self.url = response.url # Could have changed during redirects.
         self.html = response.text.replace('<br>', '<br />') # the replace is important, don't omit
