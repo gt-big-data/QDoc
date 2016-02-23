@@ -6,7 +6,7 @@ class TweetSampler(twython.TwythonStreamer):
     def on_success(self, data):
         if 'text' in data and 'id_str' in data and 'user' in data and 'id_str' in data['user'] and 'timestamp_ms' in data and 'place' in data and 'id' in data['place']:
             time = int(float(data['timestamp_ms']) / 1000.0)
-            words, hashtags, mentions = cleanTweet(data['text'])
+            words, hashtags, mentions, count = cleanTweet(data['text'])
             longitude = 0
             latitude = 0
             if 'bounding_box' in data['place']:
@@ -14,7 +14,7 @@ class TweetSampler(twython.TwythonStreamer):
                 longitude = ((bbox[0][0]+bbox[2][0])/2.0)
                 latitude = ((bbox[0][1]+bbox[1][1])/2.0)
             T = Tweet(data['id_str'], data['text'], data['user']['id_str'], time, longitude, latitude, words, hashtags, mentions)
-            saveNewTweet(T)
+            saveNewTweet(T, count)
 
     def on_error(self, status_code, data):
         print status_code

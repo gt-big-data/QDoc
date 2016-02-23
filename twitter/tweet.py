@@ -25,9 +25,9 @@ def sendCache():
 		tweetInsert.execute()
 		cacheToSave = []
 
-def saveNewTweet(T):
+def saveNewTweet(T, count):
 	global cacheToSave
-	if isValid(T):
+	if isValid(T, count):
 		cacheToSave.append(T._asdict())
 	if len(cacheToSave) >= 30:
 		sendCache()
@@ -42,16 +42,16 @@ def cleanTweet(tweet):
 	tweetString = tweetString.replace('\n', '')
 	words = tweetString.split(' ')
 	words = [w for w in words if ('http' not in w and len(w) > 1 and not w.isdigit())]
-	words = list(set(words)-common_words)
+	count = len(list(set(words)-common_words))
 	hashtags = [w for w in words if w.startswith('#')]
 	mentions = [w for w in words if w.startswith('@')]
 	words = list((set(words)-set(hashtags))-set(mentions))
-	return words, hashtags, mentions
+	return words, hashtags, mentions, count
 
 def insertTweet(T):
 	db.tweet.update({'guid': T['guid']}, {'$set': T}, upsert=True)
 
-def isValid(t):
+def isValid(t, count):
 	# Verifies that a tweet has the minimal information needed
 	if t.guid == '':
 		return False
@@ -62,6 +62,6 @@ def isValid(t):
 	if t.timestamp < 500:
 		return False
 	myText = t.text
-	if len(t.words + t.hashtags + t.mentions) < 3:
+	if count < 3:
 		return False
 	return True
