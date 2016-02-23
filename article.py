@@ -15,7 +15,7 @@ class Article(object):
     def __init__(self, guid='', title='', url='', html='', timestamp=None, source='', feed='', content=''):
         self.guid = guid
         self.title = title
-        self.url = url
+        self.url = url.strip()
         self.timestamp = timestamp
         self.source = source
         self.feed = feed
