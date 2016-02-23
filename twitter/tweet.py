@@ -39,7 +39,7 @@ def cleanTweet(tweet):
 	global common_words
 	tweetString = re.sub('[()!\.,\?&;]', '', tweet).lower()
 	tweetString = remove_non_ascii_1(tweetString)
-	tweetString = tweetString.replace('\n', '')
+	tweetString = tweetString.replace('\n', ' ')
 	words = tweetString.split(' ')
 	words = [w for w in words if ('http' not in w and len(w) > 1 and not w.isdigit())]
 	count = len(list(set(words)-common_words))
