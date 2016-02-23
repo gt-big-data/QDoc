@@ -68,15 +68,13 @@ def checkFeed(args):
     print 'Successfully downloaded the feed.'
 
     print 'Attempting to parse the feed.'
-    parseError = feed.parseFeed()
+    parseError, stats = feed.parseFeed()
     if parseError is None:
         print 'Successfully parsed the feed.'
+        print stats
 
     if len(feed.articles) == 0:
         print 'No articles parsed. Something is wrong'
-
-    else:
-        print 'Could not parse the feed. Reason: %s' % parseError
 
 commands = {
     'groupbadsources': checkBadSources,

@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 import pytz
 import concurrent.futures as futures # for multithreading
-import db, time
+import db
 
 from feedItem import feedItemToArticle
 
@@ -38,7 +38,7 @@ class Feed(object):
             print 'Could not download the feed: %s' % self.url
             print e
             return False
-        self.lastCrawlTime = time.time()
+        self.lastCrawlTime = datetime.utcnow()
         self.html = response.text
         self.url = response.url # URL may have been redirected or slightly modified during the request.
         return True
@@ -47,7 +47,7 @@ class Feed(object):
         if self.lastCrawlTime is None:
             print 'Cannot save a feed before crawling it. Doing nothing.'
             return
-        print 'Saving feed %s (stamp: %s, lastCrawl: %s)' % (self.url, datetime.fromtimestamp(self.lastCrawlTime).strftime('%c'), self.lastTimeStamp.strftime('%c'))
+        print 'Saving feed %s (stamp: %s, lastCrawl: %s)' % (self.url, self.lastCrawlTime.strftime('%c'), self.lastTimeStamp.strftime('%c'))
         db.feed.update({'feed': self.originalUrl}, {'$set': {
             'feed': self.url,
             'stamp': self.lastTimeStamp,
@@ -65,7 +65,7 @@ class Feed(object):
         Return tuple of (err, metadata) where err is a semi-generic string if an error occurred or None.
         metadata is a dict of a few statistics about the articles that were found or None if an error occured.
         """
-        self.lastCrawlTime = time.time()
+        self.lastCrawlTime = datetime.utcnow()
         if self.articles is not None and len(self.articles) > 0:
             print 'WARNING: Recrawling a feed with existing articles.'
             print 'Number of existing articles: %d' % len(self.articles)
