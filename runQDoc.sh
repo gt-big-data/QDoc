@@ -2,4 +2,4 @@
 
 cd /home/bdc/QDoc/
 echo $(date) >> QDocRuns.log
-python crawler.py
+QDOC_ENV=prod python crawler.py
