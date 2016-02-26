@@ -4,8 +4,8 @@ env = os.environ.get('QDOC_ENV') or 'dev'
 
 variables = {
     'db_connection': {
-        'prod': 'mongodb://%s:27017/' % os.environ.get('QDOC_MONGO_HOST'),
-        'dev': 'mongodb://%s:27017/' % 'localhost'
+        'prod': 'mongodb://db.retinanews.net:27017/',
+        'dev': 'mongodb://localhost:27017/'
     },
     'feedsNum': {
         'prod': 150,
