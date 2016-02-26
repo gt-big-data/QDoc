@@ -4,6 +4,7 @@ from feed import Feed, downloadFeeds, parseFeeds, downloadArticlesInFeeds
 from utils import ip
 from article import Article, parseArticles
 import db, time
+from config import config
 
 startTime = datetime.utcnow()
 
@@ -11,7 +12,7 @@ match = {'$match': {'active': True}}
 project = {'$project': {'milliSecondsUntilRedo': {'$subtract': [{'$subtract': [startTime, '$lastCrawl']}, {'$multiply': [1000, '$crawlFreq']}]}, 'feed': 1, 'stamp': 1, 'lastCrawl': 1, 'active': 1}} # Substracting datetime and a number of seconds doesn't work
 match2 = {'$match': {'milliSecondsUntilRedo': {'$gte': 0}}} # only get the ones that must be redone
 sort = {'$sort': {'milliSecondsUntilRedo': -1}} # most important ones first
-limit = {'$limit': 150} # we only get the 150 most pressing sources :)
+limit = {'$limit': config['feedsNum']} # we only get the 150 most pressing sources :)
 
 feedList = db.aggregateFeeds([match, project, match2, sort, limit])
 
@@ -22,7 +23,7 @@ feedsCount = 0
 
 i = 0
 newArticles = []
-batchSize = 50
+batchSize = config['batchSize']
 while i < len(feedList):
 	tempList = feedList[i:(i + batchSize)]
 	feeds = [Feed(url=feed['feed'], stamp=feed.get('stamp', None)) for feed in tempList]

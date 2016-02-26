@@ -14,6 +14,8 @@ import db, time
 
 from feedItem import feedItemToArticle
 
+from config import config
+
 NO_ARTICLES_FOUND = 'NO_ARTICLES_FOUND'
 PARSE_FEED_ITEM_FAILED = 'PARSE_FEED_ITEM_FAILED'
 NO_HTML_FOUND = 'NO_HTML_FOUND'
@@ -110,8 +112,8 @@ def _download(feed):
     feed.downloadFeed()
     return feed
 
-def downloadFeeds(feeds, maxWorkers=100):
-    print 'Downloading %d feeds with %d threads.' % (len(feeds), maxWorkers)
+def downloadFeeds(feeds, maxWorkers=config['downloadFeedThreads']):
+    print 'Downloading %d feed(s) with %d thread(s).' % (len(feeds), maxWorkers)
     with futures.ThreadPoolExecutor(max_workers=maxWorkers) as executor:
         feedFutures = executor.map(_download, feeds)
         feeds = [feed for feed in feedFutures]
@@ -137,8 +139,8 @@ def _downloadArticles(feed):
         article.downloadArticle()
     return feed
 
-def downloadArticlesInFeeds(feeds, maxWorkers=4):
-    print 'Downloading articles from %d feeds with %d threads.' % (len(feeds), maxWorkers)
+def downloadArticlesInFeeds(feeds, maxWorkers=config['downloadArticleWorkers']):
+    print 'Downloading article(s) from %d feed(s) with %d thread(s).' % (len(feeds), maxWorkers)
     with futures.ThreadPoolExecutor(max_workers=maxWorkers) as executor:
         feedFutures = executor.map(_downloadArticles, feeds)
         feeds = [feed for feed in feedFutures]
