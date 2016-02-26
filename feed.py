@@ -23,11 +23,11 @@ NO_HTML_FOUND = 'NO_HTML_FOUND'
 class Feed(object):
     def __init__(self, url, stamp=None, html='', articles=None):
         # Expecting most Feed objects to just be initialized with a URL and stamp.
-        self.url = url
+        self.url = url.decode('utf-8').strip()
         self.originalUrl = url
         self.lastTimeStamp = stamp or datetime(1970, 1, 1, 0, 0, 0)
         self.lastTimeStamp = self.lastTimeStamp.replace(tzinfo=pytz.utc)
-        self.html = html
+        self.html = html.decode('utf-8')
         self.articles = articles or None
         self.lastCrawlTime = None
 
