@@ -5,6 +5,8 @@ import requests
 from utils import articleQa, articleParser
 import db, sys
 
+from config import config
+
 reload(sys)
 sys.setdefaultencoding('utf8')
 
@@ -81,8 +83,8 @@ def _parse(article):
     article.html = None
     return article
 
-def parseArticles(articles, maxWorkers=4):
-    print 'Parsing %d articles with %d processes.' % (len(articles), maxWorkers)
+def parseArticles(articles, maxWorkers=config['parseWorkers']):
+    print 'Parsing %d article(s) with %d process(es).' % (len(articles), maxWorkers)
     with futures.ProcessPoolExecutor(max_workers=maxWorkers) as executor:
         articlesFutures = executor.map(_parse, articles)
         # Force the futures generator to give us all of the articles back.
