@@ -23,7 +23,7 @@ while len(arts) > 0:
 	# print fbRet
 	for art in arts:
 		thisFb = fbRet.get(art['url'], 0)
-		qdocUpdate.find({'_id': art['_id']}).upsert().update({'$push': {'social': {'date': datetime.datetime.now(), 'fb': thisFb}}})
+		qdocUpdate.find({'_id': art['_id']}).upsert().update_one({'$push': {'social': {'date': datetime.datetime.now(), 'fb': thisFb}}})
 	waves += 1
 	print waves
 	if waves > 20:

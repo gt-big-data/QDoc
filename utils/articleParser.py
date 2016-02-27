@@ -1,7 +1,18 @@
-# -*- coding: utf-8 -*-
-from bs4 import BeautifulSoup, Comment, Doctype, NavigableString
-import sys, re, tld
+from bs4 import BeautifulSoup, Comment, Doctype, NavigableString, UnicodeDammit
+import re, tld
 import db
+
+unicodePunctuation =  u'\u2013\u2014\u2015\u2017\u2018\u2019\u201a\u201b\u201c\u201d\u201e\u2032\u2033'
+asciiPunctuation = u'-     -     -     _     \'    \'    ,     \'    \"    \"    \"    \'    \"'
+asciiPunctuation = asciiPunctuation.replace(' ', '')
+punctuationTranslation =  dict((ord(uchar), achar) for uchar, achar in zip(unicodePunctuation, asciiPunctuation))
+
+def clean(s):
+    s = unicode(s)
+    s = s.translate(punctuationTranslation)
+    s = s.replace(u'\xe2\x80\x99', "'") # Replace a weird smart quote.
+    s = s.strip()
+    return s
 
 def parseArticle(article):
     print 'Parsing %s' % article.url
@@ -13,7 +24,7 @@ def parseArticle(article):
 
     soup = BeautifulSoup(article.html, 'html.parser')
     # TODO: Heavily refactor getContent(...) and everything it calls.
-    article.content = getContent(soup, article.source)
+    article.content = clean(getContent(soup, article.source))
     return True
 
 def removeComments(soup):
@@ -33,13 +44,14 @@ def removeBadContent(soup):
     removeIds(soup, ['comments'])
     removeClasses(soup, ['bottom', 'footer', 'notes'])
     for el in soup.findAll(True):
-        classes = " ".join(el.get('class', [])).lower()
+        classes = u" ".join(el.get('class', [])).lower()
         badClasses = [' ad ', 'metadata', 'byline', 'dateline', 'published', 'location', 'modification', ' footer', 'discussion', 'carousel', 'short-cuts', 'nocontent']
         for cl in badClasses:
             if cl in classes:
                 el.extract()
                 break
 
+# TODO: This always throws an exception and returns False because parse is not defined.
 def isDate(txt):
     try:
         dt = parse(txt)
@@ -104,8 +116,6 @@ def sourceSpecificcleaning(soup, source):
             [elem.extract() for elem in soup(text=re.compile(r''+text))]
 
 def getText(soup, putAlready=True):
-    reload(sys)
-    sys.setdefaultencoding('utf8') # magic sauce
     elems = soup.findAll(text=True and visible)
     buildText = []
     for elem in elems:
@@ -129,7 +139,6 @@ def getText(soup, putAlready=True):
         returnString += re.sub(' +', ' ', st).replace('\t', '')
         if st[-1] in ['.', '!', '?']:
             returnString += '\n'
-    returnString = returnString.replace("’", "'").replace("”", '"').replace("“", '"').replace('—', '-').replace('‘', "'")
     return returnString
 
 def getContent(soup, source=''):
@@ -138,7 +147,7 @@ def getContent(soup, source=''):
     genericCleaning(soup)
     sourceSpecificcleaning(soup, source)
 
-    f = open("content.html", 'w'); f.write(soup.prettify().encode('utf-8')); f.close();
+    # f = open("content.html", 'w'); f.write(soup.prettify().encode('utf-8')); f.close();
 
     # Finding content in the tree
     bestElem = None; bestText = '';
@@ -167,15 +176,6 @@ def getContent(soup, source=''):
                     bestElem = el; bestText = a
     if len(newContent) == 0 and bestElem is not None: # in case nothing had a score of 3, but something had a score of 1 or more
         newContent.append(bestText)
-    # TODO: Use a library that converts unicode to the closest approximation of ASCII.
-    finalText = '\n'.join(newContent).encode('utf-8').replace("’", "'").replace("”", '"').replace("“", '"').replace('—', '-').replace('‘', "'")
-    return finalText.replace('\n\n', '\n')
 
-if __name__ == '__main__':
-    import requests
-    if len(sys.argv) > 1:
-        url  = sys.argv[1]
-        html = requests.get(url).text.replace('<br>', '<br />')
-        soup = BeautifulSoup(html, 'html.parser')
-        source = tld.get_tld(url)
-        print getContent(soup, source)
+    finalText = UnicodeDammit(u'\n'.join(newContent), smart_quotes_to='ascii').unicode_markup
+    return finalText.replace('\n\n', '\n')

@@ -1,14 +1,11 @@
-# -*- coding: utf-8 -*-
 import concurrent.futures as futures # for multithreading
 import requests
 
 from utils import articleQa, articleParser
-import db, sys
+from utils.articleParser import clean
+import db
 
 from config import config
-
-reload(sys)
-sys.setdefaultencoding('utf8')
 
 def good(val):
     return val and len(val) > 0
@@ -16,27 +13,28 @@ def good(val):
 class Article(object):
     def __init__(self, guid='', title='', url='', html='', timestamp=None, source='', feed='', content=''):
         self.guid = guid
-        self.title = title
-        self.url = url
+        self.title = clean(title)
+        self.url = clean(url)
         self.timestamp = timestamp
-        self.source = source
-        self.feed = feed
-        self.content = unicode(content)
+        self.source = clean(source)
+        self.feed = clean(feed)
+        self.content = clean(content)
         self.keywords = []
-        self.html = html
+        self.html = clean(html)
 
     def isDuplicate(self):
         return articleQa.isDuplicate(self)
 
     def downloadArticle(self):
         try:
+            print 'Downloading article %s' % self.url
             response = requests.get(self.url, timeout=5)
         except Exception as e:
-            print 'Could not download the article: %s' % self.url.encode('utf8')
+            print 'Could not download the article: %s' % self.url
             print e
             return False
         self.url = response.url # Could have changed during redirects.
-        self.html = response.text.replace('<br>', '<br />') # the replace is important, don't omit
+        self.html = response.text
         return True
 
     def parseArticle(self):

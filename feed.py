@@ -15,6 +15,7 @@ import db
 from feedItem import feedItemToArticle
 
 from config import config
+from utils.articleParser import clean
 
 NO_ARTICLES_FOUND = 'NO_ARTICLES_FOUND'
 PARSE_FEED_ITEM_FAILED = 'PARSE_FEED_ITEM_FAILED'
@@ -23,11 +24,11 @@ NO_HTML_FOUND = 'NO_HTML_FOUND'
 class Feed(object):
     def __init__(self, url, stamp=None, html='', articles=None):
         # Expecting most Feed objects to just be initialized with a URL and stamp.
-        self.url = url
+        self.url = clean(url)
         self.originalUrl = url
         self.lastTimeStamp = stamp or datetime(1970, 1, 1, 0, 0, 0)
         self.lastTimeStamp = self.lastTimeStamp.replace(tzinfo=pytz.utc)
-        self.html = html
+        self.html = clean(html)
         self.articles = articles or None
         self.lastCrawlTime = None
 
@@ -50,14 +51,14 @@ class Feed(object):
             print 'Cannot save a feed before crawling it. Doing nothing.'
             return
         print 'Saving feed %s (stamp: %s, lastCrawl: %s)' % (self.url, self.lastCrawlTime.strftime('%c'), self.lastTimeStamp.strftime('%c'))
-        db.feed.update({'feed': self.originalUrl}, {'$set': {
+        db.feed.update_one({'feed': self.originalUrl}, {'$set': {
             'feed': self.url,
             'stamp': self.lastTimeStamp,
             'lastCrawl': self.lastCrawlTime
         }}, upsert=True)
 
     def disable(self, reason):
-        db.feed.update({'feed': self.originalUrl}, {'$set': {
+        db.feed.update_one({'feed': self.originalUrl}, {'$set': {
             'active': False,
             'disableReason': reason
         }})
