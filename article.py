@@ -2,6 +2,7 @@ import concurrent.futures as futures # for multithreading
 import requests
 
 from utils import articleQa, articleParser
+from utils.articleParser import clean
 import db
 
 from config import config
@@ -12,14 +13,16 @@ def good(val):
 class Article(object):
     def __init__(self, guid='', title='', url='', html='', timestamp=None, source='', feed='', content=''):
         self.guid = guid
-        self.title = title.encode('utf-8').strip()
-        self.url = url.decode('utf-8').strip()
+        self.title = clean(title)
+
+        print '%r' % self.title
+        self.url = clean(url)
         self.timestamp = timestamp
-        self.source = source.decode('utf-8')
-        self.feed = feed.decode('utf-8')
-        self.content = content.decode('utf-8').strip()
+        self.source = clean(source)
+        self.feed = clean(feed)
+        self.content = clean(content)
         self.keywords = []
-        self.html = html.decode('utf-8')
+        self.html = clean(html)
 
     def isDuplicate(self):
         return articleQa.isDuplicate(self)
@@ -32,7 +35,7 @@ class Article(object):
             print e
             return False
         self.url = response.url # Could have changed during redirects.
-        self.html = response.text.replace('<br>', '<br />') # the replace is important, don't omit
+        # self.html = response.text.replace('<br>', '<br />') # the replace is important, don't omit
         return True
 
     def parseArticle(self):

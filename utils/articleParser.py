@@ -2,6 +2,18 @@ from bs4 import BeautifulSoup, Comment, Doctype, NavigableString, UnicodeDammit
 import re, tld
 import db
 
+unicodePunctuation =  u'\u2013\u2014\u2015\u2017\u2018\u2019\u201a\u201b\u201c\u201d\u201e\u2032\u2033'
+asciiPunctuation = u'-     -     -     _     \'    \'    ,     \'    \"    \"    \"    \'    \"'
+asciiPunctuation = asciiPunctuation.replace(' ', '')
+punctuationTranslation =  dict((ord(uchar), achar) for uchar, achar in zip(unicodePunctuation, asciiPunctuation))
+
+def clean(s):
+    s = unicode(s)
+    s = s.translate(punctuationTranslation)
+    s = s.replace(u'\xe2\x80\x99', "'") # Replace a weird smart quote.
+    s = s.strip()
+    return s
+
 def parseArticle(article):
     print 'Parsing %s' % article.url
     if len(article.html) == 0:

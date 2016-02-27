@@ -1,5 +1,6 @@
 from difflib import SequenceMatcher
 import db, datetime
+from utils.articleParser import clean
 #Quality control for single articles
 
 def _similar(str1, str2):
@@ -11,7 +12,7 @@ def _similar(str1, str2):
 def isDuplicate(article):
     threeDays = datetime.datetime.now() - datetime.timedelta(days=3)
     otherArticles = db.getLatestArticles({'source': article.source, 'timestamp': {'$gte': threeDays}})
-    for otherArticleData in otherArticles:
-        if article.title == otherArticle['title'].encode('utf-8') or _similar(article.content, otherArticle['content'].encode('utf-8')) > 0.9:
+    for otherArticle in otherArticles:
+        if article.title == clean(otherArticle['title']) or _similar(article.content, clean(otherArticle['content'])) > 0.9:
             return otherArticle['_id']
     return None
