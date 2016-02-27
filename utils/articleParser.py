@@ -24,7 +24,7 @@ def parseArticle(article):
 
     soup = BeautifulSoup(article.html, 'html.parser')
     # TODO: Heavily refactor getContent(...) and everything it calls.
-    article.content = getContent(soup, article.source)
+    article.content = clean(getContent(soup, article.source))
     return True
 
 def removeComments(soup):
