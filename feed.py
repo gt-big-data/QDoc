@@ -51,14 +51,14 @@ class Feed(object):
             print 'Cannot save a feed before crawling it. Doing nothing.'
             return
         print 'Saving feed %s (stamp: %s, lastCrawl: %s)' % (self.url, self.lastCrawlTime.strftime('%c'), self.lastTimeStamp.strftime('%c'))
-        db.feed.update({'feed': self.originalUrl}, {'$set': {
+        db.feed.update_one({'feed': self.originalUrl}, {'$set': {
             'feed': self.url,
             'stamp': self.lastTimeStamp,
             'lastCrawl': self.lastCrawlTime
         }}, upsert=True)
 
     def disable(self, reason):
-        db.feed.update({'feed': self.originalUrl}, {'$set': {
+        db.feed.update_one({'feed': self.originalUrl}, {'$set': {
             'active': False,
             'disableReason': reason
         }})

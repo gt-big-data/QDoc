@@ -66,7 +66,7 @@ def summarizeTweet(text, hashtagsIndices, mentionsIndices, urlsIndices):
     return words, keywords
 
 def insertTweet(T):
-    db.tweet.update({'guid': T['guid']}, {'$set': T}, upsert=True)
+    db.tweet.update_one({'guid': T['guid']}, {'$set': T}, upsert=True)
 
 def isValid(t):
     if len(t.words) + len(t.hashtags) + len(t.mentions_id) < 3:

@@ -58,14 +58,14 @@ def getRandomRecentArticle():
     return None
 
 def updateArticle(id, newArticle): # this is an article object now
-    db.qdoc.update({'_id': ObjectId(id)}, {'$set': {'content': newArticle.content, 'keywords': []}})
+    db.qdoc.update_one({'_id': ObjectId(id)}, {'$set': {'content': newArticle.content, 'keywords': []}})
 
 def insertArticle(guid, values):
     try:
         values = values.__dict__
     except AttributeError:
         pass
-    db.qdoc.update({'guid': guid}, {'$set': values}, upsert=True)
+    db.qdoc.update_one({'guid': guid}, {'$set': values}, upsert=True)
 
 def aggregateArticles(operations, shouldYield=False):
     query = db.qdoc.aggregate(operations)
@@ -78,7 +78,7 @@ def aggregateFeeds(operations, shouldYield=False):
 def bulkUpdateArticles(callback):
     bulkUpdate = db.qdoc.initialize_unordered_bulk_op()
     def updater(condition, updatedValues):
-        bulkUpdate.find(condtion).upsert().update(updatedValues)
+        bulkUpdate.find(condtion).upsert().update_one(updatedValues)
     callback(updater)
     bulkUpdate.execute()
 
