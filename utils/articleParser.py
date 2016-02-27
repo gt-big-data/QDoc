@@ -38,6 +38,8 @@ def removeBadContent(soup):
             if cl in classes:
                 el.extract()
                 break
+
+# TODO: This always throws an exception and returns False because parse is not defined.
 def isDate(txt):
     try:
         dt = parse(txt)
