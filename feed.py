@@ -124,17 +124,17 @@ def downloadFeeds(feeds, maxWorkers=config['downloadFeedThreads']):
     return feeds
 
 def _parse(feed):
-    startTime = time.time()
     feed.parseFeed()
-    print "[PARSE" + str(round(time.time() - startTime, 3)) + "s] " + feed.url
     return feed
 
 def parseFeeds(feeds):
     # Not threading because GIL would make the efforts worthless.
     # Not using processes because the total amount of work here is very small.
-    print 'Parsing %d feed(s).' % (len(feeds))
+    print '\nParsing %d feed(s).' % (len(feeds))
     for feed in feeds:
+        startTime = time.time()
         feed.parseFeed()
+        print "[PARSE " + str(round(time.time() - startTime, 3)) + "s] " + feed.url
     return feeds
 
 def _downloadArticles(feed):
