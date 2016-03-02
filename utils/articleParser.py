@@ -15,7 +15,7 @@ def clean(s):
     return s
 
 def parseArticle(article):
-    print 'Parsing %s' % article.url
+    # print 'Parsing %s' % article.url
     if len(article.html) == 0:
         print 'Article has no HTML. Cannot parse.'
         return False

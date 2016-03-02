@@ -4,6 +4,7 @@ import requests
 from utils import articleQa, articleParser
 from utils.articleParser import clean
 import db
+import time
 
 from config import config
 
@@ -27,7 +28,6 @@ class Article(object):
 
     def downloadArticle(self):
         try:
-            print 'Downloading article %s' % self.url
             response = requests.get(self.url, timeout=5)
         except Exception as e:
             print 'Could not download the article: %s' % self.url
@@ -75,14 +75,16 @@ class Article(object):
         return dupID is not None
 
 def _parse(article):
+    startTime = time.time()
     article.parseArticle()
+    print "[PARSE " + str(round(time.time() - startTime, 3)) + "s] " + article.url
     # No reason to keep this after parsing.
     # And deleting it here makes interprocess-pickling much faster.
     article.html = None
     return article
 
 def parseArticles(articles, maxWorkers=config['parseWorkers']):
-    print 'Parsing %d article(s) with %d process(es).' % (len(articles), maxWorkers)
+    print '\nParsing %d article(s) with %d process(es).' % (len(articles), maxWorkers)
     with futures.ProcessPoolExecutor(max_workers=maxWorkers) as executor:
         articlesFutures = executor.map(_parse, articles)
         # Force the futures generator to give us all of the articles back.

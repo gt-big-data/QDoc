@@ -11,6 +11,7 @@ from datetime import datetime
 import pytz
 import concurrent.futures as futures # for multithreading
 import db
+import time
 
 from feedItem import feedItemToArticle
 
@@ -50,7 +51,7 @@ class Feed(object):
         if self.lastCrawlTime is None:
             print 'Cannot save a feed before crawling it. Doing nothing.'
             return
-        print 'Saving feed %s (stamp: %s, lastCrawl: %s)' % (self.url, self.lastCrawlTime.strftime('%c'), self.lastTimeStamp.strftime('%c'))
+        print '\nSaving feed %s (stamp: %s, lastCrawl: %s)' % (self.url, self.lastCrawlTime.strftime('%c'), self.lastTimeStamp.strftime('%c'))
         db.feed.update_one({'feed': self.originalUrl}, {'$set': {
             'feed': self.url,
             'stamp': self.lastTimeStamp,
@@ -110,11 +111,13 @@ class Feed(object):
         return None, articleStats
 
 def _download(feed):
+    startTime = time.time()
     feed.downloadFeed()
+    print "[DOWNLOAD " + str(round(time.time() - startTime, 3)) + "s] " + feed.url
     return feed
 
 def downloadFeeds(feeds, maxWorkers=config['downloadFeedThreads']):
-    print 'Downloading %d feed(s) with %d thread(s).' % (len(feeds), maxWorkers)
+    print '\nDownloading %d feed(s) with %d thread(s).' % (len(feeds), maxWorkers)
     with futures.ThreadPoolExecutor(max_workers=maxWorkers) as executor:
         feedFutures = executor.map(_download, feeds)
         feeds = [feed for feed in feedFutures]
@@ -127,21 +130,24 @@ def _parse(feed):
 def parseFeeds(feeds):
     # Not threading because GIL would make the efforts worthless.
     # Not using processes because the total amount of work here is very small.
-    print 'Parsing %d feeds.' % (len(feeds))
+    print '\nParsing %d feed(s).' % (len(feeds))
     for feed in feeds:
-        print 'Parsing %s' % feed.url
+        startTime = time.time()
         feed.parseFeed()
+        print "[PARSE " + str(round(time.time() - startTime, 3)) + "s] " + feed.url
     return feeds
 
 def _downloadArticles(feed):
     # Sequentially download every article in a feed.
     # Prevents us from causing excessive load to any single source.
     for article in feed.articles:
+        startTime = time.time()
         article.downloadArticle()
+        print "[DOWNLOAD " + str(round(time.time() - startTime, 3)) + "s] " + article.url
     return feed
 
 def downloadArticlesInFeeds(feeds, maxWorkers=config['downloadArticleWorkers']):
-    print 'Downloading article(s) from %d feed(s) with %d thread(s).' % (len(feeds), maxWorkers)
+    print '\nDownloading article(s) from %d feed(s) with %d thread(s).' % (len(feeds), maxWorkers)
     with futures.ThreadPoolExecutor(max_workers=maxWorkers) as executor:
         feedFutures = executor.map(_downloadArticles, feeds)
         feeds = [feed for feed in feedFutures]
