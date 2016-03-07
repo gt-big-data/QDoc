@@ -1,5 +1,6 @@
-import twython, json, requests
+import twython, json
 from tweet import *
+from dbco import *
 
 class TweetSampler(twython.TwythonStreamer):
 
@@ -52,6 +53,10 @@ class TweetSampler(twython.TwythonStreamer):
 
 BOUNDING_BOX = '-124.92,26.15,-66.59,48.96'
 
+def getUpdatedEntityList():
+    entities = db.entities.find_one({"_id" : 1})
+    return entities[ls]
+
 def main():
     f = open('credentials.json')
     credentials = json.load(f)
@@ -61,7 +66,8 @@ def main():
         credentials['APP_SECRET'],
         credentials['ACCESS_TOKEN'],
         credentials['ACCESS_TOKEN_SECRET'])
-    stream.statuses.filter(language='en',locations=BOUNDING_BOX)
+    entityList = getUpdatedEntityList()
+    stream.statuses.filter(language='en',locations=BOUNDING_BOX,track=entityList)
 
 if __name__ == '__main__':
     main()
