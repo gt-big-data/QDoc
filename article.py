@@ -3,7 +3,6 @@ import requests
 
 from utils import articleQa, articleParser
 from utils.articleParser import clean
-import db
 import time
 
 from config import config
@@ -66,6 +65,7 @@ class Article(object):
 
         Return True if this is an original article and False if it's a duplicate.
         """
+        import db
         dupID = articleQa.isDuplicate(self)
         if not self.isValid():
             print("Article from source: " + self.source + "feed: " + self.feed + " was invalid")

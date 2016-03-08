@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup, Comment, Doctype, NavigableString, UnicodeDammit
 import re, tld
-import db
 
 unicodePunctuation =  u'\u2013\u2014\u2015\u2017\u2018\u2019\u201a\u201b\u201c\u201d\u201e\u2032\u2033'
 asciiPunctuation = u'-     -     -     _     \'    \'    ,     \'    \"    \"    \"    \'    \"'
