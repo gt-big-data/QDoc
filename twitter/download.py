@@ -1,6 +1,6 @@
 import twython, json
 from tweet import *
-from dbco import *
+from dbco import db
 
 class TweetSampler(twython.TwythonStreamer):
 
@@ -49,13 +49,14 @@ class TweetSampler(twython.TwythonStreamer):
             saveNewTweet(T)
 
     def on_error(self, status_code, data):
-        print status_code
+        #print status_code
+        return
 
 BOUNDING_BOX = '-124.92,26.15,-66.59,48.96'
 
 def getUpdatedEntityList():
     entities = db.entities.find_one({"_id" : 1})
-    return entities[ls]
+    return entities["ls"]
 
 def main():
     f = open('credentials.json')
