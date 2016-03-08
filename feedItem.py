@@ -1,15 +1,27 @@
 """This file deals with everything related to taking an individual item on a feed and turning it into an article."""
 from dateutil import parser
-import pytz
-import re
+import pytz, re, tld
 
 from article import Article
+import db
+
+_sourceCleaning = {}
+def getSourceCleaning(url):
+    source = tld.get_tld(url)
+    specificCleaning = _sourceCleaning.get(source, None)
+    if specificCleaning is None:
+        print 'Getting source info for %s' % source
+        specificCleaning = list(db.source_cleaning.find({'source': source}))
+        _sourceCleaning[source] = specificCleaning
+    return specificCleaning
 
 def feedItemToArticle(item):
     url = _extractLink(item)
     if url is None:
         print 'Could not find an article URL from the given feed item. Skipping.'
         return None
+
+    sourceCleaning = getSourceCleaning(url)
 
     title = _extractTitle(item)
     if title is None:
@@ -26,7 +38,7 @@ def feedItemToArticle(item):
         print 'Could not find a pubtime for the given feed item. Skipping.'
         return None
 
-    return Article(guid=guid, title=title, url=url, timestamp=pubtime)
+    return Article(guid=guid, title=title, url=url, timestamp=pubtime, sourceCleaning=sourceCleaning)
 
 def _extractPubTime(item):
     pubText = ''

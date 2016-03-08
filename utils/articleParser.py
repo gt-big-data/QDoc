@@ -14,7 +14,7 @@ def clean(s):
     s = s.strip()
     return s
 
-def parseArticle(article):
+def parseArticle(article, sourceCleaning=[]):
     # print 'Parsing %s' % article.url
     if len(article.html) == 0:
         print 'Article has no HTML. Cannot parse.'
@@ -24,7 +24,7 @@ def parseArticle(article):
 
     soup = BeautifulSoup(article.html, 'html.parser')
     # TODO: Heavily refactor getContent(...) and everything it calls.
-    article.content = clean(getContent(soup, article.source))
+    article.content = clean(getContent(soup, article.sourceCleaning))
     return True
 
 def removeComments(soup):
@@ -106,8 +106,7 @@ def genericCleaning(soup):
     removeHeaderNavFooter(soup)
     removeBadContent(soup)
 
-def sourceSpecificcleaning(soup, source):
-    sourceCleaning = list(db.source_cleaning.find({'source': source})) # Load the source specific data
+def sourceSpecificcleaning(soup, sourceCleaning):
     if len(sourceCleaning) > 0:
         sourceCleaning = sourceCleaning[0]
         removeClasses(soup, sourceCleaning.get('classList', []))
@@ -141,11 +140,11 @@ def getText(soup, putAlready=True):
             returnString += '\n'
     return returnString
 
-def getContent(soup, source=''):
+def getContent(soup, sourceCleaning=[]):
     newContent = []
     # Cleanning phase
     genericCleaning(soup)
-    sourceSpecificcleaning(soup, source)
+    sourceSpecificcleaning(soup, sourceCleaning)
 
     # f = open("content.html", 'w'); f.write(soup.prettify().encode('utf-8')); f.close();
 

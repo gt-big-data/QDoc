@@ -12,7 +12,7 @@ def good(val):
     return val and len(val) > 0
 
 class Article(object):
-    def __init__(self, guid='', title='', url='', html='', timestamp=None, source='', feed='', content=''):
+    def __init__(self, guid='', title='', url='', html='', timestamp=None, source='', feed='', content='', sourceCleaning=None):
         self.guid = guid
         self.title = clean(title)
         self.url = clean(url)
@@ -22,6 +22,7 @@ class Article(object):
         self.content = clean(content)
         self.keywords = []
         self.html = clean(html)
+        self.sourceCleaning = sourceCleaning or []
 
     def isDuplicate(self):
         return articleQa.isDuplicate(self)
