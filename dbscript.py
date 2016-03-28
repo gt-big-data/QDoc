@@ -3,6 +3,7 @@ from pprint import pprint
 
 import db
 from feed import Feed
+from article import Article
 
 def printHelp(*args):
     print 'Usage: python %s <command> [args]' % argv[0]
@@ -76,11 +77,30 @@ def checkFeed(args):
     if len(feed.articles) == 0:
         print 'No articles parsed. Something is wrong'
 
+def parseArticle(args):
+    if len(args) != 1:
+        print 'No article given. Please specify a link to an article to parse.'
+        return
+
+    article = Article(url=args[0])
+    print 'Working with: %s' % article.url
+
+    print 'Attempting to download the article.'
+    couldDownload = article.downloadArticle()
+    if not couldDownload:
+        print 'Could not download the article. Is the URL correct? Is their site up? Is GTWifi working for you right now?'
+        return
+    print 'Successfully downloaded the article.'
+    article.parseArticle()
+    print 'Article body:'
+    print article.content
+
 commands = {
     'groupbadsources': checkBadSources,
     'getbadsource': getBadSource,
     'feedstatus': feedStatus,
-    'checkfeed': checkFeed
+    'checkfeed': checkFeed,
+    'parsearticle': parseArticle
 }
 
 if __name__ == '__main__':
