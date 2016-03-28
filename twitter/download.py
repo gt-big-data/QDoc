@@ -1,7 +1,9 @@
-import twython, json, requests
+import twython, json
 from tweet import *
+from dbco import db
+import time as t
 
-class TweetSampler(twython.TwythonStreamer):
+class TweetSampler(twython.TwythonStreamer, ms):
 
     def on_success(self, data):
         if 'text' in data and 'id_str' in data and 'user' in data and 'id_str' in data['user'] and 'name' in data['user'] and 'followers_count' in data['user'] and 'timestamp_ms' in data and 'entities' in data:
@@ -46,22 +48,38 @@ class TweetSampler(twython.TwythonStreamer):
                     lat = (bbox[0][1] + bbox[1][1]) / 2.0
             T = Tweet(data['id_str'], data['text'], data['user']['id_str'], data['user']['name'], data['user']['followers_count'], time, lon, lat, words, keywords, hashtags, mentions_id, mentions_name, urls, favorite_count, retweet_count)
             saveNewTweet(T)
+            if itIsTime(time):
+                stream.disconnect()
 
     def on_error(self, status_code, data):
-        print status_code
+        #print status_code
+        return
+
+    def itIsTime(time):
+        if ((time - self.ms) / 86400000) >= 1:
+            self.ms = time
+            return True
+        else:
+            return False
 
 BOUNDING_BOX = '-124.92,26.15,-66.59,48.96'
+
+def getUpdatedEntityList():
+    entities = db.entities.find_one({"_id" : 1})
+    return entities["ls"]
 
 def main():
     f = open('credentials.json')
     credentials = json.load(f)
     f.close()
+    millis = int(round(t.time() * 1000))
     stream = TweetSampler(
         credentials['APP_KEY'],
         credentials['APP_SECRET'],
         credentials['ACCESS_TOKEN'],
-        credentials['ACCESS_TOKEN_SECRET'])
-    stream.statuses.filter(language='en',locations=BOUNDING_BOX)
+        credentials['ACCESS_TOKEN_SECRET'], millis)
+    entityList = getUpdatedEntityList()
+    stream.statuses.filter(language='en',locations=BOUNDING_BOX,track=entityList)
 
 if __name__ == '__main__':
     main()
