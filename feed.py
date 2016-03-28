@@ -44,7 +44,6 @@ class Feed(object):
             return False
         self.lastCrawlTime = datetime.utcnow()
         self.html = response.text
-        self.url = response.url # URL may have been redirected or slightly modified during the request.
         return True
 
     def save(self):
