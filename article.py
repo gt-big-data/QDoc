@@ -11,11 +11,16 @@ from config import config
 def good(val):
     return val and len(val) > 0
 
+def fixUrl(url):
+    if url.startswith('//'):
+        url = 'http:' + url
+    return url
+
 class Article(object):
     def __init__(self, guid='', title='', url='', html='', timestamp=None, source='', feed='', content=''):
         self.guid = guid
         self.title = clean(title)
-        self.url = clean(url)
+        self.url = fixUrl(clean(url))
         self.timestamp = timestamp
         self.source = clean(source)
         self.feed = clean(feed)
