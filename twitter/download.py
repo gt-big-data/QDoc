@@ -1,9 +1,10 @@
-import twython, json
+import json
 from tweet import *
+from twython import TwythonStreamer
 from dbco import db
 import time as t
 
-class TweetSampler(twython.TwythonStreamer, ms):
+class TweetSampler(TwythonStreamer):
 
     def on_success(self, data):
         if 'text' in data and 'id_str' in data and 'user' in data and 'id_str' in data['user'] and 'name' in data['user'] and 'followers_count' in data['user'] and 'timestamp_ms' in data and 'entities' in data:
@@ -52,15 +53,13 @@ class TweetSampler(twython.TwythonStreamer, ms):
                 stream.disconnect()
 
     def on_error(self, status_code, data):
-        #print status_code
+        print status_code
         return
 
     def itIsTime(time):
-        if ((time - self.ms) / 86400000) >= 1:
-            self.ms = time
-            return True
-        else:
-            return False
+        document = db.entities.find_one({"_id" : 2})
+        lastDisconnect = document["time"]
+        return ((time - lastDisconnect) / 86400000) >= 1
 
 BOUNDING_BOX = '-124.92,26.15,-66.59,48.96'
 
@@ -73,12 +72,13 @@ def main():
     credentials = json.load(f)
     f.close()
     millis = int(round(t.time() * 1000))
+    db.entities.update({"_id" : 2}, {"$set" : {"time" : millis}}, {"upsert" : True})
+    entityList = getUpdatedEntityList()
     stream = TweetSampler(
         credentials['APP_KEY'],
         credentials['APP_SECRET'],
         credentials['ACCESS_TOKEN'],
-        credentials['ACCESS_TOKEN_SECRET'], millis)
-    entityList = getUpdatedEntityList()
+        credentials['ACCESS_TOKEN_SECRET'])
     stream.statuses.filter(language='en',locations=BOUNDING_BOX,track=entityList)
 
 if __name__ == '__main__':
