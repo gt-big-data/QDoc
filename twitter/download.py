@@ -72,7 +72,7 @@ def main():
     credentials = json.load(f)
     f.close()
     millis = int(round(t.time() * 1000))
-    db.entities.update({"_id" : 2}, {"$set" : {"time" : millis}}, {"upsert" : True})
+    db.entities.update({"_id" : 2}, {"$set" : {"time" : millis}}, upsert=True)
     entityList = getUpdatedEntityList()
     stream = TweetSampler(
         credentials['APP_KEY'],
