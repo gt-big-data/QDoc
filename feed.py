@@ -103,7 +103,6 @@ class Feed(object):
             elif article.timestamp < self.lastTimeStamp:
                 break
             articleStats['newArticles'] += 1
-            article.feed = self.url
             self.articles.append(article)
         stamps = [self.lastTimeStamp] + [article.timestamp for article in self.articles]
         self.lastTimeStamp = max(stamps)

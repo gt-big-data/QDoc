@@ -30,16 +30,6 @@ def parseArticle(article):
 def removeComments(soup):
     [e.extract() for e in soup(text=lambda text: isinstance(text, Comment))]
 
-def removeHeaderNavFooter(soup):
-    hnfs = soup.findAll({'header', 'nav', 'footer', 'aside', 'figure', 'button'})
-    [hnf.extract() for hnf in hnfs]
-    return soup
-
-def removeScriptStyle(soup):
-    hnfs = soup.findAll({'style', 'script', 'noscript', '[document]', 'head', 'title', 'form'})
-    [hnf.extract() for hnf in hnfs]
-    return soup
-
 def removeBadContent(soup):
     removeIds(soup, ['comments'])
     removeClasses(soup, ['bottom', 'footer', 'notes'])
@@ -101,10 +91,13 @@ def removeIds(soup, ids):
     [el.extract() for el in soup.findAll(True) if el.get('id', '') in ids]
 
 def genericCleaning(soup):
-    removeComments(soup)
-    removeScriptStyle(soup)
-    removeHeaderNavFooter(soup)
+    badTags = ['header', 'nav', 'footer', 'aside', 'figure', 'button']
+    badTags.extend(['style', 'script', 'noscript', '[document]', 'head', 'title', 'form'])
+    # One findAll on a bunch of elements is much faster than a bunch of findAlls on a few elements.
+    hnfs = soup.findAll(badTags)
+    [hnf.extract() for hnf in hnfs]
     removeBadContent(soup)
+    removeComments(soup)
 
 def sourceSpecificcleaning(soup, source):
     sourceCleaning = list(db.source_cleaning.find({'source': source})) # Load the source specific data
@@ -148,7 +141,6 @@ def getContent(soup, source=''):
     sourceSpecificcleaning(soup, source)
 
     # f = open("content.html", 'w'); f.write(soup.prettify().encode('utf-8')); f.close();
-
     # Finding content in the tree
     bestElem = None; bestText = '';
     for el in soup.findAll(True):
