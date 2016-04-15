@@ -1,4 +1,4 @@
-import json
+import json, pymongo
 from tweet import *
 from twython import TwythonStreamer
 from dbco import db
@@ -59,20 +59,19 @@ class TweetSampler(TwythonStreamer):
     def itIsTime(time):
         document = db.entities.find_one({"_id" : 2})
         lastDisconnect = document["time"]
-        return ((time - lastDisconnect) / 86400000) >= 1
+        return ((time - lastDisconnect) / 3600000) >= 1
 
 BOUNDING_BOX = '-124.92,26.15,-66.59,48.96'
 
 def getUpdatedEntityList():
-    entities = db.entities.find_one({"_id" : 1})
-    return entities["ls"]
+    return list(db.relevant_ents.find().sort("datetime", pymongo.DESCENDING).limit(1))[0]['entities']
 
 def main():
     f = open('credentials.json')
     credentials = json.load(f)
     f.close()
     millis = int(round(t.time() * 1000))
-    db.entities.update({"_id" : 2}, {"$set" : {"time" : millis}}, upsert=True)
+    db.relevant_ents.update({"_id" : 2}, {"$set" : {"time" : millis}}, upsert=True)
     entityList = getUpdatedEntityList()
     stream = TweetSampler(
         credentials['APP_KEY'],
